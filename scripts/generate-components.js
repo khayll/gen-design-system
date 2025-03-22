@@ -115,10 +115,10 @@ async function generateComponent(systemPrompt, componentPrompt, images) {
         }
 
         const response = await anthropic.messages.create({
-            model: 'claude-3-7-sonnet-latest',
+            model: process.env.ANTHROPIC_MODEL || 'claude-3-7-sonnet-20240229',
             messages,
-            max_tokens: 16000,
-            temperature: 0.2,
+            max_tokens: 4000,
+            temperature: parseFloat(process.env.ANTHROPIC_TEMPERATURE || '0.2'),
         });
 
         return response.content[0].text;
@@ -138,7 +138,11 @@ function parseGeneratedResponse(response) {
     const storyMatch = response.match(/```typescript\n([\s\S]*?)\n```/) || response.match(/```ts\n([\s\S]*?)\n```/);
     const storyCode = storyMatch ? storyMatch[1] : null;
 
-    return { componentCode, storyCode };
+    // Extract Playwright showcase HTML
+    const showcaseMatch = response.match(/```html\n([\s\S]*?)\n```/);
+    const showcaseCode = showcaseMatch ? showcaseMatch[1] : null;
+
+    return { componentCode, storyCode, showcaseCode };
 }
 
 // Function to create a new NX library for the component
@@ -202,7 +206,7 @@ export default defineConfig({
 }
 
 // Function to save generated component files
-async function saveGeneratedFiles(libPath, componentName, componentCode, storyCode) {
+async function saveGeneratedFiles(libPath, componentName, componentCode, storyCode, showcaseCode) {
     try {
         // Ensure lib/src directory exists
         const srcDir = path.join(libPath, 'src', 'lib');
@@ -218,15 +222,91 @@ async function saveGeneratedFiles(libPath, componentName, componentCode, storyCo
         await fs.writeFile(storyPath, storyCode);
         console.log(`Story saved to ${storyPath}`);
 
+        // Save showcase file
+        const showcasePath = path.join(srcDir, `${componentName}.showcase.html`);
+        await fs.writeFile(showcasePath, showcaseCode || generateDefaultShowcase(componentName));
+        console.log(`Showcase saved to ${showcasePath}`);
+
         // Update component's index.ts to export the component
         const indexPath = path.join(libPath, 'src', 'index.ts');
         await fs.writeFile(indexPath, `export * from './lib/${componentName}';\n`);
 
-        return { componentPath, storyPath };
+        return { componentPath, storyPath, showcasePath };
     } catch (error) {
         console.error(`Error saving generated files for ${componentName}:`, error);
         return null;
     }
+}
+
+// Function to generate a default showcase if none was provided
+function generateDefaultShowcase(componentName) {
+    const kebabName = componentName.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+    const tagName = `gds-${kebabName}`;
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${componentName} Component Showcase</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .showcase {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .variation {
+      padding: 16px;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+    }
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #212529;
+    }
+    /* Base CSS Variables */
+    :root {
+      --gds-color-primary: #4263eb;
+      --gds-color-primary-hover: #364fc7;
+      --gds-color-secondary: #868e96;
+      --gds-color-secondary-hover: #495057;
+      --gds-color-success: #40c057;
+      --gds-color-warning: #fcc419;
+      --gds-color-danger: #fa5252;
+      --gds-color-info: #15aabf;
+      --gds-color-light: #f8f9fa;
+      --gds-color-dark: #212529;
+      --gds-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+  <!-- Import the component -->
+  <script type="module" src="../../dist/libs/core/index.js"></script>
+</head>
+<body>
+  <div class="showcase">
+    <h1>${componentName} Component</h1>
+    
+    <div class="variation">
+      <div class="title">Default ${componentName}</div>
+      <${tagName}></${tagName}>
+    </div>
+  </div>
+</body>
+</html>`;
 }
 
 // Function to update core library index to export the component
@@ -255,6 +335,7 @@ async function generateAllComponents() {
     // Check for API key
     if (!process.env.ANTHROPIC_API_KEY) {
         console.error('Error: ANTHROPIC_API_KEY environment variable is not set.');
+        console.error('Please set it in your environment or create a .env file with ANTHROPIC_API_KEY=your_key_here');
         process.exit(1);
     }
 
@@ -289,7 +370,7 @@ async function generateAllComponents() {
                 }
 
                 // Parse generated response
-                const { componentCode, storyCode } = parseGeneratedResponse(generatedResponse);
+                const { componentCode, storyCode, showcaseCode } = parseGeneratedResponse(generatedResponse);
 
                 if (!componentCode || !storyCode) {
                     console.log(`Failed to parse generated response for ${componentName}. Skipping.`);
@@ -306,7 +387,7 @@ async function generateAllComponents() {
                 }
 
                 // Save generated files
-                const savedFiles = await saveGeneratedFiles(libPath, pascalCaseName, componentCode, storyCode);
+                const savedFiles = await saveGeneratedFiles(libPath, pascalCaseName, componentCode, storyCode, showcaseCode);
 
                 if (!savedFiles) {
                     console.log(`Failed to save generated files for ${componentName}. Skipping.`);
