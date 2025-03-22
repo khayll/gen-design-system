@@ -8,56 +8,17 @@
         - 'prompts/system/**'
 
   jobs:
-    build:
+    detect-changes:
       runs-on: ubuntu-latest
-      permissions:
-        contents: read
-        pull-requests: write
+      outputs:
+        affected-components: ${{ steps.affected-components.outputs.affected-components }}
 
       steps:
         - uses: actions/checkout@v3
           with:
             fetch-depth: 0
 
-        - name: Wait for Repository Owner Approval
-          id: check-approval
-          run: |
-            # Check if PR has been approved by repository owner
-            PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-            OWNER=$(echo $GITHUB_REPOSITORY | awk 'BEGIN { FS = "/" } ; { print $1 }')
-            REPO=$(echo $GITHUB_REPOSITORY | awk 'BEGIN { FS = "/" } ; { print $2 }')
-            
-            APPROVALS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews" | \
-              jq '.[] | select(.state=="APPROVED") | .user.login')
-            
-            REPO_OWNER=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/$OWNER/$REPO" | \
-              jq -r '.owner.login')
-            
-            if [[ $APPROVALS == *"$REPO_OWNER"* ]]; then
-              echo "PR approved by repository owner. Proceeding with component generation."
-              echo "approved=true" >> $GITHUB_OUTPUT
-            else
-              echo "PR not approved by repository owner. Skipping component generation."
-              echo "approved=false" >> $GITHUB_OUTPUT
-            fi
-
-        - name: Set up Node.js
-          if: steps.check-approval.outputs.approved == 'true'
-          uses: actions/setup-node@v3
-          with:
-            node-version: '18'
-            cache: 'npm'
-
-        - name: Install dependencies
-          if: steps.check-approval.outputs.approved == 'true'
-          run: |
-            npm ci
-            npx nx reset
-
         - name: Determine affected components
-          if: steps.check-approval.outputs.approved == 'true'
           id: affected-components
           run: |
             # Get list of changed files
@@ -86,8 +47,56 @@
             echo "Components to regenerate: $AFFECTED_COMPONENTS"
             echo "affected-components=$AFFECTED_COMPONENTS" >> $GITHUB_OUTPUT
 
+        - name: Post initial PR comment
+          if: steps.affected-components.outputs.affected-components != ''
+          uses: actions/github-script@v6
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const components = '${{ steps.affected-components.outputs.affected-components }}'.split(' ');
+              
+              let commentBody = '## Component Generation Pending\n\n';
+              commentBody += 'The following components will be regenerated when approved:\n\n';
+              
+              for (const component of components) {
+                commentBody += `- ${component}\n`;
+              }
+              
+              commentBody += '\nComponent generation will start after approval in the protected environment.';
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+
+    generate-components:
+      needs: detect-changes
+      if: needs.detect-changes.outputs.affected-components != ''
+      runs-on: ubuntu-latest
+      environment: component-generation
+      permissions:
+        contents: read
+        pull-requests: write
+
+      steps:
+        - uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '18'
+            cache: 'npm'
+
+        - name: Install dependencies
+          run: |
+            npm ci
+            npx nx reset
+
         - name: Take screenshot of current components
-          if: steps.check-approval.outputs.approved == 'true' && steps.affected-components.outputs.affected-components != ''
           id: before-screenshots
           run: |
             # Install Playwright
@@ -104,7 +113,7 @@
             mkdir -p screenshots/before
             
             # Take screenshots of affected components
-            COMPONENTS="${{ steps.affected-components.outputs.affected-components }}"
+            COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
             for COMPONENT in $COMPONENTS; do
               # Convert to pascal case for story URL
               PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
@@ -121,12 +130,11 @@
             kill $(lsof -t -i:6006) || true
 
         - name: Generate components
-          if: steps.check-approval.outputs.approved == 'true' && steps.affected-components.outputs.affected-components != ''
           env:
             ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           run: |
             # Generate only affected components
-            COMPONENTS="${{ steps.affected-components.outputs.affected-components }}"
+            COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
             for COMPONENT in $COMPONENTS; do
               # Create temporary directory with only this component
               mkdir -p temp_components/$COMPONENT
@@ -141,7 +149,6 @@
             done
 
         - name: Take screenshot of regenerated components
-          if: steps.check-approval.outputs.approved == 'true' && steps.affected-components.outputs.affected-components != ''
           id: after-screenshots
           run: |
             # Start Storybook in background
@@ -155,7 +162,7 @@
             mkdir -p screenshots/after
             
             # Take screenshots of affected components
-            COMPONENTS="${{ steps.affected-components.outputs.affected-components }}"
+            COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
             for COMPONENT in $COMPONENTS; do
               # Convert to pascal case for story URL
               PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
@@ -172,7 +179,6 @@
             kill $(lsof -t -i:6006) || true
 
         - name: Comment on PR with component changes
-          if: steps.check-approval.outputs.approved == 'true' && steps.affected-components.outputs.affected-components != ''
           uses: actions/github-script@v6
           with:
             github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -180,7 +186,7 @@
               const fs = require('fs');
               const path = require('path');
               
-              const components = '${{ steps.affected-components.outputs.affected-components }}'.split(' ');
+              const components = '${{ needs.detect-changes.outputs.affected-components }}'.split(' ');
               let commentBody = '## Component Generation Results\n\n';
               
               for (const component of components) {
@@ -210,17 +216,4 @@
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 body: commentBody
-              });
-
-        - name: Provide feedback if no owner approval
-          if: steps.check-approval.outputs.approved == 'false'
-          uses: actions/github-script@v6
-          with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            script: |
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `⚠️ Component generation skipped: This PR needs approval from the repository owner to process component regeneration using the Anthropic API.`
               });
