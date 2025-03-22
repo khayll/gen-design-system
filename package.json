@@ -6,11 +6,11 @@
   "types": "./src/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "start": "nx serve",
-    "build": "nx build",
-    "test": "nx test",
+    "start": "npx nx serve",
+    "build": "npx nx build",
+    "test": "npx nx test",
     "generate": "node scripts/generate-components.js",
-    "storybook": "nx run core:storybook"
+    "storybook": "npx nx run core:storybook"
   },
   "nx": {
     "includedScripts": []

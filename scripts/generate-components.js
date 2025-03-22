@@ -155,7 +155,7 @@ async function createComponentLibrary(componentName) {
         } catch {
             // Library doesn't exist, create it
             console.log(`Creating library for ${componentName}...`);
-            execSync(`nx g @nx/js:lib ${libName} --directory=libs/${libName} --bundler=vite --unitTestRunner=vitest --no-interactive`, { stdio: 'inherit' });
+            execSync(`npx nx g @nx/js:lib ${libName} --directory=libs/${libName} --bundler=vite --unitTestRunner=vitest --no-interactive`, { stdio: 'inherit' });
 
             // Update vite.config.ts to support Svelte
             const viteConfigPath = path.join(fullLibPath, 'vite.config.ts');
