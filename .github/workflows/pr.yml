@@ -26,9 +26,19 @@ jobs:
           
           # Extract component names from changed files
           AFFECTED_COMPONENTS=""
+          NEW_COMPONENTS=""
+          
           for FILE in $CHANGED_FILES; do
             if [[ $FILE == prompts/components/* ]]; then
               COMPONENT=$(echo $FILE | cut -d'/' -f3)
+          
+              # Check if component is new by looking at the base branch
+              if ! git ls-tree -r ${{ github.event.pull_request.base.sha }} --name-only | grep -q "prompts/components/$COMPONENT/"; then
+                if [[ ! " $NEW_COMPONENTS " =~ " $COMPONENT " ]]; then
+                  NEW_COMPONENTS="$NEW_COMPONENTS $COMPONENT"
+                fi
+              fi
+          
               if [[ ! " $AFFECTED_COMPONENTS " =~ " $COMPONENT " ]]; then
                 AFFECTED_COMPONENTS="$AFFECTED_COMPONENTS $COMPONENT"
               fi
@@ -44,8 +54,13 @@ jobs:
           
           # Trim and format
           AFFECTED_COMPONENTS=$(echo $AFFECTED_COMPONENTS | xargs)
+          NEW_COMPONENTS=$(echo $NEW_COMPONENTS | xargs)
+          
           echo "Components to regenerate: $AFFECTED_COMPONENTS"
+          echo "New components: $NEW_COMPONENTS"
+          
           echo "affected-components=$AFFECTED_COMPONENTS" >> $GITHUB_OUTPUT
+          echo "new-components=$NEW_COMPONENTS" >> $GITHUB_OUTPUT
 
       - name: Post initial PR comment
         if: steps.affected-components.outputs.affected-components != ''
@@ -54,15 +69,29 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const components = '${{ steps.affected-components.outputs.affected-components }}'.split(' ');
+            const newComponents = '${{ steps.affected-components.outputs.new-components }}'.split(' ').filter(c => c);
             
             let commentBody = '## Component Generation Pending\n\n';
             commentBody += 'The following components will be regenerated when approved:\n\n';
             
             for (const component of components) {
-              commentBody += `- ${component}\n`;
+              if (newComponents.includes(component)) {
+                commentBody += `- ${component} (new component) 🆕\n`;
+              } else {
+                commentBody += `- ${component}\n`;
+              }
             }
             
             commentBody += '\nComponent generation will start after approval in the protected environment.';
+            
+            if (newComponents.length > 0) {
+              commentBody += '## 🆕 New Components Added\n\n';
+              commentBody += 'The following new components were added in this PR:\n\n';
+            
+              for (const component of newComponents) {
+                commentBody += `- **${component}**: Generated from prompt\n`;
+              }
+            }
             
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -103,38 +132,71 @@ jobs:
           npx playwright install --with-deps chromium
           
           # Build Storybook as static site
-          npx nx build-storybook core
+          npx nx build-storybook core || true
           
-          # Install simple HTTP server
-          npm install -g http-server
-          
-          # Start static Storybook in background
-          npx http-server dist/storybook/core -p 6006 &
-          SERVER_PID=$!
-          
-          # Wait for server to be ready
-          echo "Waiting for Storybook server to start..."
-          npx wait-on http://localhost:6006 -t 60000
-          
-          # Create directory for screenshots
+          # Create directory for screenshots and placeholders
           mkdir -p screenshots/before
+          mkdir -p screenshots/placeholders
           
-          # Take screenshots of affected components
-          COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
-          for COMPONENT in $COMPONENTS; do
-          # Convert to pascal case for story URL
-          PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
-          
-          # Take screenshot
-          echo "Taking screenshot of $PASCAL_CASE before regeneration..."
+          # Create a "New Component" placeholder image for new components
+          echo "Creating placeholder image for new components..."
           npx playwright screenshot --browser chromium \
-           --viewport-size=1280,800 \
-           "http://localhost:6006/?path=/story/components-$PASCAL_CASE--default" \
-           "screenshots/before/$COMPONENT.png" || true
-          done
+            --viewport-size=1280,800 \
+            "data:text/html,<html><body style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f5f5;'><div style='text-align:center;font-family:system-ui;'><h1 style='font-size:32px;color:#333;'>New Component</h1><p style='font-size:18px;color:#666;'>No previous version exists</p></div></body></html>" \
+            "screenshots/placeholders/new-component.png" || true
           
-          # Kill HTTP server
-          kill $SERVER_PID || true
+          # Only continue with screenshots if we have existing components to update
+          if [[ -d "dist/storybook/core" ]]; then
+            # Install simple HTTP server
+            npm install -g http-server
+          
+            # Start static Storybook in background
+            npx http-server dist/storybook/core -p 6006 &
+            SERVER_PID=$!
+          
+            # Wait for server to be ready
+            echo "Waiting for Storybook server to start..."
+            npx wait-on http://localhost:6006 -t 60000 || true
+          
+            # Take screenshots of affected existing components
+            COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
+            NEW_COMPONENTS="${{ needs.detect-changes.outputs.new-components }}"
+          
+            for COMPONENT in $COMPONENTS; do
+              # Skip new components for before screenshots
+              if [[ "$NEW_COMPONENTS" == *"$COMPONENT"* ]]; then
+                echo "Skipping before screenshot for new component: $COMPONENT"
+                # Copy placeholder image
+                cp screenshots/placeholders/new-component.png "screenshots/before/$COMPONENT.png"
+                continue
+              fi
+          
+              # Convert to pascal case for story URL
+              PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
+          
+              # Take screenshot
+              echo "Taking screenshot of $PASCAL_CASE before regeneration..."
+              npx playwright screenshot --browser chromium \
+                --viewport-size=1280,800 \
+                "http://localhost:6006/?path=/story/components-$PASCAL_CASE--default" \
+                "screenshots/before/$COMPONENT.png" || echo "Failed to take screenshot of $COMPONENT, will use placeholder"
+          
+              # If screenshot failed, use placeholder
+              if [ ! -f "screenshots/before/$COMPONENT.png" ]; then
+                cp screenshots/placeholders/new-component.png "screenshots/before/$COMPONENT.png"
+              fi
+            done
+          
+            # Kill HTTP server
+            kill $SERVER_PID || true
+          else
+            # No existing Storybook, use placeholders for all components
+            echo "No existing Storybook build found, using placeholders for all components"
+            COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
+            for COMPONENT in $COMPONENTS; do
+              cp screenshots/placeholders/new-component.png "screenshots/before/$COMPONENT.png"
+            done
+          fi
 
       - name: Generate components
         env:
@@ -158,16 +220,12 @@ jobs:
       - name: Take screenshot of regenerated components
         id: after-screenshots
         run: |
-          # Build Storybook again with regenerated components
-          npx nx build-storybook core
+          # Start Storybook in background
+          npx nx run core:storybook -- --ci &
           
-          # Start static Storybook in background
-          npx http-server dist/storybook/core -p 6006 &
-          SERVER_PID=$!
-          
-          # Wait for server to be ready
-          echo "Waiting for Storybook server to start..."
-          npx wait-on http://localhost:6006 -t 60000
+          # Wait for Storybook to start
+          echo "Waiting for Storybook to start..."
+          sleep 30
           
           # Create directory for screenshots
           mkdir -p screenshots/after
@@ -175,19 +233,19 @@ jobs:
           # Take screenshots of affected components
           COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
           for COMPONENT in $COMPONENTS; do
-          # Convert to pascal case for story URL
-          PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
+            # Convert to pascal case for story URL
+            PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
           
-          # Take screenshot
-          echo "Taking screenshot of $PASCAL_CASE after regeneration..."
-          npx playwright screenshot --browser chromium \
-           --viewport-size=1280,800 \
-           "http://localhost:6006/?path=/story/components-$PASCAL_CASE--default" \
-           "screenshots/after/$COMPONENT.png" || true
+            # Take screenshot
+            echo "Taking screenshot of $PASCAL_CASE after regeneration..."
+            npx playwright screenshot --browser chromium \
+              --viewport-size=1280,800 \
+              "http://localhost:6006/?path=/story/components-$PASCAL_CASE--default" \
+              "screenshots/after/$COMPONENT.png" || true
           done
           
-          # Kill HTTP server
-          kill $SERVER_PID || true
+          # Kill Storybook
+          kill $(lsof -t -i:6006) || true
 
       - name: Comment on PR with component changes
         uses: actions/github-script@v6
@@ -198,10 +256,16 @@ jobs:
             const path = require('path');
             
             const components = '${{ needs.detect-changes.outputs.affected-components }}'.split(' ');
+            const newComponents = '${{ needs.detect-changes.outputs.new-components }}'.split(' ').filter(c => c);
+            
             let commentBody = '## Component Generation Results\n\n';
             
             for (const component of components) {
-              commentBody += `### ${component}\n\n`;
+              if (newComponents.includes(component)) {
+                commentBody += `### ${component} 🆕 (New Component)\n\n`;
+              } else {
+                commentBody += `### ${component}\n\n`;
+              }
             
               const beforePath = path.join('screenshots', 'before', `${component}.png`);
               const afterPath = path.join('screenshots', 'after', `${component}.png`);
@@ -213,7 +277,13 @@ jobs:
             
                 commentBody += '<table><tr><th>Before</th><th>After</th></tr>\n';
                 commentBody += '<tr><td>';
-                commentBody += `<img src="data:image/png;base64,${beforeBase64}" width="400" />`;
+            
+                if (newComponents.includes(component)) {
+                  commentBody += 'New component - no previous version';
+                } else {
+                  commentBody += `<img src="data:image/png;base64,${beforeBase64}" width="400" />`;
+                }
+            
                 commentBody += '</td><td>';
                 commentBody += `<img src="data:image/png;base64,${afterBase64}" width="400" />`;
                 commentBody += '</td></tr></table>\n\n';
