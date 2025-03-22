@@ -14,6 +14,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@gds/core": ["libs/core/src/index.ts"],
       "@gen-design-system/source": ["src/index.ts"]
     }
   },
@@ -26,5 +27,10 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
 }

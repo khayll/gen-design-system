@@ -8,16 +8,28 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/gen-design-system",
         "main": "./src/index.ts",
         "tsConfig": "./tsconfig.lib.json",
-        "assets": ["*.md"]
+        "assets": [
+          "*.md"
+        ]
       }
     },
     "lint": {
       "command": "eslint ./src ./package.json"
+    },
+    "local-registry": {
+      "executor": "@nx/js:verdaccio",
+      "options": {
+        "port": 4873,
+        "config": ".verdaccio/config.yml",
+        "storage": "tmp/local-registry/storage"
+      }
     }
   }
 }

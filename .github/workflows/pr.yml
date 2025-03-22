@@ -1,0 +1,226 @@
+  name: PR Component Generation
+
+  on:
+    pull_request:
+      branches: [ main ]
+      paths:
+        - 'prompts/components/**'
+        - 'prompts/system/**'
+
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      permissions:
+        contents: read
+        pull-requests: write
+
+      steps:
+        - uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+
+        - name: Wait for Repository Owner Approval
+          id: check-approval
+          run: |
+            # Check if PR has been approved by repository owner
+            PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+            OWNER=$(echo $GITHUB_REPOSITORY | awk 'BEGIN { FS = "/" } ; { print $1 }')
+            REPO=$(echo $GITHUB_REPOSITORY | awk 'BEGIN { FS = "/" } ; { print $2 }')
+            
+            APPROVALS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews" | \
+              jq '.[] | select(.state=="APPROVED") | .user.login')
+            
+            REPO_OWNER=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/$OWNER/$REPO" | \
+              jq -r '.owner.login')
+            
+            if [[ $APPROVALS == *"$REPO_OWNER"* ]]; then
+              echo "PR approved by repository owner. Proceeding with component generation."
+              echo "approved=true" >> $GITHUB_OUTPUT
+            else
+              echo "PR not approved by repository owner. Skipping component generation."
+              echo "approved=false" >> $GITHUB_OUTPUT
+            fi
+
+        - name: Set up Node.js
+          if: steps.check-approval.outputs.approved == 'true'
+          uses: actions/setup-node@v3
+          with:
+            node-version: '18'
+            cache: 'npm'
+
+        - name: Install dependencies
+          if: steps.check-approval.outputs.approved == 'true'
+          run: |
+            npm ci
+            npx nx reset
+
+        - name: Determine affected components
+          if: steps.check-approval.outputs.approved == 'true'
+          id: affected-components
+          run: |
+            # Get list of changed files
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+            
+            # Extract component names from changed files
+            AFFECTED_COMPONENTS=""
+            for FILE in $CHANGED_FILES; do
+              if [[ $FILE == prompts/components/* ]]; then
+                COMPONENT=$(echo $FILE | cut -d'/' -f3)
+                if [[ ! " $AFFECTED_COMPONENTS " =~ " $COMPONENT " ]]; then
+                  AFFECTED_COMPONENTS="$AFFECTED_COMPONENTS $COMPONENT"
+                fi
+              fi
+            done
+            
+            # Also consider system prompts changes which affect all components
+            if echo "$CHANGED_FILES" | grep -q "prompts/system/"; then
+              # Get all component directories
+              ALL_COMPONENTS=$(ls -d prompts/components/*/ | cut -d'/' -f3)
+              AFFECTED_COMPONENTS="$ALL_COMPONENTS"
+            fi
+            
+            # Trim and format
+            AFFECTED_COMPONENTS=$(echo $AFFECTED_COMPONENTS | xargs)
+            echo "Components to regenerate: $AFFECTED_COMPONENTS"
+            echo "affected-components=$AFFECTED_COMPONENTS" >> $GITHUB_OUTPUT
+
+        - name: Take screenshot of current components
+          if: steps.check-approval.outputs.approved == 'true' && steps.affected-components.outputs.affected-components != ''
+          id: before-screenshots
+          run: |
+            # Install Playwright
+            npx playwright install --with-deps chromium
+            
+            # Start Storybook in background
+            npm run storybook -- --ci &
+            
+            # Wait for Storybook to start
+            echo "Waiting for Storybook to start..."
+            sleep 30
+            
+            # Create directory for screenshots
+            mkdir -p screenshots/before
+            
+            # Take screenshots of affected components
+            COMPONENTS="${{ steps.affected-components.outputs.affected-components }}"
+            for COMPONENT in $COMPONENTS; do
+              # Convert to pascal case for story URL
+              PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
+            
+              # Take screenshot
+              echo "Taking screenshot of $PASCAL_CASE before regeneration..."
+              npx playwright screenshot --browser chromium \
+                --viewport-size=1280,800 \
+                "http://localhost:6006/?path=/story/components-$PASCAL_CASE--default" \
+                "screenshots/before/$COMPONENT.png" || true
+            done
+            
+            # Kill Storybook
+            kill $(lsof -t -i:6006) || true
+
+        - name: Generate components
+          if: steps.check-approval.outputs.approved == 'true' && steps.affected-components.outputs.affected-components != ''
+          env:
+            ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          run: |
+            # Generate only affected components
+            COMPONENTS="${{ steps.affected-components.outputs.affected-components }}"
+            for COMPONENT in $COMPONENTS; do
+              # Create temporary directory with only this component
+              mkdir -p temp_components/$COMPONENT
+              cp -r prompts/components/$COMPONENT/* temp_components/$COMPONENT/
+            
+              # Move temporary directory to replace original
+              rm -rf prompts/components/$COMPONENT
+              mv temp_components/$COMPONENT prompts/components/
+            
+              # Run generation for this component
+              node scripts/generate-components.js
+            done
+
+        - name: Take screenshot of regenerated components
+          if: steps.check-approval.outputs.approved == 'true' && steps.affected-components.outputs.affected-components != ''
+          id: after-screenshots
+          run: |
+            # Start Storybook in background
+            npm run storybook -- --ci &
+            
+            # Wait for Storybook to start
+            echo "Waiting for Storybook to start..."
+            sleep 30
+            
+            # Create directory for screenshots
+            mkdir -p screenshots/after
+            
+            # Take screenshots of affected components
+            COMPONENTS="${{ steps.affected-components.outputs.affected-components }}"
+            for COMPONENT in $COMPONENTS; do
+              # Convert to pascal case for story URL
+              PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
+            
+              # Take screenshot
+              echo "Taking screenshot of $PASCAL_CASE after regeneration..."
+              npx playwright screenshot --browser chromium \
+                --viewport-size=1280,800 \
+                "http://localhost:6006/?path=/story/components-$PASCAL_CASE--default" \
+                "screenshots/after/$COMPONENT.png" || true
+            done
+            
+            # Kill Storybook
+            kill $(lsof -t -i:6006) || true
+
+        - name: Comment on PR with component changes
+          if: steps.check-approval.outputs.approved == 'true' && steps.affected-components.outputs.affected-components != ''
+          uses: actions/github-script@v6
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const fs = require('fs');
+              const path = require('path');
+              
+              const components = '${{ steps.affected-components.outputs.affected-components }}'.split(' ');
+              let commentBody = '## Component Generation Results\n\n';
+              
+              for (const component of components) {
+                commentBody += `### ${component}\n\n`;
+              
+                const beforePath = path.join('screenshots', 'before', `${component}.png`);
+                const afterPath = path.join('screenshots', 'after', `${component}.png`);
+              
+                if (fs.existsSync(beforePath) && fs.existsSync(afterPath)) {
+                  // Encode images as base64
+                  const beforeBase64 = fs.readFileSync(beforePath, { encoding: 'base64' });
+                  const afterBase64 = fs.readFileSync(afterPath, { encoding: 'base64' });
+              
+                  commentBody += '<table><tr><th>Before</th><th>After</th></tr>\n';
+                  commentBody += '<tr><td>';
+                  commentBody += `<img src="data:image/png;base64,${beforeBase64}" width="400" />`;
+                  commentBody += '</td><td>';
+                  commentBody += `<img src="data:image/png;base64,${afterBase64}" width="400" />`;
+                  commentBody += '</td></tr></table>\n\n';
+                } else {
+                  commentBody += 'Screenshots not available for this component.\n\n';
+                }
+              }
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+
+        - name: Provide feedback if no owner approval
+          if: steps.check-approval.outputs.approved == 'false'
+          uses: actions/github-script@v6
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `⚠️ Component generation skipped: This PR needs approval from the repository owner to process component regeneration using the Anthropic API.`
+              });
