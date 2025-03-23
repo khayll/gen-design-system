@@ -181,7 +181,12 @@
               # Wait for server to start and list files
               sleep 5
               echo "Files being served by http-server:"
-              find . -type f -name "*.html" | while read file; do
+              echo "Showcase files:"
+              find screenshots/showcases -type f | while read file; do
+                echo "- $file"
+              done
+              echo "Dist files:"
+              find dist -type f | while read file; do
                 echo "- $file"
               done
             
@@ -281,7 +286,12 @@
             # Wait for server to start and list files
             sleep 5
             echo "Files being served by http-server:"
-            find . -type f -name "*.html" | while read file; do
+            echo "Showcase files:"
+            find screenshots/showcases -type f | while read file; do
+              echo "- $file"
+            done
+            echo "Dist files:"
+            find dist -type f | while read file; do
               echo "- $file"
             done
             
