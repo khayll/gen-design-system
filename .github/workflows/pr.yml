@@ -174,11 +174,16 @@
               npm install -g http-server
             
               # Start server for the showcase files
+              echo "Starting http-server and listing served files..."
               nohup http-server . -p 8000 > http-server.log 2>&1 &
               SERVER_PID=$!
             
-              # Wait for server to start
+              # Wait for server to start and list files
               sleep 5
+              echo "Files being served by http-server:"
+              find . -type f -name "*.html" | while read file; do
+                echo "- $file"
+              done
             
               # Take screenshots for existing components
               for COMPONENT in $EXISTING_COMPONENTS; do
@@ -269,11 +274,16 @@
             npm list -g http-server || npm install -g http-server
             
             # Start server for the showcase files
+            echo "Starting http-server and listing served files..."
             nohup http-server . -p 8000 > http-server-after.log 2>&1 &
             SERVER_PID=$!
             
-            # Wait for server to start
+            # Wait for server to start and list files
             sleep 5
+            echo "Files being served by http-server:"
+            find . -type f -name "*.html" | while read file; do
+              echo "- $file"
+            done
             
             # Take screenshots for all components
             for COMPONENT in $COMPONENTS; do

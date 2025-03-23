@@ -42,7 +42,7 @@ async function fixShowcaseFile(filePath) {
 
         // Check if file already has the correct import
         if (content.includes(`import '${importPath}'`)) {
-            console.log(`✅ ${filePath} already has correct import`);
+            console.log(`✅ ${filePath} already has correct import: ${importPath}`);
             return;
         }
 
@@ -60,6 +60,7 @@ async function fixShowcaseFile(filePath) {
   });
 </script>`
             );
+            console.log(`🔄 ${filePath}: Replaced src import with: ${importPath}`);
         } else if (!content.includes('<script type="module">')) {
             // Add import if no module script exists at all
             content = content.replace(
@@ -75,12 +76,14 @@ async function fixShowcaseFile(filePath) {
   </script>
 </head>`
             );
+            console.log(`➕ ${filePath}: Added new import: ${importPath}`);
         } else {
             // For other cases, add import inside existing script if needed
             content = content.replace(
                 /<script type="module">([\s\S]*?)<\/script>/,
                 (match, scriptContent) => {
                     if (!scriptContent.includes(`import '${importPath}'`)) {
+                        console.log(`📝 ${filePath}: Added import to existing script: ${importPath}`);
                         return `<script type="module">
   import '${importPath}';
   ${scriptContent}
