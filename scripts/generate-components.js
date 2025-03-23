@@ -188,16 +188,20 @@ export default defineConfig({
       entry: 'src/index.ts',
       name: 'GDS${componentName}',
       fileName: 'index',
-      formats: ['es', 'umd'],
+      formats: ['umd'],
     },
     rollupOptions: {
-      external: ['svelte'],
       output: {
+        inlineDynamicImports: true,
+        format: 'umd',
         globals: {
           svelte: 'Svelte',
         },
       },
     },
+    target: 'es2015',
+    minify: 'terser',
+    sourcemap: true,
   },
   resolve: {
     alias: {
@@ -310,9 +314,8 @@ function generateDefaultShowcase(componentName) {
     }
   </style>
   <!-- Import the compiled component -->
-  <script type="module">
-    import '../../../dist/libs/core/index.js';
-    
+  <script src="../../dist/libs/${kebabName}/index.umd.cjs"></script>
+  <script type="module">    
     // Add any initialization code if needed
     document.addEventListener('DOMContentLoaded', () => {
       console.log('Components loaded from @gen-design-system/core');
