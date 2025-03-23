@@ -27,8 +27,8 @@ function getComponentImportPath(filePath) {
     }
 
     const [, libName, componentName] = match;
-    // Update path to point to the built file in dist
-    return `../../dist/libs/${libName}/index.js`;
+    // Convert component name to kebab case
+    return `../../dist/libs/${libName}/index.umd.cjs`;
 }
 
 async function fixShowcaseFile(filePath) {
@@ -42,56 +42,23 @@ async function fixShowcaseFile(filePath) {
         }
 
         // Check if file already has the correct import
-        if (content.includes(`import '${importPath}'`)) {
+        if (content.includes(`<script src="${importPath}">`)) {
             console.log(`✅ ${filePath} already has correct import: ${importPath}`);
             return;
         }
 
-        // Fix script imports
-        if (content.includes(`<script type="module" src="${importPath}">`)) {
-            // Replace src attribute with import statement
-            content = content.replace(
-                new RegExp(`<script type="module" src="${importPath}"><\/script>`),
-                `<script type="module">
-  import '${importPath}';
-  
-  // Add any initialization code if needed
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('Component loaded');
-  });
-</script>`
-            );
-            console.log(`🔄 ${filePath}: Replaced src import with: ${importPath}`);
-        } else if (!content.includes('<script type="module">')) {
-            // Add import if no module script exists at all
+        // Replace any existing module script with the new UMD script
+        content = content.replace(
+            /<script type="module"[^>]*>[\s\S]*?<\/script>/g,
+            `<script src="${importPath}"></script>`
+        );
+
+        // If no script tag was replaced, add the new one before closing head
+        if (!content.includes(`<script src="${importPath}">`)) {
             content = content.replace(
                 '</head>',
-                `  <!-- Import the compiled component -->
-  <script type="module">
-    import '${importPath}';
-    
-    // Add any initialization code if needed
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('Component loaded');
-    });
-  </script>
+                `  <script src="${importPath}"></script>
 </head>`
-            );
-            console.log(`➕ ${filePath}: Added new import: ${importPath}`);
-        } else {
-            // For other cases, add import inside existing script if needed
-            content = content.replace(
-                /<script type="module">([\s\S]*?)<\/script>/,
-                (match, scriptContent) => {
-                    if (!scriptContent.includes(`import '${importPath}'`)) {
-                        console.log(`📝 ${filePath}: Added import to existing script: ${importPath}`);
-                        return `<script type="module">
-  import '${importPath}';
-  ${scriptContent}
-</script>`;
-                    }
-                    return match;
-                }
             );
         }
 
