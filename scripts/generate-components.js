@@ -193,6 +193,11 @@ export default defineConfig({
       },
     },
   },
+  resolve: {
+    alias: {
+      '@gen-design-system/${libName}': path.resolve(__dirname, './src/index.ts'),
+    },
+  },
 });
       `;
             await fs.writeFile(viteConfigPath, viteConfig);
@@ -227,9 +232,10 @@ async function saveGeneratedFiles(libPath, componentName, componentCode, storyCo
         await fs.writeFile(showcasePath, showcaseCode || generateDefaultShowcase(componentName));
         console.log(`Showcase saved to ${showcasePath}`);
 
-        // Update component's index.ts to export the component
-        const indexPath = path.join(libPath, 'src', 'index.ts');
-        await fs.writeFile(indexPath, `export * from './lib/${componentName}';\n`);
+        // Update src/index.ts to export the component directly from the Svelte file
+        const srcIndexPath = path.join(libPath, 'src', 'index.ts');
+        await fs.writeFile(srcIndexPath, `export * from './lib/${componentName}.svelte';\n`);
+        console.log(`Updated index.ts with .svelte export`);
 
         return { componentPath, storyPath, showcasePath };
     } catch (error) {
@@ -293,8 +299,15 @@ function generateDefaultShowcase(componentName) {
       --gds-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
   </style>
-  <!-- Import the component -->
-  <script type="module" src="../../dist/libs/core/index.js"></script>
+  <!-- Import the compiled component -->
+  <script type="module">
+    import '../../dist/libs/core/index.js';
+    
+    // Add any initialization code if needed
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Components loaded from @gen-design-system/core');
+    });
+  </script>
 </head>
 <body>
   <div class="showcase">
@@ -315,13 +328,13 @@ async function updateCoreLibraryIndex(componentName, libName) {
         const indexContent = await readFile(CORE_LIB_INDEX);
 
         // Check if component is already exported
-        if (indexContent.includes(`export * from '@gds/${libName}';`)) {
+        if (indexContent.includes(`export * from '@gen-design-system/${libName}';`)) {
             console.log(`Component ${componentName} already exported from core. Skipping.`);
             return;
         }
 
         // Add export statement
-        const newContent = `${indexContent}\nexport * from '@gds/${libName}';\n`;
+        const newContent = `${indexContent}\nexport * from '@gen-design-system/${libName}';\n`;
         await fs.writeFile(CORE_LIB_INDEX, newContent);
 
         console.log(`Updated core library index to export ${componentName}`);
