@@ -158,12 +158,6 @@
             if [ -n "$EXISTING_COMPONENTS" ]; then
               echo "Attempting to capture screenshots for existing components: $EXISTING_COMPONENTS"
             
-              # Build each component individually
-              for COMPONENT in $EXISTING_COMPONENTS; do
-                echo "Building component: $COMPONENT"
-                npx nx build $COMPONENT
-              done
-            
               # Find and copy showcase files
               find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
             
@@ -228,6 +222,33 @@
             # Generate all affected components in a single run
             node scripts/generate-components.js $COMPONENTS
 
+        - name: Build components
+          run: |
+            # Build core first
+            npx nx build core
+            
+            # Build each affected component
+            COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
+            for COMPONENT in $COMPONENTS; do
+              echo "Building component: $COMPONENT"
+              npx nx build $COMPONENT
+            done
+
+        - name: Fix showcase imports
+          run: |
+            # Fix showcase imports in original files
+            node scripts/fix-showcase-imports.js
+            
+            # Clean and re-copy showcase files to ensure we have the latest versions
+            rm -rf screenshots/showcases/*
+            find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
+            
+            # Fix imports in the copied showcase files
+            find screenshots/showcases -name "*.showcase.html" | while read file; do
+              # Update relative paths to work from showcases directory
+              sed -i 's|../../dist/libs/core/index.js|../../../dist/libs/core/index.js|g' "$file"
+            done
+
         - name: Take screenshot of regenerated components
           id: after-screenshots
           run: |
@@ -243,22 +264,6 @@
             
             # Get all components
             COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
-            
-            # Build the components
-            npx nx build core
-            
-            # Fix showcase imports in original files
-            node scripts/fix-showcase-imports.js
-            
-            # Clean and re-copy showcase files to ensure we have the latest versions
-            rm -rf screenshots/showcases/*
-            find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
-            
-            # Fix imports in the copied showcase files
-            find screenshots/showcases -name "*.showcase.html" | while read file; do
-              # Update relative paths to work from showcases directory
-              sed -i 's|../../dist/libs/core/index.js|../../../dist/libs/core/index.js|g' "$file"
-            done
             
             # Install http-server if not already installed
             npm list -g http-server || npm install -g http-server
@@ -349,7 +354,7 @@
                 commentBody += 'The following new components were added in this PR:\n\n';
               
                 for (const component of newComponents) {
-                  commentBody += `- **${component}**: Generated from prompt\n`;
+                  commentBody += `- ${component}\n`;
                 }
               }
               
