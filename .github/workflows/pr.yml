@@ -158,8 +158,11 @@
             if [ -n "$EXISTING_COMPONENTS" ]; then
               echo "Attempting to capture screenshots for existing components: $EXISTING_COMPONENTS"
             
-              # Try building the components
-              npx nx build core
+              # Build each component individually
+              for COMPONENT in $EXISTING_COMPONENTS; do
+                echo "Building component: $COMPONENT"
+                npx nx build $COMPONENT
+              done
             
               # Find and copy showcase files
               find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
