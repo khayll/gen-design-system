@@ -27,7 +27,8 @@ function getComponentImportPath(filePath) {
     }
 
     const [, libName, componentName] = match;
-    return `../../dist/libs/${libName}/index.js`;
+    // Update path to point to the built file in dist
+    return `../../../dist/libs/${libName}/index.js`;
 }
 
 async function fixShowcaseFile(filePath) {

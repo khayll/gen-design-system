@@ -175,7 +175,7 @@
             
               # Start server for the showcase files
               echo "Starting http-server and listing served files..."
-              nohup http-server . -p 8000 > http-server.log 2>&1 &
+              nohup http-server . -p 8000 --cors -c-1 > http-server.log 2>&1 &
               SERVER_PID=$!
             
               # Wait for server to start and list files
@@ -275,7 +275,7 @@
             
             # Start server for the showcase files
             echo "Starting http-server and listing served files..."
-            nohup http-server . -p 8000 > http-server-after.log 2>&1 &
+            nohup http-server . -p 8000 --cors -c-1 > http-server-after.log 2>&1 &
             SERVER_PID=$!
             
             # Wait for server to start and list files

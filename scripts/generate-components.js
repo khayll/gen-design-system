@@ -305,7 +305,7 @@ function generateDefaultShowcase(componentName) {
   </style>
   <!-- Import the compiled component -->
   <script type="module">
-    import '../../dist/libs/core/index.js';
+    import '../../../dist/libs/core/index.js';
     
     // Add any initialization code if needed
     document.addEventListener('DOMContentLoaded', () => {
