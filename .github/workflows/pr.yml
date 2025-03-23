@@ -184,16 +184,10 @@
               echo "Showcase files:"
               find screenshots/showcases -type f | while read file; do
                 echo "- $file"
-                echo "Contents:"
-                cat "$file"
-                echo "---"
               done
               echo "Dist files:"
               find dist -type f | while read file; do
                 echo "- $file"
-                echo "Contents:"
-                cat "$file"
-                echo "---"
               done
             
               # Take screenshots for existing components
@@ -295,16 +289,10 @@
             echo "Showcase files:"
             find screenshots/showcases -type f | while read file; do
               echo "- $file"
-              echo "Contents:"
-              cat "$file"
-              echo "---"
             done
             echo "Dist files:"
             find dist -type f | while read file; do
               echo "- $file"
-              echo "Contents:"
-              cat "$file"
-              echo "---"
             done
             
             # Take screenshots for all components
