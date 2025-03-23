@@ -118,7 +118,7 @@ async function generateComponent(systemPrompt, componentPrompt, images) {
             model: process.env.ANTHROPIC_MODEL || 'claude-3-7-sonnet-latest',
             messages,
             max_tokens: 16000,
-            temperature: parseFloat(process.env.ANTHROPIC_TEMPERATURE || '0.2'),
+            temperature: parseFloat(process.env.ANTHROPIC_TEMPERATURE || '0.05'),
         });
 
         return response.content[0].text;

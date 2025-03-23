@@ -344,6 +344,8 @@
             git add .github/screenshots
             git commit -m "Add component screenshots for PR review"
             git push origin $BRANCH_NAME
+            # Wait for GitHub to process the files
+            sleep 5
 
         - name: Comment on PR with component changes
           uses: actions/github-script@v6
@@ -379,11 +381,11 @@
                   if (newComponents.includes(component)) {
                     commentBody += 'New component - no previous version';
                   } else {
-                    commentBody += `![${component} before](${baseUrl}/before/${component}.png)`;
+                    commentBody += `<img src="${baseUrl}/before/${component}.png" width="400" />`;
                   }
                   
                   commentBody += '</td><td>';
-                  commentBody += `![${component} after](${baseUrl}/after/${component}.png)`;
+                  commentBody += `<img src="${baseUrl}/after/${component}.png" width="400" />`;
                   commentBody += '</td></tr></table>\n\n';
                 } else {
                   commentBody += 'Screenshots not available for this component.\n\n';
