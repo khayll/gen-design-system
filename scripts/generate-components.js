@@ -235,7 +235,11 @@ async function saveGeneratedFiles(libPath, componentName, componentCode, storyCo
         // Update src/index.ts to export the component directly from the Svelte file
         const srcIndexPath = path.join(libPath, 'src', 'index.ts');
         await fs.writeFile(srcIndexPath, `export * from './lib/${componentName}.svelte';\n`);
-        console.log(`Updated index.ts with .svelte export`);
+
+        // Create root index.ts that exports the Svelte file directly
+        const rootIndexPath = path.join(libPath, 'index.ts');
+        await fs.writeFile(rootIndexPath, `export { default } from './src/lib/${componentName}.svelte';\nexport * from './src/lib/${componentName}.svelte';\n`);
+        console.log(`Root index.ts created at ${rootIndexPath}`);
 
         return { componentPath, storyPath, showcasePath };
     } catch (error) {
@@ -343,8 +347,8 @@ async function updateCoreLibraryIndex(componentName, libName) {
     }
 }
 
-// Main function to generate all components
-async function generateAllComponents() {
+// Main function to generate components
+async function generateComponents(specificComponents = []) {
     // Check for API key
     if (!process.env.ANTHROPIC_API_KEY) {
         console.error('Error: ANTHROPIC_API_KEY environment variable is not set.');
@@ -363,6 +367,13 @@ async function generateAllComponents() {
         for (const dir of componentDirs) {
             if (dir.isDirectory()) {
                 const componentName = dir.name;
+
+                // Skip if specific components were provided and this one is not included
+                if (specificComponents.length > 0 && !specificComponents.includes(componentName)) {
+                    console.log(`Skipping component: ${componentName} (not in specified list)`);
+                    continue;
+                }
+
                 console.log(`\nProcessing component: ${componentName}`);
 
                 // Get component prompts and images
@@ -415,7 +426,10 @@ async function generateAllComponents() {
             }
         }
 
-        console.log('\nAll components generated successfully!');
+        const message = specificComponents.length > 0
+            ? `\nSelected components generated successfully!`
+            : `\nAll components generated successfully!`;
+        console.log(message);
     } catch (error) {
         console.error('Error generating components:', error);
         process.exit(1);
@@ -423,4 +437,11 @@ async function generateAllComponents() {
 }
 
 // Execute main function
-generateAllComponents();
+const specificComponents = process.argv.slice(2);
+if (specificComponents.length > 0) {
+    console.log(`Generating specific components: ${specificComponents.join(', ')}`);
+    generateComponents(specificComponents);
+} else {
+    console.log('Generating all components...');
+    generateComponents();
+}
