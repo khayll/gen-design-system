@@ -331,6 +331,19 @@
               kill $SERVER_PID || echo "Failed to kill server process"
             fi
 
+        - name: Create temporary branch for images
+          run: |
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "actions@github.com"
+            BRANCH_NAME="pr-${{ github.event.pull_request.number }}-screenshots"
+            git checkout -b $BRANCH_NAME
+            mkdir -p .github/screenshots
+            cp -r screenshots/before .github/screenshots/
+            cp -r screenshots/after .github/screenshots/
+            git add .github/screenshots
+            git commit -m "Add component screenshots for PR review"
+            git push origin $BRANCH_NAME
+
         - name: Comment on PR with component changes
           uses: actions/github-script@v6
           with:
@@ -344,32 +357,32 @@
               
               let commentBody = '## Component Generation Results\n\n';
               
+              const branchName = `pr-${context.issue.number}-screenshots`;
+              const baseUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branchName}/.github/screenshots`;
+              
+              // Generate comment with image URLs
               for (const component of components) {
                 if (newComponents.includes(component)) {
                   commentBody += `### ${component} 🆕 (New Component)\n\n`;
                 } else {
                   commentBody += `### ${component}\n\n`;
                 }
-              
+                
                 const beforePath = path.join('screenshots', 'before', `${component}.png`);
                 const afterPath = path.join('screenshots', 'after', `${component}.png`);
-              
+                
                 if (fs.existsSync(beforePath) && fs.existsSync(afterPath)) {
-                  // Encode images as base64
-                  const beforeBase64 = fs.readFileSync(beforePath, { encoding: 'base64' });
-                  const afterBase64 = fs.readFileSync(afterPath, { encoding: 'base64' });
-              
                   commentBody += '<table><tr><th>Before</th><th>After</th></tr>\n';
                   commentBody += '<tr><td>';
-              
+                  
                   if (newComponents.includes(component)) {
                     commentBody += 'New component - no previous version';
                   } else {
-                    commentBody += `<img src="data:image/png;base64,${beforeBase64}" width="400" />`;
+                    commentBody += `![${component} before](${baseUrl}/before/${component}.png)`;
                   }
-              
+                  
                   commentBody += '</td><td>';
-                  commentBody += `<img src="data:image/png;base64,${afterBase64}" width="400" />`;
+                  commentBody += `![${component} after](${baseUrl}/after/${component}.png)`;
                   commentBody += '</td></tr></table>\n\n';
                 } else {
                   commentBody += 'Screenshots not available for this component.\n\n';
@@ -379,7 +392,7 @@
               if (newComponents.length > 0) {
                 commentBody += '## 🆕 New Components Added\n\n';
                 commentBody += 'The following new components were added in this PR:\n\n';
-              
+                
                 for (const component of newComponents) {
                   commentBody += `- ${component}\n`;
                 }
@@ -391,3 +404,9 @@
                 repo: context.repo.repo,
                 body: commentBody
               });
+
+        - name: Cleanup temporary branch
+          if: false
+          run: |
+            BRANCH_NAME="pr-${{ github.event.pull_request.number }}-screenshots"
+            git push origin --delete $BRANCH_NAME || true
