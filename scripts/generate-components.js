@@ -115,10 +115,10 @@ async function generateComponent(systemPrompt, componentPrompt, images) {
         }
 
         const response = await anthropic.messages.create({
-            model: 'claude-3-7-sonnet-latest',
+            model: process.env.ANTHROPIC_MODEL || 'claude-3-7-sonnet-latest',
             messages,
             max_tokens: 16000,
-            temperature: 0.2,
+            temperature: parseFloat(process.env.ANTHROPIC_TEMPERATURE || '0.05'),
         });
 
         return response.content[0].text;
@@ -138,7 +138,11 @@ function parseGeneratedResponse(response) {
     const storyMatch = response.match(/```typescript\n([\s\S]*?)\n```/) || response.match(/```ts\n([\s\S]*?)\n```/);
     const storyCode = storyMatch ? storyMatch[1] : null;
 
-    return { componentCode, storyCode };
+    // Extract Playwright showcase HTML
+    const showcaseMatch = response.match(/```html\n([\s\S]*?)\n```/);
+    const showcaseCode = showcaseMatch ? showcaseMatch[1] : null;
+
+    return { componentCode, storyCode, showcaseCode };
 }
 
 // Function to create a new NX library for the component
@@ -155,7 +159,7 @@ async function createComponentLibrary(componentName) {
         } catch {
             // Library doesn't exist, create it
             console.log(`Creating library for ${componentName}...`);
-            execSync(`nx g @nx/js:lib ${libName} --directory=libs/${libName} --bundler=vite --unitTestRunner=vitest --no-interactive`, { stdio: 'inherit' });
+            execSync(`npx nx g @nx/js:lib ${libName} --directory=libs/${libName} --bundler=vite --unitTestRunner=vitest --no-interactive`, { stdio: 'inherit' });
 
             // Update vite.config.ts to support Svelte
             const viteConfigPath = path.join(fullLibPath, 'vite.config.ts');
@@ -174,19 +178,34 @@ export default defineConfig({
     }),
   ],
   build: {
+    outDir: '../../dist/libs/${libName}',
+    emptyOutDir: true,
+    reportCompressedSize: true,
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
     lib: {
       entry: 'src/index.ts',
       name: 'GDS${componentName}',
       fileName: 'index',
-      formats: ['es', 'umd'],
+      formats: ['umd'],
     },
     rollupOptions: {
-      external: ['svelte'],
       output: {
+        inlineDynamicImports: true,
+        format: 'umd',
         globals: {
           svelte: 'Svelte',
         },
       },
+    },
+    target: 'es2015',
+    minify: 'terser',
+    sourcemap: true,
+  },
+  resolve: {
+    alias: {
+      '@gen-design-system/${libName}': path.resolve(__dirname, './src/index.ts'),
     },
   },
 });
@@ -202,7 +221,7 @@ export default defineConfig({
 }
 
 // Function to save generated component files
-async function saveGeneratedFiles(libPath, componentName, componentCode, storyCode) {
+async function saveGeneratedFiles(libPath, componentName, componentCode, storyCode, showcaseCode) {
     try {
         // Ensure lib/src directory exists
         const srcDir = path.join(libPath, 'src', 'lib');
@@ -218,15 +237,102 @@ async function saveGeneratedFiles(libPath, componentName, componentCode, storyCo
         await fs.writeFile(storyPath, storyCode);
         console.log(`Story saved to ${storyPath}`);
 
-        // Update component's index.ts to export the component
-        const indexPath = path.join(libPath, 'src', 'index.ts');
-        await fs.writeFile(indexPath, `export * from './lib/${componentName}';\n`);
+        // Save showcase file
+        const showcasePath = path.join(srcDir, `${componentName}.showcase.html`);
+        await fs.writeFile(showcasePath, showcaseCode || generateDefaultShowcase(componentName));
+        console.log(`Showcase saved to ${showcasePath}`);
 
-        return { componentPath, storyPath };
+        // Update src/index.ts to export the component directly from the Svelte file
+        const srcIndexPath = path.join(libPath, 'src', 'index.ts');
+        await fs.writeFile(srcIndexPath, `export * from './lib/${componentName}.svelte';\n`);
+
+        // Create root index.ts that exports the Svelte file directly
+        const rootIndexPath = path.join(libPath, 'index.ts');
+        await fs.writeFile(rootIndexPath, `export { default } from './src/lib/${componentName}.svelte';\nexport * from './src/lib/${componentName}.svelte';\n`);
+        console.log(`Root index.ts created at ${rootIndexPath}`);
+
+        return { componentPath, storyPath, showcasePath };
     } catch (error) {
         console.error(`Error saving generated files for ${componentName}:`, error);
         return null;
     }
+}
+
+// Function to generate a default showcase if none was provided
+function generateDefaultShowcase(componentName) {
+    const kebabName = componentName.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+    const tagName = `gds-${kebabName}`;
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${componentName} Component Showcase</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .showcase {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .variation {
+      padding: 16px;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+    }
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #212529;
+    }
+    /* Base CSS Variables */
+    :root {
+      --gds-color-primary: #4263eb;
+      --gds-color-primary-hover: #364fc7;
+      --gds-color-secondary: #868e96;
+      --gds-color-secondary-hover: #495057;
+      --gds-color-success: #40c057;
+      --gds-color-warning: #fcc419;
+      --gds-color-danger: #fa5252;
+      --gds-color-info: #15aabf;
+      --gds-color-light: #f8f9fa;
+      --gds-color-dark: #212529;
+      --gds-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+  <!-- Import the compiled component -->
+  <script src="../../dist/libs/${kebabName}/index.umd.cjs"></script>
+  <script type="module">    
+    // Add any initialization code if needed
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Components loaded from @gen-design-system/core');
+    });
+  </script>
+</head>
+<body>
+  <div class="showcase">
+    <h1>${componentName} Component</h1>
+    
+    <div class="variation">
+      <div class="title">Default ${componentName}</div>
+      <${tagName}></${tagName}>
+    </div>
+  </div>
+</body>
+</html>`;
 }
 
 // Function to update core library index to export the component
@@ -235,13 +341,13 @@ async function updateCoreLibraryIndex(componentName, libName) {
         const indexContent = await readFile(CORE_LIB_INDEX);
 
         // Check if component is already exported
-        if (indexContent.includes(`export * from '@gds/${libName}';`)) {
+        if (indexContent.includes(`export * from '@gen-design-system/${libName}';`)) {
             console.log(`Component ${componentName} already exported from core. Skipping.`);
             return;
         }
 
         // Add export statement
-        const newContent = `${indexContent}\nexport * from '@gds/${libName}';\n`;
+        const newContent = `${indexContent}\nexport * from '@gen-design-system/${libName}';\n`;
         await fs.writeFile(CORE_LIB_INDEX, newContent);
 
         console.log(`Updated core library index to export ${componentName}`);
@@ -250,11 +356,12 @@ async function updateCoreLibraryIndex(componentName, libName) {
     }
 }
 
-// Main function to generate all components
-async function generateAllComponents() {
+// Main function to generate components
+async function generateComponents(specificComponents = []) {
     // Check for API key
     if (!process.env.ANTHROPIC_API_KEY) {
         console.error('Error: ANTHROPIC_API_KEY environment variable is not set.');
+        console.error('Please set it in your environment or create a .env file with ANTHROPIC_API_KEY=your_key_here');
         process.exit(1);
     }
 
@@ -269,6 +376,13 @@ async function generateAllComponents() {
         for (const dir of componentDirs) {
             if (dir.isDirectory()) {
                 const componentName = dir.name;
+
+                // Skip if specific components were provided and this one is not included
+                if (specificComponents.length > 0 && !specificComponents.includes(componentName)) {
+                    console.log(`Skipping component: ${componentName} (not in specified list)`);
+                    continue;
+                }
+
                 console.log(`\nProcessing component: ${componentName}`);
 
                 // Get component prompts and images
@@ -289,7 +403,7 @@ async function generateAllComponents() {
                 }
 
                 // Parse generated response
-                const { componentCode, storyCode } = parseGeneratedResponse(generatedResponse);
+                const { componentCode, storyCode, showcaseCode } = parseGeneratedResponse(generatedResponse);
 
                 if (!componentCode || !storyCode) {
                     console.log(`Failed to parse generated response for ${componentName}. Skipping.`);
@@ -306,7 +420,7 @@ async function generateAllComponents() {
                 }
 
                 // Save generated files
-                const savedFiles = await saveGeneratedFiles(libPath, pascalCaseName, componentCode, storyCode);
+                const savedFiles = await saveGeneratedFiles(libPath, pascalCaseName, componentCode, storyCode, showcaseCode);
 
                 if (!savedFiles) {
                     console.log(`Failed to save generated files for ${componentName}. Skipping.`);
@@ -321,7 +435,10 @@ async function generateAllComponents() {
             }
         }
 
-        console.log('\nAll components generated successfully!');
+        const message = specificComponents.length > 0
+            ? `\nSelected components generated successfully!`
+            : `\nAll components generated successfully!`;
+        console.log(message);
     } catch (error) {
         console.error('Error generating components:', error);
         process.exit(1);
@@ -329,4 +446,11 @@ async function generateAllComponents() {
 }
 
 // Execute main function
-generateAllComponents();
+const specificComponents = process.argv.slice(2);
+if (specificComponents.length > 0) {
+    console.log(`Generating specific components: ${specificComponents.join(', ')}`);
+    generateComponents(specificComponents);
+} else {
+    console.log('Generating all components...');
+    generateComponents();
+}
