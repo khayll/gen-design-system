@@ -178,6 +178,12 @@ export default defineConfig({
     }),
   ],
   build: {
+    outDir: '../../dist/libs/${libName}',
+    emptyOutDir: true,
+    reportCompressedSize: true,
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
     lib: {
       entry: 'src/index.ts',
       name: 'GDS${componentName}',
