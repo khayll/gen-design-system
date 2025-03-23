@@ -253,10 +253,17 @@
             rm -rf screenshots/showcases/*
             find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
             
-            # Fix imports in the copied showcase files
+            # Replace UMD imports with actual content
             find screenshots/showcases -name "*.showcase.html" | while read file; do
-              # Update relative paths to work from showcases directory
-              sed -i 's|../../dist/libs/core/index.js|../../dist/libs/core/index.js|g' "$file"
+              # Extract the UMD import path
+              UMD_PATH=$(grep -o 'src="[^"]*index.umd.cjs"' "$file" | cut -d'"' -f2)
+              if [ -n "$UMD_PATH" ]; then
+                # Get the actual content of the UMD file
+                UMD_CONTENT=$(cat "$UMD_PATH" 2>/dev/null || echo "// UMD file not found")
+                
+                # Replace the script tag with the actual content
+                sed -i "s|<script src=\"$UMD_PATH\"></script>|<script>$UMD_CONTENT</script>|g" "$file"
+              fi
             done
 
         - name: Take screenshot of regenerated components
