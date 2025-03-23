@@ -167,7 +167,7 @@
               # Also fix imports in the copied showcase files
               find screenshots/showcases -name "*.showcase.html" | while read file; do
                 # Update relative paths to work from showcases directory
-                sed -i 's|../../dist/libs/core/index.js|../../../dist/libs/core/index.js|g' "$file"
+                sed -i 's|../../dist/libs/core/index.js|../../dist/libs/core/index.js|g' "$file"
               done
             
               # Install simple HTTP server
@@ -175,7 +175,7 @@
             
               # Start server for the showcase files
               echo "Starting http-server and listing served files..."
-              nohup http-server . -p 8000 --cors -c-1 > http-server.log 2>&1 &
+              nohup http-server . -p 8000 --cors -c-1 --proxy http://localhost:8000? > http-server.log 2>&1 &
               SERVER_PID=$!
             
               # Wait for server to start and list files
@@ -251,7 +251,7 @@
             # Fix imports in the copied showcase files
             find screenshots/showcases -name "*.showcase.html" | while read file; do
               # Update relative paths to work from showcases directory
-              sed -i 's|../../dist/libs/core/index.js|../../../dist/libs/core/index.js|g' "$file"
+              sed -i 's|../../dist/libs/core/index.js|../../dist/libs/core/index.js|g' "$file"
             done
 
         - name: Take screenshot of regenerated components
@@ -275,7 +275,7 @@
             
             # Start server for the showcase files
             echo "Starting http-server and listing served files..."
-            nohup http-server . -p 8000 --cors -c-1 > http-server-after.log 2>&1 &
+            nohup http-server . -p 8000 --cors -c-1 --proxy http://localhost:8000? > http-server-after.log 2>&1 &
             SERVER_PID=$!
             
             # Wait for server to start and list files
