@@ -261,8 +261,8 @@
               # Extract the UMD import path
               UMD_PATH=$(grep -o 'src="[^"]*index.umd.cjs"' "$file" | cut -d'"' -f2)
               if [ -n "$UMD_PATH" ]; then
-                # Get the actual content of the UMD file
-                UMD_CONTENT=$(cat "$UMD_PATH" 2>/dev/null || echo "// UMD file not found")
+                # Get the actual content of the UMD file and escape special characters
+                UMD_CONTENT=$(cat "$UMD_PATH" 2>/dev/null | sed 's/[\/&]/\\&/g' || echo "// UMD file not found")
                 
                 # Replace the script tag with the actual content
                 sed -i "s|<script src=\"$UMD_PATH\"></script>|<script>$UMD_CONTENT</script>|g" "$file"
