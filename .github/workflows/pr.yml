@@ -267,6 +267,10 @@
               fi
             done
 
+        - name: Add base styles to showcase files
+          run: |
+            node scripts/add-base-styles.js
+
         - name: Fix showcase host selectors
           run: |
             node scripts/fix-showcase-hosts.js
