@@ -289,10 +289,6 @@
           run: |
             node scripts/add-base-styles.js
 
-        - name: Fix showcase host selectors
-          run: |
-            node scripts/fix-showcase-hosts.js
-
         - name: Log showcase file contents
           run: |
             echo "=== Showcase File Contents ==="
