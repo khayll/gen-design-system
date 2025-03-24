@@ -271,6 +271,15 @@
           run: |
             node scripts/fix-showcase-hosts.js
 
+        - name: Log showcase file contents
+          run: |
+            echo "=== Showcase File Contents ==="
+            find screenshots/showcases -type f | while read file; do
+              echo "=== Contents of $file ==="
+              cat "$file"
+              echo "=== End of $file ===\n"
+            done
+
         - name: Take screenshot of regenerated components
           id: after-screenshots
           run: |
