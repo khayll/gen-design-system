@@ -267,6 +267,10 @@
               fi
             done
 
+        - name: Fix showcase host selectors
+          run: |
+            node scripts/fix-showcase-hosts.js
+
         - name: Take screenshot of regenerated components
           id: after-screenshots
           run: |
