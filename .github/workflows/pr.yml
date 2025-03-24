@@ -336,14 +336,48 @@
           run: |
             git config --global user.name "GitHub Actions"
             git config --global user.email "actions@github.com"
-            BRANCH_NAME="pr-${{ github.event.pull_request.number }}-screenshots"
+            
+            # Get the latest image branch number
+            LATEST_BRANCH=$(git ls-remote --heads origin | grep -o 'pr-.*-screenshots-v[0-9]*' | sed 's/.*-v//' | sort -n | tail -n1)
+            if [ -z "$LATEST_BRANCH" ]; then
+              LATEST_BRANCH=0
+            fi
+            NEXT_BRANCH=$((LATEST_BRANCH + 1))
+            
+            # Create new branch with version number
+            BRANCH_NAME="pr-${{ github.event.pull_request.number }}-screenshots-v$NEXT_BRANCH"
             git checkout -b $BRANCH_NAME
+            
+            # Create screenshots directory
             mkdir -p .github/screenshots
-            cp -r screenshots/before .github/screenshots/
+            
+            # Copy after screenshots
             cp -r screenshots/after .github/screenshots/
+            
+            # Copy before screenshots from previous branch if it exists
+            if [ $LATEST_BRANCH -gt 0 ]; then
+              PREV_BRANCH="pr-${{ github.event.pull_request.number }}-screenshots-v$LATEST_BRANCH"
+              if git ls-remote --heads origin | grep -q "$PREV_BRANCH"; then
+                git fetch origin $PREV_BRANCH:$PREV_BRANCH
+                if [ -d "$PREV_BRANCH/.github/screenshots/after" ]; then
+                  cp -r $PREV_BRANCH/.github/screenshots/after .github/screenshots/before
+                fi
+              fi
+            fi
+            
+            # Copy new before screenshots for new components
+            if [ -d "screenshots/before" ]; then
+              mkdir -p .github/screenshots/before
+              cp -r screenshots/before/* .github/screenshots/before/
+            fi
+            
             git add .github/screenshots
-            git commit -m "Add component screenshots for PR review"
+            git commit -m "Add component screenshots for PR review (v$NEXT_BRANCH)"
             git push origin $BRANCH_NAME
+            
+            # Store the branch name for later use
+            echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+            
             # Wait for GitHub to process the files
             sleep 5
 
@@ -360,7 +394,7 @@
               
               let commentBody = '## Component Generation Results\n\n';
               
-              const branchName = `pr-${context.issue.number}-screenshots`;
+              const branchName = '${{ env.BRANCH_NAME }}';
               const baseUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branchName}/.github/screenshots`;
               
               // Generate comment with image URLs
@@ -408,8 +442,19 @@
                 body: commentBody
               });
 
-        - name: Cleanup temporary branch
-          if: always()
+        - name: Cleanup old image branches
           run: |
-            BRANCH_NAME="pr-${{ github.event.pull_request.number }}-screenshots"
-            git push origin --delete $BRANCH_NAME || true
+            # Get all image branches for this PR
+            PR_BRANCHES=$(git ls-remote --heads origin | grep -o "pr-${{ github.event.pull_request.number }}-screenshots-v[0-9]*" | sort -V)
+            
+            # Get the current branch number
+            CURRENT_BRANCH=$(echo "$PR_BRANCHES" | grep -o 'v[0-9]*$' | sort -n | tail -n1 | sed 's/v//')
+            
+            # Delete branches that are 10 or more versions old
+            echo "$PR_BRANCHES" | while read -r branch; do
+              branch_num=$(echo "$branch" | grep -o 'v[0-9]*$' | sed 's/v//')
+              if [ "$branch_num" -lt $((CURRENT_BRANCH - 10)) ]; then
+                echo "Deleting old branch: $branch"
+                git push origin --delete "$branch" || true
+              fi
+            done
