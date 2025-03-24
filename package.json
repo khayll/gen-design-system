@@ -6,11 +6,11 @@
   "types": "./src/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "start": "nx serve",
-    "build": "nx build",
-    "test": "nx test",
+    "start": "npx nx serve",
+    "build": "npx nx build",
+    "test": "npx nx test",
     "generate": "node scripts/generate-components.js",
-    "storybook": "nx run core:storybook"
+    "storybook": "npx nx run core:storybook"
   },
   "nx": {
     "includedScripts": []
@@ -43,6 +43,7 @@
     "@vitest/ui": "^3.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.0.0",
+    "http-server": "^14.1.1",
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
     "nx": "20.6.2",
@@ -50,6 +51,7 @@
     "storybook": "^8.6.8",
     "svelte": "^5.25.2",
     "svelte-check": "^4.1.5",
+    "terser": "^5.39.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
@@ -57,6 +59,7 @@
     "verdaccio": "^6.0.5",
     "vite": "^6.2.2",
     "vite-plugin-dts": "~4.5.0",
-    "vitest": "^3.0.9"
+    "vitest": "^3.0.9",
+    "wait-on": "^8.0.3"
   }
 }
