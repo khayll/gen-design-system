@@ -13,8 +13,8 @@ function processFile(filePath) {
   console.log('----------------');
   console.log(content);
   
-  // Replace :host with body in style tags
-  content = content.replace(/:host/g, 'body');
+  // Replace :host and :root with body in style tags
+  content = content.replace(/:host/g, 'body').replace(/:root/g, 'body');
   
   // Log modified content
   console.log('\nModified content:');
