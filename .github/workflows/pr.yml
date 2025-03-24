@@ -261,11 +261,23 @@
               # Extract the UMD import path
               UMD_PATH=$(grep -o 'src="[^"]*index.umd.cjs"' "$file" | cut -d'"' -f2)
               if [ -n "$UMD_PATH" ]; then
-                # Get the actual content of the UMD file and escape special characters
-                UMD_CONTENT=$(cat "$UMD_PATH" 2>/dev/null | sed 's/[\/&]/\\&/g' || echo "// UMD file not found")
-                
-                # Replace the script tag with the actual content
-                sed -i "s|<script src=\"$UMD_PATH\"></script>|<script>$UMD_CONTENT</script>|g" "$file"
+                # Get the actual content of the UMD file
+                if [ -f "$UMD_PATH" ]; then
+                  # Create a temporary file with the new content
+                  TMP_FILE=$(mktemp)
+                  # Copy the original file up to the script tag
+                  sed "/<script src=\"$UMD_PATH\"><\/script>/q" "$file" > "$TMP_FILE"
+                  # Add the new script tag with content
+                  echo "<script>" >> "$TMP_FILE"
+                  cat "$UMD_PATH" >> "$TMP_FILE"
+                  echo "</script>" >> "$TMP_FILE"
+                  # Add the rest of the file after the script tag
+                  sed -n "/<script src=\"$UMD_PATH\"><\/script>/,/^$/p" "$file" | tail -n +2 >> "$TMP_FILE"
+                  # Replace the original file with the new content
+                  mv "$TMP_FILE" "$file"
+                else
+                  echo "Warning: UMD file not found: $UMD_PATH"
+                fi
               fi
             done
 
