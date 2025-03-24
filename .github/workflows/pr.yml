@@ -159,18 +159,12 @@
             if [ -n "$EXISTING_COMPONENTS" ]; then
               echo "Attempting to capture screenshots for existing components: $EXISTING_COMPONENTS"
             
-              # Find and copy showcase files
-              find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
-            
               # Fix showcase imports
               node scripts/fix-showcase-imports.js
-            
-              # Also fix imports in the copied showcase files
-              find screenshots/showcases -name "*.showcase.html" | while read file; do
-                # Update relative paths to work from showcases directory
-                sed -i 's|../../dist/libs/core/index.js|../../dist/libs/core/index.js|g' "$file"
-              done
-            
+
+              # Find and copy showcase files
+              find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
+                                 
               # Install simple HTTP server
               npm install -g http-server
             
