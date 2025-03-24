@@ -28,7 +28,7 @@ function getComponentImportPath(filePath) {
 
     const [, libName, componentName] = match;
     // Convert component name to kebab case
-    return `../../dist/libs/${libName}/index.umd.cjs`;
+    return `dist/libs/${libName}/index.umd.cjs`;
 }
 
 async function fixShowcaseFile(filePath) {
