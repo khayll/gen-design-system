@@ -409,7 +409,7 @@
               });
 
         - name: Cleanup temporary branch
-          if: false
+          if: always()
           run: |
             BRANCH_NAME="pr-${{ github.event.pull_request.number }}-screenshots"
             git push origin --delete $BRANCH_NAME || true
