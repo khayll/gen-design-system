@@ -245,6 +245,14 @@
               npx nx build $COMPONENT
             done
 
+        - name: List dist folder contents
+          run: |
+            echo "=== Contents of dist folder ==="
+            find dist -type f | while read file; do
+              echo "- $file"
+            done
+            echo "=== End of dist folder contents ===\n"
+
         - name: Fix showcase imports
           run: |
             # Fix showcase imports in original files
