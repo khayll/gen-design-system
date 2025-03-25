@@ -1,336 +1,184 @@
-  name: PR Component Generation
+name: PR Component Generation
 
-  on:
-    pull_request:
-      branches: [ main ]
-      paths:
-        - 'prompts/components/**'
-        - 'prompts/system/**'
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'prompts/components/**'
+      - 'prompts/system/**'
 
-  jobs:
-    detect-changes:
-      runs-on: ubuntu-latest
-      outputs:
-        affected-components: ${{ steps.affected-components.outputs.affected-components }}
-        new-components: ${{ steps.affected-components.outputs.new-components }}
+# Add permissions at the workflow level
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
 
-      steps:
-        - uses: actions/checkout@v3
-          with:
-            fetch-depth: 0
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      affected-components: ${{ steps.affected-components.outputs.affected-components }}
+      new-components: ${{ steps.affected-components.outputs.new-components }}
 
-        - name: Determine affected components
-          id: affected-components
-          run: |
-            # Get list of changed files
-            CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
-            
-            # Extract component names from changed files
-            AFFECTED_COMPONENTS=""
-            NEW_COMPONENTS=""
-            
-            for FILE in $CHANGED_FILES; do
-              if [[ $FILE == prompts/components/* ]]; then
-                COMPONENT=$(echo $FILE | cut -d'/' -f3)
-            
-                # Check if component is new by looking at the base branch
-                if ! git ls-tree -r ${{ github.event.pull_request.base.sha }} --name-only | grep -q "prompts/components/$COMPONENT/"; then
-                  if [[ ! " $NEW_COMPONENTS " =~ " $COMPONENT " ]]; then
-                    NEW_COMPONENTS="$NEW_COMPONENTS $COMPONENT"
-                  fi
-                fi
-            
-                if [[ ! " $AFFECTED_COMPONENTS " =~ " $COMPONENT " ]]; then
-                  AFFECTED_COMPONENTS="$AFFECTED_COMPONENTS $COMPONENT"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Determine affected components
+        id: affected-components
+        run: |
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+          
+          # Extract component names from changed files
+          AFFECTED_COMPONENTS=""
+          NEW_COMPONENTS=""
+          
+          for FILE in $CHANGED_FILES; do
+            if [[ $FILE == prompts/components/* ]]; then
+              COMPONENT=$(echo $FILE | cut -d'/' -f3)
+          
+              # Check if component is new by looking at the base branch
+              if ! git ls-tree -r ${{ github.event.pull_request.base.sha }} --name-only | grep -q "prompts/components/$COMPONENT/"; then
+                if [[ ! " $NEW_COMPONENTS " =~ " $COMPONENT " ]]; then
+                  NEW_COMPONENTS="$NEW_COMPONENTS $COMPONENT"
                 fi
               fi
-            done
-            
-            # Also consider system prompts changes which affect all components
-            if echo "$CHANGED_FILES" | grep -q "prompts/system/"; then
-              # Get all component directories
-              ALL_COMPONENTS=$(ls -d prompts/components/*/ | cut -d'/' -f3)
-              AFFECTED_COMPONENTS="$ALL_COMPONENTS"
+          
+              if [[ ! " $AFFECTED_COMPONENTS " =~ " $COMPONENT " ]]; then
+                AFFECTED_COMPONENTS="$AFFECTED_COMPONENTS $COMPONENT"
+              fi
             fi
-            
-            # Trim and format
-            AFFECTED_COMPONENTS=$(echo $AFFECTED_COMPONENTS | xargs)
-            NEW_COMPONENTS=$(echo $NEW_COMPONENTS | xargs)
-            
-            echo "Components to regenerate: $AFFECTED_COMPONENTS"
-            echo "New components: $NEW_COMPONENTS"
-            
-            echo "affected-components=$AFFECTED_COMPONENTS" >> $GITHUB_OUTPUT
-            echo "new-components=$NEW_COMPONENTS" >> $GITHUB_OUTPUT
+          done
+          
+          # Also consider system prompts changes which affect all components
+          if echo "$CHANGED_FILES" | grep -q "prompts/system/"; then
+            # Get all component directories
+            ALL_COMPONENTS=$(ls -d prompts/components/*/ | cut -d'/' -f3)
+            AFFECTED_COMPONENTS="$ALL_COMPONENTS"
+          fi
+          
+          # Trim and format
+          AFFECTED_COMPONENTS=$(echo $AFFECTED_COMPONENTS | xargs)
+          NEW_COMPONENTS=$(echo $NEW_COMPONENTS | xargs)
+          
+          echo "Components to regenerate: $AFFECTED_COMPONENTS"
+          echo "New components: $NEW_COMPONENTS"
+          
+          echo "affected-components=$AFFECTED_COMPONENTS" >> $GITHUB_OUTPUT
+          echo "new-components=$NEW_COMPONENTS" >> $GITHUB_OUTPUT
 
-        - name: Post initial PR comment
-          if: steps.affected-components.outputs.affected-components != ''
-          uses: actions/github-script@v6
-          with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            script: |
-              const components = '${{ steps.affected-components.outputs.affected-components }}'.split(' ');
-              const newComponents = '${{ steps.affected-components.outputs.new-components }}'.split(' ').filter(c => c);
-              
-              let commentBody = '## Component Generation Pending\n\n';
-              commentBody += 'The following components will be regenerated when approved:\n\n';
-              
-              for (const component of components) {
-                if (newComponents.includes(component)) {
-                  commentBody += `- ${component} (new component) 🆕\n`;
-                } else {
-                  commentBody += `- ${component}\n`;
-                }
+      - name: Post initial PR comment
+        if: steps.affected-components.outputs.affected-components != ''
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const components = '${{ steps.affected-components.outputs.affected-components }}'.split(' ');
+            const newComponents = '${{ steps.affected-components.outputs.new-components }}'.split(' ').filter(c => c);
+            
+            let commentBody = '## Component Generation Pending\n\n';
+            commentBody += 'The following components will be regenerated when approved:\n\n';
+            
+            for (const component of components) {
+              if (newComponents.includes(component)) {
+                commentBody += `- ${component} (new component) 🆕\n`;
+              } else {
+                commentBody += `- ${component}\n`;
               }
-              
-              commentBody += '\nComponent generation will start after approval in the protected environment.';
-              
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: commentBody
-              });
+            }
+            
+            commentBody += '\nComponent generation will start after approval in the protected environment.';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
 
-    generate-components:
-      needs: detect-changes
-      if: needs.detect-changes.outputs.affected-components != ''
-      runs-on: ubuntu-latest
-      environment: component-generation
-      permissions:
-        contents: write
-        pull-requests: write
+  generate-components:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.affected-components != ''
+    runs-on: ubuntu-latest
+    environment: component-generation
+    permissions:
+      contents: write
+      pull-requests: write
 
-      steps:
-        - uses: actions/checkout@v3
-          with:
-            fetch-depth: 0
-            token: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-        - name: Set up Node.js
-          uses: actions/setup-node@v3
-          with:
-            node-version: '18'
-            cache: 'npm'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
 
-        - name: Install dependencies
-          run: |
-            npm ci
-            npx nx reset
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx nx reset
 
-        - name: Create showcase directory
-          run: |
-            mkdir -p screenshots/showcases
+      - name: Create showcase directory
+        run: |
+          mkdir -p screenshots/showcases
 
-        - name: Take screenshot of current components
-          id: before-screenshots
-          run: |
-            # Install Playwright
-            npx playwright install --with-deps chromium
-            
-            # Create directory for screenshots and placeholders
-            mkdir -p screenshots/before
-            mkdir -p screenshots/placeholders
-            
-            # Create a "New Component" placeholder image for new components
-            echo "Creating placeholder image for new components..."
-            npx playwright screenshot --browser chromium \
-              --viewport-size=1280,800 \
-              "data:text/html,<html><body style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f5f5;'><div style='text-align:center;font-family:system-ui;'><h1 style='font-size:32px;color:#333;'>New Component</h1><p style='font-size:18px;color:#666;'>No previous version exists</p></div></body></html>" \
-              "screenshots/placeholders/new-component.png"
-            
-            # Create placeholder for components that can't be captured  
-            echo "Creating placeholder image for components that couldn't be captured..."
-            npx playwright screenshot --browser chromium \
-              --viewport-size=1280,800 \
-              "data:text/html,<html><body style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f5f5;'><div style='text-align:center;font-family:system-ui;'><h1 style='font-size:32px;color:#333;'>Screenshot Failed</h1><p style='font-size:18px;color:#666;'>Component exists but couldn't be captured</p></div></body></html>" \
-              "screenshots/placeholders/capture-failed.png"
-            
-            # For new components, use the placeholder without trying to capture
-            NEW_COMPONENTS="${{ needs.detect-changes.outputs.new-components }}"
-            for COMPONENT in $NEW_COMPONENTS; do
-              echo "Using placeholder for new component: $COMPONENT"
-              cp screenshots/placeholders/new-component.png "screenshots/before/$COMPONENT.png"
-            done
-            
-            # For existing components, try to capture screenshots
-            EXISTING_COMPONENTS=$(echo "${{ needs.detect-changes.outputs.affected-components }}" | tr ' ' '\n' | grep -v "$NEW_COMPONENTS" | tr '\n' ' ')
-            
-            if [ -n "$EXISTING_COMPONENTS" ]; then
-              echo "Attempting to capture screenshots for existing components: $EXISTING_COMPONENTS"
-            
-              # Fix showcase imports
-              node scripts/fix-showcase-imports.js
-
-              # Find and copy showcase files
-              find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
-                                 
-              # Install simple HTTP server
-              npm install -g http-server
-            
-              # Start server for the showcase files
-              echo "Starting http-server and listing served files..."
-              nohup http-server . -p 8000 --cors -c-1 --proxy http://localhost:8000? > http-server.log 2>&1 &
-              SERVER_PID=$!
-            
-              # Wait for server to start and list files
-              sleep 5
-              echo "Files being served by http-server:"
-              echo "Showcase files:"
-              find screenshots/showcases -type f | while read file; do
-                echo "- $file"
-              done
-              echo "Dist files:"
-              find dist -type f | while read file; do
-                echo "- $file"
-              done
-            
-              # Take screenshots for existing components
-              for COMPONENT in $EXISTING_COMPONENTS; do
-                # Convert to pascal case
-                PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
-            
-                echo "Taking screenshot of $PASCAL_CASE before regeneration..."
-            
-                if [ -f "screenshots/showcases/${PASCAL_CASE}.showcase.html" ]; then
-                  if npx playwright screenshot --browser chromium \
-                    --viewport-size=1280,800 \
-                    "http://localhost:8000/screenshots/showcases/${PASCAL_CASE}.showcase.html" \
-                    "screenshots/before/$COMPONENT.png"; then
-                    echo "Screenshot captured successfully for $COMPONENT"
-                  else
-                    echo "Failed to capture screenshot for $COMPONENT, using placeholder"
-                    cp screenshots/placeholders/capture-failed.png "screenshots/before/$COMPONENT.png"
-                  fi
-                else
-                  echo "No showcase file found for $COMPONENT, using placeholder"
-                  cp screenshots/placeholders/capture-failed.png "screenshots/before/$COMPONENT.png"
-                fi
-              done
-            
-              # Clean up
-              if [ -n "$SERVER_PID" ]; then
-                echo "Stopping http-server (PID $SERVER_PID)"
-                kill $SERVER_PID || echo "Failed to kill server process"
-              fi
-            else
-              echo "No existing components to capture screenshots for"
-            fi
-
-        - name: Generate components
-          env:
-            ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          run: |
-            # Get affected components list
-            COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
-            
-            # Generate all affected components in a single run
-            node scripts/generate-components.js $COMPONENTS
-
-        - name: Log showcase files after generation
-          run: |
-            echo "=== Showcase Files After Generation ==="
-            find libs -name "*.showcase.html" | while read file; do
-              echo "=== Contents of $file ==="
-              cat "$file"
-              echo "=== End of $file ===\n"
-            done
-
-        - name: Build components
-          run: |
-            # Build core first
-            npx nx build core
-            
-            # Build each affected component
-            COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
-            for COMPONENT in $COMPONENTS; do
-              echo "Building component: $COMPONENT"
-              npx nx build $COMPONENT
-            done
-
-        - name: List dist folder contents
-          run: |
-            echo "=== Contents of dist folder ==="
-            find dist -type f | while read file; do
-              echo "- $file"
-            done
-            echo "=== End of dist folder contents ===\n"
-
-        - name: Fix showcase imports
-          run: |
-            # Fix showcase imports in original files
+      - name: Take screenshot of current components
+        id: before-screenshots
+        run: |
+          # Install Playwright
+          npx playwright install --with-deps chromium
+          
+          # Create directory for screenshots and placeholders
+          mkdir -p screenshots/before
+          mkdir -p screenshots/placeholders
+          
+          # Create a "New Component" placeholder image for new components
+          echo "Creating placeholder image for new components..."
+          npx playwright screenshot --browser chromium \
+            --viewport-size=1280,800 \
+            "data:text/html,<html><body style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f5f5;'><div style='text-align:center;font-family:system-ui;'><h1 style='font-size:32px;color:#333;'>New Component</h1><p style='font-size:18px;color:#666;'>No previous version exists</p></div></body></html>" \
+            "screenshots/placeholders/new-component.png"
+          
+          # Create placeholder for components that can't be captured  
+          echo "Creating placeholder image for components that couldn't be captured..."
+          npx playwright screenshot --browser chromium \
+            --viewport-size=1280,800 \
+            "data:text/html,<html><body style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f5f5;'><div style='text-align:center;font-family:system-ui;'><h1 style='font-size:32px;color:#333;'>Screenshot Failed</h1><p style='font-size:18px;color:#666;'>Component exists but couldn't be captured</p></div></body></html>" \
+            "screenshots/placeholders/capture-failed.png"
+          
+          # For new components, use the placeholder without trying to capture
+          NEW_COMPONENTS="${{ needs.detect-changes.outputs.new-components }}"
+          for COMPONENT in $NEW_COMPONENTS; do
+            echo "Using placeholder for new component: $COMPONENT"
+            cp screenshots/placeholders/new-component.png "screenshots/before/$COMPONENT.png"
+          done
+          
+          # For existing components, try to capture screenshots
+          EXISTING_COMPONENTS=$(echo "${{ needs.detect-changes.outputs.affected-components }}" | tr ' ' '\n' | grep -v "$NEW_COMPONENTS" | tr '\n' ' ')
+          
+          if [ -n "$EXISTING_COMPONENTS" ]; then
+            echo "Attempting to capture screenshots for existing components: $EXISTING_COMPONENTS"
+          
+            # Fix showcase imports
             node scripts/fix-showcase-imports.js
-            
-            # Clean and re-copy showcase files to ensure we have the latest versions
-            rm -rf screenshots/showcases/*
+
+            # Find and copy showcase files
             find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
-            
-            # Replace UMD imports with actual content
-            find screenshots/showcases -name "*.showcase.html" | while read file; do
-              # Extract the UMD import path
-              UMD_PATH=$(grep -o 'src="[^"]*index.umd.cjs"' "$file" | cut -d'"' -f2)
-              if [ -n "$UMD_PATH" ]; then
-                # Get the actual content of the UMD file
-                if [ -f "$UMD_PATH" ]; then
-                  # Create a temporary file with the new content
-                  TMP_FILE=$(mktemp)
-                  # Process the file line by line
-                  while IFS= read -r line; do
-                    if [[ "$line" == *"<script src=\"$UMD_PATH\">"* ]]; then
-                      echo "<script>" >> "$TMP_FILE"
-                      cat "$UMD_PATH" >> "$TMP_FILE"
-                      echo "</script>" >> "$TMP_FILE"
-                      # Skip the closing script tag
-                      read -r
-                    else
-                      echo "$line" >> "$TMP_FILE"
-                    fi
-                  done < "$file"
-                  # Replace the original file with the new content
-                  mv "$TMP_FILE" "$file"
-                else
-                  echo "Warning: UMD file not found: $UMD_PATH"
-                fi
-              fi
-            done
-
-        - name: Add base styles to showcase files
-          run: |
-            node scripts/add-base-styles.js
-
-        - name: Log showcase file contents
-          run: |
-            echo "=== Showcase File Contents ==="
-            find screenshots/showcases -type f | while read file; do
-              echo "=== Contents of $file ==="
-              cat "$file"
-              echo "=== End of $file ===\n"
-            done
-
-        - name: Take screenshot of regenerated components
-          id: after-screenshots
-          run: |
-            # Create directory for after screenshots
-            mkdir -p screenshots/after
-            
-            # Create placeholder for components that can't be captured  
-            echo "Creating placeholder image for components that couldn't be captured..."
-            npx playwright screenshot --browser chromium \
-              --viewport-size=1280,800 \
-              "data:text/html,<html><body style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f5f5;'><div style='text-align:center;font-family:system-ui;'><h1 style='font-size:32px;color:#333;'>Screenshot Failed</h1><p style='font-size:18px;color:#666;'>Component was generated but couldn't be captured</p></div></body></html>" \
-              "screenshots/placeholders/after-failed.png"
-            
-            # Get all components
-            COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
-            
-            # Install http-server if not already installed
-            npm list -g http-server || npm install -g http-server
-            
+                               
+            # Install simple HTTP server
+            npm install -g http-server
+          
             # Start server for the showcase files
             echo "Starting http-server and listing served files..."
-            nohup http-server . -p 8000 --cors -c-1 --proxy http://localhost:8000? > http-server-after.log 2>&1 &
+            nohup http-server . -p 8000 --cors -c-1 --proxy http://localhost:8000? > http-server.log 2>&1 &
             SERVER_PID=$!
-            
+          
             # Wait for server to start and list files
             sleep 5
             echo "Files being served by http-server:"
@@ -342,159 +190,317 @@
             find dist -type f | while read file; do
               echo "- $file"
             done
-            
-            # Take screenshots for all components
-            for COMPONENT in $COMPONENTS; do
+          
+            # Take screenshots for existing components
+            for COMPONENT in $EXISTING_COMPONENTS; do
               # Convert to pascal case
               PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
-            
-              echo "Taking screenshot of $PASCAL_CASE after regeneration..."
-            
+          
+              echo "Taking screenshot of $PASCAL_CASE before regeneration..."
+          
               if [ -f "screenshots/showcases/${PASCAL_CASE}.showcase.html" ]; then
                 if npx playwright screenshot --browser chromium \
                   --viewport-size=1280,800 \
                   "http://localhost:8000/screenshots/showcases/${PASCAL_CASE}.showcase.html" \
-                  "screenshots/after/$COMPONENT.png"; then
+                  "screenshots/before/$COMPONENT.png"; then
                   echo "Screenshot captured successfully for $COMPONENT"
                 else
                   echo "Failed to capture screenshot for $COMPONENT, using placeholder"
-                  cp screenshots/placeholders/after-failed.png "screenshots/after/$COMPONENT.png"
+                  cp screenshots/placeholders/capture-failed.png "screenshots/before/$COMPONENT.png"
                 fi
               else
                 echo "No showcase file found for $COMPONENT, using placeholder"
-                cp screenshots/placeholders/after-failed.png "screenshots/after/$COMPONENT.png"
+                cp screenshots/placeholders/capture-failed.png "screenshots/before/$COMPONENT.png"
               fi
             done
-            
+          
             # Clean up
             if [ -n "$SERVER_PID" ]; then
               echo "Stopping http-server (PID $SERVER_PID)"
               kill $SERVER_PID || echo "Failed to kill server process"
             fi
+          else
+            echo "No existing components to capture screenshots for"
+          fi
 
-        - name: Create temporary branch for images
-          run: |
-            git config --global user.name "GitHub Actions"
-            git config --global user.email "actions@github.com"
-            
-            # Get the latest image branch number
-            LATEST_BRANCH=$(git ls-remote --heads origin | grep -o 'pr-.*-screenshots-v[0-9]*' | sed 's/.*-v//' | sort -n | tail -n1)
-            if [ -z "$LATEST_BRANCH" ]; then
-              LATEST_BRANCH=0
-            fi
-            NEXT_BRANCH=$((LATEST_BRANCH + 1))
-            
-            # Create new branch with version number
-            BRANCH_NAME="pr-${{ github.event.pull_request.number }}-screenshots-v$NEXT_BRANCH"
-            git checkout -b $BRANCH_NAME
-            
-            # Create screenshots directory
-            mkdir -p .github/screenshots
-            
-            # Copy after screenshots
-            cp -r screenshots/after .github/screenshots/
-            
-            # Copy before screenshots from previous branch if it exists
-            if [ $LATEST_BRANCH -gt 0 ]; then
-              PREV_BRANCH="pr-${{ github.event.pull_request.number }}-screenshots-v$LATEST_BRANCH"
-              if git ls-remote --heads origin | grep -q "$PREV_BRANCH"; then
-                git fetch origin $PREV_BRANCH:$PREV_BRANCH
-                if [ -d "$PREV_BRANCH/.github/screenshots/after" ]; then
-                  cp -r $PREV_BRANCH/.github/screenshots/after .github/screenshots/before
-                fi
+      - name: Generate components
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Get affected components list
+          COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
+          
+          # Generate all affected components in a single run
+          node scripts/generate-components.js $COMPONENTS
+
+      - name: Log showcase files after generation
+        run: |
+          echo "=== Showcase Files After Generation ==="
+          find libs -name "*.showcase.html" | while read file; do
+            echo "=== Contents of $file ==="
+            cat "$file"
+            echo "=== End of $file ===\n"
+          done
+
+      - name: Build components
+        run: |
+          # Build core first
+          npx nx build core
+          
+          # Build each affected component
+          COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
+          for COMPONENT in $COMPONENTS; do
+            echo "Building component: $COMPONENT"
+            npx nx build $COMPONENT
+          done
+
+      - name: List dist folder contents
+        run: |
+          echo "=== Contents of dist folder ==="
+          find dist -type f | while read file; do
+            echo "- $file"
+          done
+          echo "=== End of dist folder contents ===\n"
+
+      - name: Fix showcase imports
+        run: |
+          # Fix showcase imports in original files
+          node scripts/fix-showcase-imports.js
+          
+          # Clean and re-copy showcase files to ensure we have the latest versions
+          rm -rf screenshots/showcases/*
+          find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
+          
+          # Replace UMD imports with actual content
+          find screenshots/showcases -name "*.showcase.html" | while read file; do
+            # Extract the UMD import path
+            UMD_PATH=$(grep -o 'src="[^"]*index.umd.cjs"' "$file" | cut -d'"' -f2)
+            if [ -n "$UMD_PATH" ]; then
+              # Get the actual content of the UMD file
+              if [ -f "$UMD_PATH" ]; then
+                # Create a temporary file with the new content
+                TMP_FILE=$(mktemp)
+                # Process the file line by line
+                while IFS= read -r line; do
+                  if [[ "$line" == *"<script src=\"$UMD_PATH\">"* ]]; then
+                    echo "<script>" >> "$TMP_FILE"
+                    cat "$UMD_PATH" >> "$TMP_FILE"
+                    echo "</script>" >> "$TMP_FILE"
+                    # Skip the closing script tag
+                    read -r
+                  else
+                    echo "$line" >> "$TMP_FILE"
+                  fi
+                done < "$file"
+                # Replace the original file with the new content
+                mv "$TMP_FILE" "$file"
+              else
+                echo "Warning: UMD file not found: $UMD_PATH"
               fi
             fi
-            
-            # Copy new before screenshots for new components
-            if [ -d "screenshots/before" ]; then
-              mkdir -p .github/screenshots/before
-              cp -r screenshots/before/* .github/screenshots/before/
-            fi
-            
-            git add .github/screenshots
-            git commit -m "Add component screenshots for PR review (v$NEXT_BRANCH)"
-            git push origin $BRANCH_NAME
-            
-            # Store the branch name for later use
-            echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-            
-            # Wait for GitHub to process the files
-            sleep 5
+          done
 
-        - name: Comment on PR with component changes
-          uses: actions/github-script@v6
-          with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            script: |
-              const fs = require('fs');
-              const path = require('path');
+      - name: Add base styles to showcase files
+        run: |
+          node scripts/add-base-styles.js
+
+      - name: Log showcase file contents
+        run: |
+          echo "=== Showcase File Contents ==="
+          find screenshots/showcases -type f | while read file; do
+            echo "=== Contents of $file ==="
+            cat "$file"
+            echo "=== End of $file ===\n"
+          done
+
+      - name: Take screenshot of regenerated components
+        id: after-screenshots
+        run: |
+          # Create directory for after screenshots
+          mkdir -p screenshots/after
+          
+          # Create placeholder for components that can't be captured  
+          echo "Creating placeholder image for components that couldn't be captured..."
+          npx playwright screenshot --browser chromium \
+            --viewport-size=1280,800 \
+            "data:text/html,<html><body style='display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f5f5;'><div style='text-align:center;font-family:system-ui;'><h1 style='font-size:32px;color:#333;'>Screenshot Failed</h1><p style='font-size:18px;color:#666;'>Component was generated but couldn't be captured</p></div></body></html>" \
+            "screenshots/placeholders/after-failed.png"
+          
+          # Get all components
+          COMPONENTS="${{ needs.detect-changes.outputs.affected-components }}"
+          
+          # Install http-server if not already installed
+          npm list -g http-server || npm install -g http-server
+          
+          # Start server for the showcase files
+          echo "Starting http-server and listing served files..."
+          nohup http-server . -p 8000 --cors -c-1 --proxy http://localhost:8000? > http-server-after.log 2>&1 &
+          SERVER_PID=$!
+          
+          # Wait for server to start and list files
+          sleep 5
+          echo "Files being served by http-server:"
+          echo "Showcase files:"
+          find screenshots/showcases -type f | while read file; do
+            echo "- $file"
+          done
+          echo "Dist files:"
+          find dist -type f | while read file; do
+            echo "- $file"
+          done
+          
+          # Take screenshots for all components
+          for COMPONENT in $COMPONENTS; do
+            # Convert to pascal case
+            PASCAL_CASE=$(echo $COMPONENT | sed -r 's/(^|-)([a-z])/\U\2/g')
+          
+            echo "Taking screenshot of $PASCAL_CASE after regeneration..."
+          
+            if [ -f "screenshots/showcases/${PASCAL_CASE}.showcase.html" ]; then
+              if npx playwright screenshot --browser chromium \
+                --viewport-size=1280,800 \
+                "http://localhost:8000/screenshots/showcases/${PASCAL_CASE}.showcase.html" \
+                "screenshots/after/$COMPONENT.png"; then
+                echo "Screenshot captured successfully for $COMPONENT"
+              else
+                echo "Failed to capture screenshot for $COMPONENT, using placeholder"
+                cp screenshots/placeholders/after-failed.png "screenshots/after/$COMPONENT.png"
+              fi
+            else
+              echo "No showcase file found for $COMPONENT, using placeholder"
+              cp screenshots/placeholders/after-failed.png "screenshots/after/$COMPONENT.png"
+            fi
+          done
+          
+          # Clean up
+          if [ -n "$SERVER_PID" ]; then
+            echo "Stopping http-server (PID $SERVER_PID)"
+            kill $SERVER_PID || echo "Failed to kill server process"
+          fi
+
+      - name: Create temporary branch for images
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # Get the latest image branch number
+          LATEST_BRANCH=$(git ls-remote --heads origin | grep -o 'pr-.*-screenshots-v[0-9]*' | sed 's/.*-v//' | sort -n | tail -n1)
+          if [ -z "$LATEST_BRANCH" ]; then
+            LATEST_BRANCH=0
+          fi
+          NEXT_BRANCH=$((LATEST_BRANCH + 1))
+          
+          # Create new branch with version number
+          BRANCH_NAME="pr-${{ github.event.pull_request.number }}-screenshots-v$NEXT_BRANCH"
+          git checkout -b $BRANCH_NAME
+          
+          # Create screenshots directory
+          mkdir -p .github/screenshots
+          
+          # Copy after screenshots
+          cp -r screenshots/after .github/screenshots/
+          
+          # Copy before screenshots from previous branch if it exists
+          if [ $LATEST_BRANCH -gt 0 ]; then
+            PREV_BRANCH="pr-${{ github.event.pull_request.number }}-screenshots-v$LATEST_BRANCH"
+            if git ls-remote --heads origin | grep -q "$PREV_BRANCH"; then
+              git fetch origin $PREV_BRANCH:$PREV_BRANCH
+              if [ -d "$PREV_BRANCH/.github/screenshots/after" ]; then
+                cp -r $PREV_BRANCH/.github/screenshots/after .github/screenshots/before
+              fi
+            fi
+          fi
+          
+          # Copy new before screenshots for new components
+          if [ -d "screenshots/before" ]; then
+            mkdir -p .github/screenshots/before
+            cp -r screenshots/before/* .github/screenshots/before/
+          fi
+          
+          git add .github/screenshots
+          git commit -m "Add component screenshots for PR review (v$NEXT_BRANCH)"
+          git push origin $BRANCH_NAME
+          
+          # Store the branch name for later use
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          
+          # Wait for GitHub to process the files
+          sleep 5
+
+      - name: Comment on PR with component changes
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            const components = '${{ needs.detect-changes.outputs.affected-components }}'.split(' ');
+            const newComponents = '${{ needs.detect-changes.outputs.new-components }}'.split(' ').filter(c => c);
+            
+            let commentBody = '## Component Generation Results\n\n';
+            
+            const branchName = '${{ env.BRANCH_NAME }}';
+            const baseUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branchName}/.github/screenshots`;
+            
+            // Generate comment with image URLs
+            for (const component of components) {
+              if (newComponents.includes(component)) {
+                commentBody += `### ${component} 🆕 (New Component)\n\n`;
+              } else {
+                commentBody += `### ${component}\n\n`;
+              }
               
-              const components = '${{ needs.detect-changes.outputs.affected-components }}'.split(' ');
-              const newComponents = '${{ needs.detect-changes.outputs.new-components }}'.split(' ').filter(c => c);
+              const beforePath = path.join('screenshots', 'before', `${component}.png`);
+              const afterPath = path.join('screenshots', 'after', `${component}.png`);
               
-              let commentBody = '## Component Generation Results\n\n';
-              
-              const branchName = '${{ env.BRANCH_NAME }}';
-              const baseUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branchName}/.github/screenshots`;
-              
-              // Generate comment with image URLs
-              for (const component of components) {
+              if (fs.existsSync(beforePath) && fs.existsSync(afterPath)) {
+                commentBody += '<table><tr><th>Before</th><th>After</th></tr>\n';
+                commentBody += '<tr><td>';
+                
                 if (newComponents.includes(component)) {
-                  commentBody += `### ${component} 🆕 (New Component)\n\n`;
+                  commentBody += 'New component - no previous version';
                 } else {
-                  commentBody += `### ${component}\n\n`;
+                  commentBody += `<img src="${baseUrl}/before/${component}.png" width="400" />`;
                 }
                 
-                const beforePath = path.join('screenshots', 'before', `${component}.png`);
-                const afterPath = path.join('screenshots', 'after', `${component}.png`);
-                
-                if (fs.existsSync(beforePath) && fs.existsSync(afterPath)) {
-                  commentBody += '<table><tr><th>Before</th><th>After</th></tr>\n';
-                  commentBody += '<tr><td>';
-                  
-                  if (newComponents.includes(component)) {
-                    commentBody += 'New component - no previous version';
-                  } else {
-                    commentBody += `<img src="${baseUrl}/before/${component}.png" width="400" />`;
-                  }
-                  
-                  commentBody += '</td><td>';
-                  commentBody += `<img src="${baseUrl}/after/${component}.png" width="400" />`;
-                  commentBody += '</td></tr></table>\n\n';
-                } else {
-                  commentBody += 'Screenshots not available for this component.\n\n';
-                }
+                commentBody += '</td><td>';
+                commentBody += `<img src="${baseUrl}/after/${component}.png" width="400" />`;
+                commentBody += '</td></tr></table>\n\n';
+              } else {
+                commentBody += 'Screenshots not available for this component.\n\n';
               }
+            }
+            
+            if (newComponents.length > 0) {
+              commentBody += '## 🆕 New Components Added\n\n';
+              commentBody += 'The following new components were added in this PR:\n\n';
               
-              if (newComponents.length > 0) {
-                commentBody += '## 🆕 New Components Added\n\n';
-                commentBody += 'The following new components were added in this PR:\n\n';
-                
-                for (const component of newComponents) {
-                  commentBody += `- ${component}\n`;
-                }
+              for (const component of newComponents) {
+                commentBody += `- ${component}\n`;
               }
-              
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: commentBody
-              });
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
 
-        - name: Cleanup old image branches
-          run: |
-            # Get all image branches for this PR
-            PR_BRANCHES=$(git ls-remote --heads origin | grep -o "pr-${{ github.event.pull_request.number }}-screenshots-v[0-9]*" | sort -V)
-            
-            # Get the current branch number
-            CURRENT_BRANCH=$(echo "$PR_BRANCHES" | grep -o 'v[0-9]*$' | sort -n | tail -n1 | sed 's/v//')
-            
-            # Delete branches that are 10 or more versions old
-            echo "$PR_BRANCHES" | while read -r branch; do
-              branch_num=$(echo "$branch" | grep -o 'v[0-9]*$' | sed 's/v//')
-              if [ "$branch_num" -lt $((CURRENT_BRANCH - 10)) ]; then
-                echo "Deleting old branch: $branch"
-                git push origin --delete "$branch" || true
-              fi
-            done
+      - name: Cleanup old image branches
+        run: |
+          # Get all image branches for this PR
+          PR_BRANCHES=$(git ls-remote --heads origin | grep -o "pr-${{ github.event.pull_request.number }}-screenshots-v[0-9]*" | sort -V)
+          
+          # Get the current branch number
+          CURRENT_BRANCH=$(echo "$PR_BRANCHES" | grep -o 'v[0-9]*$' | sort -n | tail -n1 | sed 's/v//')
+          
+          # Delete branches that are 10 or more versions old
+          echo "$PR_BRANCHES" | while read -r branch; do
+            branch_num=$(echo "$branch" | grep -o 'v[0-9]*$' | sed 's/v//')
+            if [ "$branch_num" -lt $((CURRENT_BRANCH - 10)) ]; then
+              echo "Deleting old branch: $branch"
+              git push origin --delete "$branch" || true
+            fi
+          done
