@@ -227,6 +227,15 @@
             # Generate all affected components in a single run
             node scripts/generate-components.js $COMPONENTS
 
+        - name: Log showcase files after generation
+          run: |
+            echo "=== Showcase Files After Generation ==="
+            find libs -name "*.showcase.html" | while read file; do
+              echo "=== Contents of $file ==="
+              cat "$file"
+              echo "=== End of $file ===\n"
+            done
+
         - name: Build components
           run: |
             # Build core first
