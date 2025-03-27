@@ -445,7 +445,8 @@ jobs:
             let commentBody = '## Component Generation Results\n\n';
             
             const branchName = '${{ env.BRANCH_NAME }}';
-            const baseUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branchName}/.github`;
+            const rawBaseUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branchName}/.github`;
+            const htmlPreviewBaseUrl = `https://htmlpreview.github.io/?https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branchName}/.github`;
             
             // Generate comment with image URLs and showcase links
             for (const component of components) {
@@ -460,7 +461,8 @@ jobs:
               
               // Add showcase file link if it exists
               if (fs.existsSync(path.join('screenshots', 'showcases', showcaseFile))) {
-                commentBody += `📄 **[View Component Showcase](${baseUrl}/showcases/${showcaseFile})**  \n`;
+                commentBody += `📄 **[View Component Showcase](${htmlPreviewBaseUrl}/showcases/${showcaseFile})**  \n`;
+                commentBody += `([View Source](${rawBaseUrl}/showcases/${showcaseFile}))  \n`;
                 commentBody += `_This file shows the component's HTML structure and styling_\n\n`;
               }
               
@@ -474,11 +476,11 @@ jobs:
                 if (newComponents.includes(component)) {
                   commentBody += 'New component - no previous version';
                 } else {
-                  commentBody += `<img src="${baseUrl}/screenshots/before/${component}.png" width="400" />`;
+                  commentBody += `<img src="${rawBaseUrl}/screenshots/before/${component}.png" width="400" />`;
                 }
                 
                 commentBody += '</td><td>';
-                commentBody += `<img src="${baseUrl}/screenshots/after/${component}.png" width="400" />`;
+                commentBody += `<img src="${rawBaseUrl}/screenshots/after/${component}.png" width="400" />`;
                 commentBody += '</td></tr></table>\n\n';
               } else {
                 commentBody += 'Screenshots not available for this component.\n\n';
