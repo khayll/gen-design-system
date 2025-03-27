@@ -58,6 +58,8 @@ Enough talking, let's see some (GitHub) action.
 ## Conclusion
 
 - higher level programming language?
+   - the description problem (if it's well defined it takes long, but if it's not well defined, then the results vary))
+   - the common understanding of a domain problem (i.e. we can define what sorting is, but can we define what a webshop is?)
 - What is AI or LLMs good for - in the process of software development?
 
 Should you be using LLMs for coding?
