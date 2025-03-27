@@ -224,7 +224,7 @@ Please include stories for:
 11. Tree with custom node rendering
 12. Accessibility demonstration (keyboard navigation, screen reader compatibility)
 
-Make sure to have items in th tree for all examples and showcases.
+Make sure to have the data property defined for all examples and create the json structure to fill the data property.
 
 
 
