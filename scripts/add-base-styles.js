@@ -24,7 +24,7 @@ function addBaseStylesToShowcase(filePath) {
         let content = fs.readFileSync(filePath, 'utf8');
 
         // Check if base styles are already present
-        if (content.includes('--gds-color-primary')) {
+        if (content.includes(':host {') && content.includes('--gds-color-primary:')) {
             console.log(`Base styles already present in ${filePath}`);
             return;
         }
