@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+    body {
+        
+    /* Colors */
+    --gds-color-primary: #4263eb;
+    --gds-color-primary-hover: #364fc7;
+    --gds-color-secondary: #868e96;
+    --gds-color-secondary-hover: #495057;
+    --gds-color-success: #40c057;
+    --gds-color-warning: #fcc419;
+    --gds-color-danger: #fa5252;
+    --gds-color-info: #15aabf;
+    --gds-color-light: #f8f9fa;
+    --gds-color-dark: #212529;
+
+    /* Typography */
+    --gds-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --gds-font-size-xs: 0.75rem;
+    --gds-font-size-sm: 0.875rem;
+    --gds-font-size-md: 1rem;
+    --gds-font-size-lg: 1.125rem;
+    --gds-font-size-xl: 1.25rem;
+    --gds-font-weight-normal: 400;
+    --gds-font-weight-medium: 500;
+    --gds-font-weight-bold: 700;
+
+    /* Spacing */
+    --gds-spacing-xs: 0.25rem;
+    --gds-spacing-sm: 0.5rem;
+    --gds-spacing-md: 1rem;
+    --gds-spacing-lg: 1.5rem;
+    --gds-spacing-xl: 2rem;
+
+    /* Borders */
+    --gds-border-radius-sm: 0.25rem;
+    --gds-border-radius-md: 0.375rem;
+    --gds-border-radius-lg: 0.5rem;
+    --gds-border-radius-full: 9999px;
+    --gds-border-width: 1px;
+
+    /* Shadows */
+    --gds-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --gds-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --gds-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Transitions */
+    --gds-transition-fast: 150ms;
+    --gds-transition-normal: 250ms;
+    --gds-transition-slow: 350ms;
+
+    }
+</style>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tree Component Showcase</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      color: #212529;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #364fc7;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+      margin: 2rem 0 1rem;
+      color: #4263eb;
+      border-bottom: 1px solid #e9ecef;
+      padding-bottom: 0.5rem;
+    }
+    
+    .showcase-section {
+      margin-bottom: 3rem;
+      padding: 1.5rem;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .showcase-description {
+      margin-bottom: 1rem;
+      color: #495057;
+    }
+    
+    .showcase-controls {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background-color: #e9ecef;
+      border-radius: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .showcase-controls button {
+      padding: 0.5rem 1rem;
+      background-color: #4263eb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background-color 0.2s;
+    }
+    
+    .showcase-controls button:hover {
+      background-color: #364fc7;
+    }
+    
+    .showcase-controls input[type="text"] {
+      padding: 0.5rem;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 0.875rem;
+    }
+    
+    .showcase-controls label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .showcase-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Tree Component Showcase</h1>
+  
+  <div class="showcase-section">
+    <h2>Basic Tree</h2>
+    <div class="showcase-description">
+      A simple tree component with default settings, showing a file system structure.
+    </div>
+    <gds-tree id="basic-tree"></gds-tree>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Selection Modes</h2>
+    <div class="showcase-description">
+      Demonstrates different selection modes: none, single, and multiple.
+    </div>
+    <div class="showcase-controls">
+      <label>
+        <input type="radio" name="selection-mode" value="none" onclick="updateSelectionMode('none')"> None
+      </label>
+      <label>
+        <input type="radio" name="selection-mode" value="single" onclick="updateSelectionMode('single')" checked> Single
+      </label>
+      <label>
+        <input type="radio" name="selection-mode" value="multiple" onclick="updateSelectionMode('multiple')"> Multiple
+      </label>
+    </div>
+    <gds-tree id="selection-tree"></gds-tree>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Tree with Checkboxes</h2>
+    <div class="showcase-description">
+      Tree with checkboxes for selecting multiple items.
+    </div>
+    <gds-tree id="checkbox-tree"></gds-tree>
+  </div>
+  
+  <div class="showcase-grid">
+    <div class="showcase-section">
+      <h2>Tree with Lines</h2>
+      <div class="showcase-description">
+        Tree with connecting lines between nodes.
+      </div>
+      <gds-tree id="lines-tree"></gds-tree>
+    </div>
+    
+    <div class="showcase-section">
+      <h2>Searchable Tree</h2>
+      <div class="showcase-description">
+        Tree with search functionality.
+      </div>
+      <gds-tree id="search-tree"></gds-tree>
+    </div>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Drag and Drop</h2>
+    <div class="showcase-description">
+      Tree with drag and drop capabilities for reorganizing nodes.
+    </div>
+    <gds-tree id="dnd-tree"></gds-tree>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Organization Chart</h2>
+    <div class="showcase-description">
+      Tree representing an organization structure.
+    </div>
+    <gds-tree id="org-tree"></gds-tree>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Category Hierarchy</h2>
+    <div class="showcase-description">
+      Tree representing a product category hierarchy.
+    </div>
+    <gds-tree id="category-tree"></gds-tree>
+  </div>
+  
+  <script type="module">
+    // Wait for custom elements to be defined
+    customElements.whenDefined('gds-tree').then(() => {
+      // File system data
+      const fileSystemData = [
+        {
+          key: '1',
+          label: 'Documents',
+          children: [
+            {
+              key: '1-1',
+              label: 'Work',
+              children: [
+                { key: '1-1-1', label: 'Project A.docx' },
+                { key: '1-1-2', label: 'Report Q1.xlsx' }
+              ]
+            },
+            {
+              key: '1-2',
+              label: 'Personal',
+              children: [
+                { key: '1-2-1', label: 'Resume.pdf' },
+                { key: '1-2-2', label: 'Family Photo.jpg' }
+              ]
+            }
+          ]
+        },
+        {
+          key: '2',
+          label: 'Downloads',
+          children: [
+            { key: '2-1', label: 'Software.zip' },
+            { key: '2-2', label: 'Movie.mp4' }
+          ]
+        },
+        {
+          key: '3',
+          label: 'Desktop',
+          children: [
+            { key: '3-1', label: 'Screenshot.png' },
+            { key: '3-2', label: 'Presentation.pptx' }
+          ]
+        }
+      ];
+      
+      // Organization data
+      const organizationData = [
+        {
+          key: 'CEO',
+          label: 'John Smith (CEO)',
+          children: [
+            {
+              key: 'CTO',
+              label: 'Jane Doe (CTO)',
+              children: [
+                { key: 'DEV1', label: 'Developer 1' },
+                { key: 'DEV2', label: 'Developer 2' }
+              ]
+            },
+            {
+              key: 'CFO',
+              label: 'Bob Johnson (CFO)',
+              children: [
+                { key: 'ACC1', label: 'Accountant 1' },
+                { key: 'ACC2', label: 'Accountant 2' }
+              ]
+            },
+            {
+              key: 'COO',
+              label: 'Alice Brown (COO)',
+              children: [
+                { key: 'PM1', label: 'Product Manager 1' },
+                { key: 'PM2', label: 'Product Manager 2' }
+              ]
+            }
+          ]
+        }
+      ];
+      
+      // Category data
+      const categoryData = [
+        {
+          key: 'electronics',
+          label: 'Electronics',
+          children: [
+            {
+              key: 'smartphones',
+              label: 'Smartphones',
+              children: [
+                { key: 'iphone', label: 'iPhone' },
+                { key: 'samsung', label: 'Samsung' },
+                { key: 'google', label: 'Google Pixel' }
+              ]
+            },
+            {
+              key: 'laptops',
+              label: 'Laptops',
+              children: [
+                { key: 'macbook', label: 'MacBook' },
+                { key: 'dell', label: 'Dell' },
+                { key: 'hp', label: 'HP' }
+              ]
+            }
+          ]
+        },
+        {
+          key: 'clothing',
+          label: 'Clothing',
+          children: [
+            {
+              key: 'mens',
+              label: 'Men\'s',
+              children: [
+                { key: 'shirts', label: 'Shirts' },
+                { key: 'pants', label: 'Pants' }
+              ]
+            },
+            {
+              key: 'womens',
+              label: 'Women\'s',
+              children: [
+                { key: 'dresses', label: 'Dresses' },
+                { key: 'skirts', label: 'Skirts' }
+              ]
+            }
+          ]
+        }
+      ];
+      
+      // Initialize trees
+      const basicTree = document.getElementById('basic-tree');
+      basicTree.data = fileSystemData;
+      basicTree.showIcons = true;
+      basicTree.expandedKeys = ['1'];
+      
+      const selectionTree = document.getElementById('selection-tree');
+      selectionTree.data = fileSystemData;
+      selectionTree.showIcons = true;
+      selectionTree.selectionMode = 'single';
+      selectionTree.expandedKeys = ['1', '2'];
+      
+      const checkboxTree = document.getElementById('checkbox-tree');
+      checkboxTree.data = fileSystemData;
+      checkboxTree.showIcons = true;
+      checkboxTree.showCheckboxes = true;
+      checkboxTree.expandedKeys = ['1'];
+      checkboxTree.checkedKeys = ['1-1', '2-1'];
+      
+      const linesTree = document.getElementById('lines-tree');
+      linesTree.data = fileSystemData;
+      linesTree.showIcons = true;
+      linesTree.showLines = true;
+      linesTree.defaultExpandAll = true;
+      
+      const searchTree = document.getElementById('search-tree');
+      searchTree.data = fileSystemData;
+      searchTree.showIcons = true;
+      searchTree.searchable = true;
+      searchTree.defaultExpandAll = true;
+      
+      const dndTree = document.getElementById('dnd-tree');
+      dndTree.data = fileSystemData;
+      dndTree.showIcons = true;
+      dndTree.draggable = true;
+      dndTree.droppable = true;
+      dndTree.expandedKeys = ['1', '2'];
+      
+      const orgTree = document.getElementById('org-tree');
+      orgTree.data = organizationData;
+      orgTree.showIcons = true;
+      orgTree.defaultExpandAll = true;
+      
+      const categoryTree = document.getElementById('category-tree');
+      categoryTree.data = categoryData;
+      categoryTree.showIcons = true;
+      categoryTree.expandedKeys = ['electronics', 'clothing'];
+      
+      // Event listeners
+      selectionTree.addEventListener('select', (e) => {
+        console.log('Selection changed:', e.detail);
+      });
+      
+      checkboxTree.addEventListener('check', (e) => {
+        console.log('Check changed:', e.detail);
+      });
+      
+      dndTree.addEventListener('drop', (e) => {
+        console.log('Node dropped:', e.detail);
+      });
+      
+      // Update selection mode
+      window.updateSelectionMode = function(mode) {
+        selectionTree.selectionMode = mode;
+      };
+    });
+  </script>
+</body>
+</html>
