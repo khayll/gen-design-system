@@ -81,7 +81,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           # Use a PAT instead of GITHUB_TOKEN for fork PRs
-          github-token: ${{ secrets.WORKFLOW_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const components = '${{ steps.affected-components.outputs.affected-components }}'.split(' ');
             const newComponents = '${{ steps.affected-components.outputs.new-components }}'.split(' ').filter(c => c);
@@ -124,8 +124,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          # Use PAT instead of GITHUB_TOKEN for fork PRs
-          token: ${{ secrets.WORKFLOW_TOKEN }}
+          # Use GITHUB_TOKEN instead of WORKFLOW_TOKEN
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -448,8 +448,7 @@ jobs:
       - name: Comment on PR with component changes
         uses: actions/github-script@v6
         with:
-          # Use PAT instead of GITHUB_TOKEN for fork PRs
-          github-token: ${{ secrets.WORKFLOW_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const path = require('path');
@@ -534,3 +533,4 @@ jobs:
               git push origin --delete "$branch" || true
             fi
           done
+          
