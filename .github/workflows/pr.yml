@@ -448,8 +448,7 @@ jobs:
       - name: Comment on PR with component changes
         uses: actions/github-script@v6
         with:
-          # Use PAT instead of GITHUB_TOKEN for fork PRs
-          github-token: ${{ secrets.WORKFLOW_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const path = require('path');
