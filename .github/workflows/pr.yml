@@ -81,7 +81,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           # Use a PAT instead of GITHUB_TOKEN for fork PRs
-          github-token: ${{ secrets.WORKFLOW_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const components = '${{ steps.affected-components.outputs.affected-components }}'.split(' ');
             const newComponents = '${{ steps.affected-components.outputs.new-components }}'.split(' ').filter(c => c);
