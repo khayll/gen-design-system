@@ -394,11 +394,15 @@ jobs:
           BRANCH_NAME="pr-${{ github.event.pull_request.number }}-screenshots-v$NEXT_BRANCH"
           git checkout -b $BRANCH_NAME
           
-          # Create screenshots directory
+          # Create screenshots and showcase directories
           mkdir -p .github/screenshots
+          mkdir -p .github/showcases
           
           # Copy after screenshots
           cp -r screenshots/after .github/screenshots/
+          
+          # Copy showcase files
+          cp -r screenshots/showcases/* .github/showcases/
           
           # Copy before screenshots from previous branch if it exists
           if [ $LATEST_BRANCH -gt 0 ]; then
@@ -417,8 +421,8 @@ jobs:
             cp -r screenshots/before/* .github/screenshots/before/
           fi
           
-          git add .github/screenshots
-          git commit -m "Add component screenshots for PR review (v$NEXT_BRANCH)"
+          git add .github/screenshots .github/showcases
+          git commit -m "Add component screenshots and showcases for PR review (v$NEXT_BRANCH)"
           git push origin $BRANCH_NAME
           
           # Store the branch name for later use
@@ -441,14 +445,23 @@ jobs:
             let commentBody = '## Component Generation Results\n\n';
             
             const branchName = '${{ env.BRANCH_NAME }}';
-            const baseUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branchName}/.github/screenshots`;
+            const baseUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${branchName}/.github`;
             
-            // Generate comment with image URLs
+            // Generate comment with image URLs and showcase links
             for (const component of components) {
+              const pascalCase = component.replace(/-./g, x => x[1].toUpperCase()).replace(/^[a-z]/, x => x.toUpperCase());
+              const showcaseFile = `${pascalCase}.showcase.html`;
+              
               if (newComponents.includes(component)) {
                 commentBody += `### ${component} 🆕 (New Component)\n\n`;
               } else {
                 commentBody += `### ${component}\n\n`;
+              }
+              
+              // Add showcase file link if it exists
+              if (fs.existsSync(path.join('screenshots', 'showcases', showcaseFile))) {
+                commentBody += `📄 **[View Component Showcase](${baseUrl}/showcases/${showcaseFile})**  \n`;
+                commentBody += `_This file shows the component's HTML structure and styling_\n\n`;
               }
               
               const beforePath = path.join('screenshots', 'before', `${component}.png`);
@@ -461,11 +474,11 @@ jobs:
                 if (newComponents.includes(component)) {
                   commentBody += 'New component - no previous version';
                 } else {
-                  commentBody += `<img src="${baseUrl}/before/${component}.png" width="400" />`;
+                  commentBody += `<img src="${baseUrl}/screenshots/before/${component}.png" width="400" />`;
                 }
                 
                 commentBody += '</td><td>';
-                commentBody += `<img src="${baseUrl}/after/${component}.png" width="400" />`;
+                commentBody += `<img src="${baseUrl}/screenshots/after/${component}.png" width="400" />`;
                 commentBody += '</td></tr></table>\n\n';
               } else {
                 commentBody += 'Screenshots not available for this component.\n\n';
