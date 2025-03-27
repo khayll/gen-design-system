@@ -7,7 +7,7 @@ on:
       - 'prompts/components/**'
       - 'prompts/system/**'
 
-# Add permissions at the workflow level
+# Verify workflow-level permissions
 permissions:
   contents: write
   pull-requests: write
@@ -15,7 +15,14 @@ permissions:
 
 jobs:
   detect-changes:
+    # Add check for fork PRs
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event.pull_request.head.repo.fork == true
     runs-on: ubuntu-latest
+    # Add permissions for this specific job
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
     outputs:
       affected-components: ${{ steps.affected-components.outputs.affected-components }}
       new-components: ${{ steps.affected-components.outputs.new-components }}
@@ -73,7 +80,8 @@ jobs:
         if: steps.affected-components.outputs.affected-components != ''
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Use a PAT instead of GITHUB_TOKEN for fork PRs
+          github-token: ${{ secrets.WORKFLOW_TOKEN }}
           script: |
             const components = '${{ steps.affected-components.outputs.affected-components }}'.split(' ');
             const newComponents = '${{ steps.affected-components.outputs.new-components }}'.split(' ').filter(c => c);
@@ -100,18 +108,24 @@ jobs:
 
   generate-components:
     needs: detect-changes
-    if: needs.detect-changes.outputs.affected-components != ''
+    # Add check for fork PRs
+    if: |
+      needs.detect-changes.outputs.affected-components != '' && 
+      (github.event.pull_request.head.repo.full_name == github.repository || github.event.pull_request.head.repo.fork == true)
     runs-on: ubuntu-latest
     environment: component-generation
+    # Add permissions for this job as well
     permissions:
       contents: write
       pull-requests: write
+      issues: write
 
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # Use PAT instead of GITHUB_TOKEN for fork PRs
+          token: ${{ secrets.WORKFLOW_TOKEN }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -434,7 +448,8 @@ jobs:
       - name: Comment on PR with component changes
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Use PAT instead of GITHUB_TOKEN for fork PRs
+          github-token: ${{ secrets.WORKFLOW_TOKEN }}
           script: |
             const fs = require('fs');
             const path = require('path');
