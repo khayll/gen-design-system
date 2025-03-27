@@ -1,4 +1,4 @@
-# Slider Component
+# Slider Component v1
 
 Create a versatile slider component for the design system that allows users to select a value or range from a min-max range by dragging a handle or clicking on the track.
 
