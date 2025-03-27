@@ -1,4 +1,4 @@
-# Label Component
+# Label Component v1
 
 Create a versatile label component for the design system that can be used with form elements and other UI components to provide clear, accessible descriptions and instructions.
 
