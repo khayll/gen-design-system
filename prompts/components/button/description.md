@@ -1,4 +1,4 @@
-# Button Component
+# Button Component v1
 
 Create a versatile button component for the GDS design system that can be used throughout applications.
 
