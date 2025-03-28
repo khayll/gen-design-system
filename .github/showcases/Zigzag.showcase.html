@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+    body {
+        
+    /* Colors */
+    --gds-color-primary: #4263eb;
+    --gds-color-primary-hover: #364fc7;
+    --gds-color-secondary: #868e96;
+    --gds-color-secondary-hover: #495057;
+    --gds-color-success: #40c057;
+    --gds-color-warning: #fcc419;
+    --gds-color-danger: #fa5252;
+    --gds-color-info: #15aabf;
+    --gds-color-light: #f8f9fa;
+    --gds-color-dark: #212529;
+
+    /* Typography */
+    --gds-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --gds-font-size-xs: 0.75rem;
+    --gds-font-size-sm: 0.875rem;
+    --gds-font-size-md: 1rem;
+    --gds-font-size-lg: 1.125rem;
+    --gds-font-size-xl: 1.25rem;
+    --gds-font-weight-normal: 400;
+    --gds-font-weight-medium: 500;
+    --gds-font-weight-bold: 700;
+
+    /* Spacing */
+    --gds-spacing-xs: 0.25rem;
+    --gds-spacing-sm: 0.5rem;
+    --gds-spacing-md: 1rem;
+    --gds-spacing-lg: 1.5rem;
+    --gds-spacing-xl: 2rem;
+
+    /* Borders */
+    --gds-border-radius-sm: 0.25rem;
+    --gds-border-radius-md: 0.375rem;
+    --gds-border-radius-lg: 0.5rem;
+    --gds-border-radius-full: 9999px;
+    --gds-border-width: 1px;
+
+    /* Shadows */
+    --gds-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --gds-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --gds-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Transitions */
+    --gds-transition-fast: 150ms;
+    --gds-transition-normal: 250ms;
+    --gds-transition-slow: 350ms;
+
+    }
+</style>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zigzag Timeline Component Showcase</title>
+<script>
+!function(t){"function"==typeof define&&define.amd?define(t):t()}((function(){"use strict";var t,e,n,r,l,i=Object.defineProperty,o=Object.defineProperties,a=Object.getOwnPropertyDescriptors,s=Object.getOwnPropertySymbols,u=Object.prototype.hasOwnProperty,f=Object.prototype.propertyIsEnumerable,c=t=>{throw TypeError(t)},v=(t,e,n)=>e in t?i(t,e,{enumerable:!0,configurable:!0,writable:!0,value:n}):t[e]=n,d=(t,e)=>{for(var n in e||(e={}))u.call(e,n)&&v(t,n,e[n]);if(s)for(var n of s(e))f.call(e,n)&&v(t,n,e[n]);return t},h=(t,e)=>o(t,a(e)),p=(t,e,n)=>v(t,"symbol"!=typeof e?e+"":e,n),g=(t,e,n)=>e.has(t)||c("Cannot "+n),$=(t,e,n)=>(g(t,e,"read from private field"),n?n.call(t):e.get(t)),y=(t,e,n)=>e.has(t)?c("Cannot add the same private member more than once"):e instanceof WeakSet?e.add(t):e.set(t,n),m=(t,e,n,r)=>(g(t,e,"write to private field"),r?r.call(t,n):e.set(t,n),n);"undefined"!=typeof window&&(null!=(n=(e=null!=(t=window.__svelte)?t:window.__svelte={}).v)?n:e.v=new Set).add("5");let b=!1;b=!0;const w={},_=Symbol(),z="http://www.w3.org/1999/xhtml",x=!1,E=32,O=64,L=128,C=256,P=512,S=1024,j=2048,M=4096,k=8192,N=16384,A=1<<20,T=1<<21,D=Symbol("$state"),R=Symbol("legacy props"),q=Symbol("");var B=Array.isArray,W=Array.prototype.indexOf,I=Array.from,H=Object.keys,F=Object.defineProperty,K=Object.getOwnPropertyDescriptor,U=Object.getOwnPropertyDescriptors,J=Object.prototype,V=Array.prototype,X=Object.getPrototypeOf,G=Object.isExtensible;function Q(t){return t()}function Y(t){for(var e=0;e<t.length;e++)t[e]()}let Z=[],tt=[];function et(){var t=Z;Z=[],Y(t)}function nt(t){0===Z.length&&queueMicrotask(et),Z.push(t)}function rt(){var t;Z.length>0&&et(),tt.length>0&&(t=tt,tt=[],Y(t))}function lt(t){return t===this.v}function it(t){return e=t,n=this.v,!(e!=e?n==n:e!==n||null!==e&&"object"==typeof e||"function"==typeof e);var e,n}function ot(t,e){if("object"!=typeof t||null===t||D in t)return t;const n=X(t);if(n!==J&&n!==V)return t;var r=new Map,l=B(t),i=ft(0),o=It,a=t=>{var e,n=It;return Ft(o),e=t(),Ft(n),e};return l&&r.set("length",ft(t.length)),new Proxy(t,{defineProperty(t,e,n){"value"in n&&!1!==n.configurable&&!1!==n.enumerable&&!1!==n.writable||function(){throw new Error("https://svelte.dev/e/state_descriptors_fixed")}();var l=r.get(e);return void 0===l?(l=a((()=>ft(n.value))),r.set(e,l)):vt(l,a((()=>ot(n.value)))),!0},deleteProperty(t,e){var n=r.get(e);if(void 0===n)e in t&&r.set(e,a((()=>ft(_))));else{if(l&&"string"==typeof e){var o=r.get("length"),s=Number(e);Number.isInteger(s)&&s<o.v&&vt(o,s)}vt(n,_),at(i)}return!0},get(e,n,l){var i;if(n===D)return t;var o=r.get(n),s=n in e;if(void 0!==o||s&&!(null==(i=K(e,n))?void 0:i.writable)||(o=a((()=>ft(ot(s?e[n]:_)))),r.set(n,o)),void 0!==o){var u=he(o);return u===_?void 0:u}return Reflect.get(e,n,l)},getOwnPropertyDescriptor(t,e){var n=Reflect.getOwnPropertyDescriptor(t,e);if(n&&"value"in n){var l=r.get(e);l&&(n.value=he(l))}else if(void 0===n){var i=r.get(e),o=null==i?void 0:i.v;if(void 0!==i&&o!==_)return{enumerable:!0,configurable:!0,value:o,writable:!0}}return n},has(t,e){var n;if(e===D)return!0;var l=r.get(e),i=void 0!==l&&l.v!==_||Reflect.has(t,e);if((void 0!==l||null!==Kt&&(!i||(null==(n=K(t,e))?void 0:n.writable)))&&(void 0===l&&(l=a((()=>ft(i?ot(t[e]):_))),r.set(e,l)),he(l)===_))return!1;return i},set(t,e,n,o){var s,u=r.get(e),f=e in t;if(l&&"length"===e)for(var c=n;c<u.v;c+=1){var v=r.get(c+"");void 0!==v?vt(v,_):c in t&&(v=a((()=>ft(_))),r.set(c+"",v))}void 0===u?f&&!(null==(s=K(t,e))?void 0:s.writable)||(vt(u=a((()=>ft(void 0))),a((()=>ot(n)))),r.set(e,u)):(f=u.v!==_,vt(u,a((()=>ot(n)))));var d=Reflect.getOwnPropertyDescriptor(t,e);if((null==d?void 0:d.set)&&d.set.call(o,n),!f){if(l&&"string"==typeof e){var h=r.get("length"),p=Number(e);Number.isInteger(p)&&p>=h.v&&vt(h,p+1)}at(i)}return!0},ownKeys(t){he(i);var e=Reflect.ownKeys(t).filter((t=>{var e=r.get(t);return void 0===e||e.v!==_}));for(var[n,l]of r)l.v===_||n in t||e.push(n);return e},setPrototypeOf(){!function(){throw new Error("https://svelte.dev/e/state_prototype_fixed")}()}})}function at(t,e=1){vt(t,t.v+e)}const st=new Map;function ut(t,e){return{f:0,v:t,reactions:null,equals:lt,rv:0,wv:0}}function ft(t,e){const n=ut(t);var r;return r=n,null!==It&&It.f&T&&(null===Jt?Jt=[r]:Jt.push(r)),n}function ct(t,e=!1){var n,r;const l=ut(t);return e||(l.equals=it),b&&null!==ke&&null!==ke.l&&(null!=(r=(n=ke.l).s)?r:n.s=[]).push(l),l}function vt(t,e,n=!1){return null!==It&&!Ht&&De()&&18&It.f&&!(null==Jt?void 0:Jt.includes(t))&&function(){throw new Error("https://svelte.dev/e/state_unsafe_mutation")}(),function(t,e){if(!t.equals(e)){var n=t.v;qt?st.set(t,e):st.set(t,n),t.v=e,t.wv=te(),dt(t,j),De()&&null!==Kt&&Kt.f&S&&!(96&Kt.f)&&(null===Gt?function(t){Gt=t}([t]):Gt.push(t))}return e}(t,n?ot(e):e)}function dt(t,e){var n=t.reactions;if(null!==n)for(var r=De(),l=n.length,i=0;i<l;i++){var o=n[i],a=o.f;a&j||(r||o!==Kt)&&($e(o,e),1280&a&&(2&a?dt(o,M):ce(o)))}}function ht(t){var e=2050,n=null!==It&&2&It.f?It:null;null===Kt||null!==n&&n.f&C?e|=C:Kt.f|=A;return{ctx:ke,deps:null,effects:null,equals:lt,f:e,fn:t,reactions:null,rv:0,v:null,wv:0,parent:null!=n?n:Kt}}function pt(t){const e=ht(t);return e.equals=it,e}function gt(t){var e=t.effects;if(null!==e){t.effects=null;for(var n=0;n<e.length;n+=1)Pe(e[n])}}function $t(t){var e=function(t){var e,n=Kt;Ut(function(t){for(var e=t.parent;null!==e;){if(!(2&e.f))return e;e=e.parent}return null}(t));try{gt(t),e=le(t)}finally{Ut(n)}return e}(t);$e(t,(Zt||t.f&C)&&null!==t.deps?M:S),t.equals(e)||(t.v=e,t.wv=te())}function yt(t){console.warn("https://svelte.dev/e/hydration_mismatch")}let mt,bt=!1;function wt(t){bt=t}function _t(t){if(null===t)throw yt(),w;return mt=t}function zt(){return _t(Mt(mt))}function xt(t){if(bt){if(null!==Mt(mt))throw yt(),w;mt=t}}var Et,Ot,Lt,Ct;function Pt(){if(void 0===Et){Et=window,Ot=/Firefox/.test(navigator.userAgent);var t=Element.prototype,e=Node.prototype,n=Text.prototype;Lt=K(e,"firstChild").get,Ct=K(e,"nextSibling").get,G(t)&&(t.__click=void 0,t.__className=void 0,t.__attributes=null,t.__style=void 0,t.__e=void 0),G(n)&&(n.__t=void 0)}}function St(t=""){return document.createTextNode(t)}function jt(t){return Lt.call(t)}function Mt(t){return Ct.call(t)}function kt(t,e){if(!bt)return jt(t);var n=jt(mt);if(null===n)n=mt.appendChild(St());else if(e&&3!==n.nodeType){var r=St();return null==n||n.before(r),_t(r),r}return _t(n),n}function Nt(t,e=1,n=!1){let r=bt?mt:t;for(var l;e--;)l=r,r=Mt(r);if(!bt)return r;var i=null==r?void 0:r.nodeType;if(n&&3!==i){var o=St();return null===r?null==l||l.after(o):r.before(o),_t(o),o}return _t(r),r}let At=!1,Tt=!1,Dt=null,Rt=!1,qt=!1;function Bt(t){qt=t}let Wt=[],It=null,Ht=!1;function Ft(t){It=t}let Kt=null;function Ut(t){Kt=t}let Jt=null;let Vt=null,Xt=0,Gt=null;let Qt=1,Yt=0,Zt=!1;function te(){return++Qt}function ee(t){var e,n,r=t.f;if(r&j)return!0;if(r&M){var l=t.deps,i=!!(r&C);if(null!==l){var o,a,s=!!(r&P),u=i&&null!==Kt&&!Zt,f=l.length;if(s||u){var c=t,v=c.parent;for(o=0;o<f;o++)a=l[o],!s&&(null==(e=null==a?void 0:a.reactions)?void 0:e.includes(c))||(null!=(n=a.reactions)?n:a.reactions=[]).push(c);s&&(c.f^=P),!u||null===v||v.f&C||(c.f^=C)}for(o=0;o<f;o++)if(ee(a=l[o])&&$t(a),a.wv>t.wv)return!0}i&&(null===Kt||Zt)||$e(t,S)}return!1}function ne(t,e,n,r){if(At){if(null===n&&(At=!1),function(t){return!(t.f&N||null!==t.parent&&t.parent.f&L)}(e))throw t}else null!==n&&(At=!0),function(t,e){for(var n=e;null!==n;){if(n.f&L)try{return void n.fn(t)}catch(r){n.f^=L}n=n.parent}throw At=!1,t}(t,e)}function re(t,e,n=!0){var r=t.reactions;if(null!==r)for(var l=0;l<r.length;l++){var i=r[l];(null==Jt?void 0:Jt.includes(t))||(2&i.f?re(i,e,!1):e===i&&(n?$e(i,j):i.f&S&&$e(i,M),ce(i)))}}function le(t){var e,n,r=Vt,l=Xt,i=Gt,o=It,a=Zt,s=Jt,u=ke,f=Ht,c=t.f;Vt=null,Xt=0,Gt=null,Zt=!!(c&C)&&(Ht||!Rt||null===It),It=96&c?null:t,Jt=null,Ne(t.ctx),Ht=!1,Yt++,t.f|=T;try{var v=(0,t.fn)(),d=t.deps;if(null!==Vt){var h;if(oe(t,Xt),null!==d&&Xt>0)for(d.length=Xt+Vt.length,h=0;h<Vt.length;h++)d[Xt+h]=Vt[h];else t.deps=d=Vt;if(!Zt)for(h=Xt;h<d.length;h++)(null!=(n=(e=d[h]).reactions)?n:e.reactions=[]).push(t)}else null!==d&&Xt<d.length&&(oe(t,Xt),d.length=Xt);if(De()&&null!==Gt&&!Ht&&null!==d&&!(6146&t.f))for(h=0;h<Gt.length;h++)re(Gt[h],t);return null!==o&&(Yt++,null!==Gt&&(null===i?i=Gt:i.push(...Gt))),v}finally{Vt=r,Xt=l,Gt=i,It=o,Zt=a,Jt=s,Ne(u),Ht=f,t.f^=T}}function ie(t,e){let n=e.reactions;if(null!==n){var r=W.call(n,t);if(-1!==r){var l=n.length-1;0===l?n=e.reactions=null:(n[r]=n[l],n.pop())}}null===n&&2&e.f&&(null===Vt||!Vt.includes(e))&&($e(e,M),768&e.f||(e.f^=P),gt(e),oe(e,0))}function oe(t,e){var n=t.deps;if(null!==n)for(var r=e;r<n.length;r++)ie(t,n[r])}function ae(t){var e=t.f;if(!(e&N)){$e(t,S);var n=Kt,r=ke,l=Rt;Kt=t,Rt=!0;try{16&e?function(t){var e=t.first;for(;null!==e;){var n=e.next;e.f&E||Pe(e),e=n}}(t):Ce(t),Le(t);var i=le(t);t.teardown="function"==typeof i?i:null,t.wv=Qt;t.deps;x}catch(o){ne(o,t,n,r||t.ctx)}finally{Rt=l,Kt=n}}}function se(){try{!function(){throw new Error("https://svelte.dev/e/effect_update_depth_exceeded")}()}catch(t){if(null===Dt)throw t;ne(t,Dt,null)}}function ue(){var t=Rt;try{var e=0;for(Rt=!0;Wt.length>0;){e++>1e3&&se();var n=Wt,r=n.length;Wt=[];for(var l=0;l<r;l++){fe(ve(n[l]))}}}finally{Tt=!1,Rt=t,Dt=null,st.clear()}}function fe(t){var e=t.length;if(0!==e)for(var n=0;n<e;n++){var r=t[n];if(!(24576&r.f))try{ee(r)&&(ae(r),null===r.deps&&null===r.first&&null===r.nodes_start&&(null===r.teardown?Se(r):r.fn=null))}catch(l){ne(l,r,null,r.ctx)}}}function ce(t){Tt||(Tt=!0,queueMicrotask(ue));for(var e=Dt=t;null!==e.parent;){var n=(e=e.parent).f;if(96&n){if(!(n&S))return;e.f^=S}}Wt.push(e)}function ve(t){for(var e=[],n=t;null!==n;){var r=n.f,l=!!(96&r);if(!(l&&!!(r&S)||r&k)){if(4&r)e.push(n);else if(l)n.f^=S;else{var i=It;try{It=n,ee(n)&&ae(n)}catch(s){ne(s,n,null,n.ctx)}finally{It=i}}var o=n.first;if(null!==o){n=o;continue}}var a=n.parent;for(n=n.next;null===n&&null!==a;)n=a.next,a=a.parent}return e}function de(t){for(rt();Wt.length>0;)Tt=!0,ue(),rt()}function he(t){var e=!!(2&t.f);if(null===It||Ht){if(e&&null===t.deps&&null===t.effects){var n=t,r=n.parent;null===r||r.f&C||(n.f^=C)}}else if(!(null==Jt?void 0:Jt.includes(t))){var l=It.deps;t.rv<Yt&&(t.rv=Yt,null===Vt&&null!==l&&l[Xt]===t?Xt++:null===Vt?Vt=[t]:Zt&&Vt.includes(t)||Vt.push(t))}return e&&ee(n=t)&&$t(n),qt&&st.has(t)?st.get(t):t.v}function pe(t){var e=Ht;try{return Ht=!0,t()}finally{Ht=e}}const ge=-7169;function $e(t,e){t.f=t.f&ge|e}function ye(t,e=new Set){if(!("object"!=typeof t||null===t||t instanceof EventTarget||e.has(t))){e.add(t),t instanceof Date&&t.getTime();for(let l in t)try{ye(t[l],e)}catch(n){}const r=X(t);if(r!==Object.prototype&&r!==Array.prototype&&r!==Map.prototype&&r!==Set.prototype&&r!==Date.prototype){const e=U(r);for(let r in e){const l=e[r].get;if(l)try{l.call(t)}catch(n){}}}}}function me(t){null===Kt&&null===It&&function(){throw new Error("https://svelte.dev/e/effect_orphan")}(),null!==It&&It.f&C&&null===Kt&&function(){throw new Error("https://svelte.dev/e/effect_in_unowned_derived")}(),qt&&function(){throw new Error("https://svelte.dev/e/effect_in_teardown")}()}function be(t,e,n,r=!0){var l,i=Kt,o={ctx:ke,deps:null,nodes_start:null,nodes_end:null,f:t|j,first:null,fn:e,last:null,next:null,parent:i,prev:null,teardown:null,transitions:null,wv:0};if(n)try{ae(o),o.f|=32768}catch(s){throw Pe(o),s}else null!==e&&ce(o);if(!(n&&null===o.deps&&null===o.first&&null===o.nodes_start&&null===o.teardown&&!(1048704&o.f))&&r&&(null!==i&&function(t,e){var n=e.last;null===n?e.last=e.first=t:(n.next=t,t.prev=n,e.last=t)}(o,i),null!==It&&2&It.f)){var a=It;(null!=(l=a.effects)?l:a.effects=[]).push(o)}return o}function we(t){const e=be(8,null,!1);return $e(e,S),e.teardown=t,e}function _e(t){var e;if(me(),!(null!==Kt&&!!(Kt.f&E)&&null!==ke&&!ke.m))return xe(t);var n=ke;(null!=(e=n.e)?e:n.e=[]).push({fn:t,effect:Kt,reaction:It})}function ze(t){const e=be(O,t,!0);return(t={})=>new Promise((n=>{t.outro?function(t,e){var n=[];je(t,n,!0),function(t,e){var n=t.length;if(n>0){var r=()=>--n||e();for(var l of t)l.out(r)}else e()}(n,(()=>{Pe(t),e&&e()}))}(e,(()=>{Pe(e),n(void 0)})):(Pe(e),n(void 0))}))}function xe(t){return be(4,t,!1)}function Ee(t){return be(8,t,!0)}function Oe(t,e=[],n=ht){const r=e.map(n);return function(t,e=0){return be(24|e,t,!0)}((()=>t(...r.map(he))))}function Le(t){var e=t.teardown;if(null!==e){const t=qt,n=It;Bt(!0),Ft(null);try{e.call(null)}finally{Bt(t),Ft(n)}}}function Ce(t,e=!1){var n=t.first;for(t.first=t.last=null;null!==n;){var r=n.next;n.f&O?n.parent=null:Pe(n,e),n=r}}function Pe(t,e=!0){var n=!1;if((e||524288&t.f)&&null!==t.nodes_start){for(var r=t.nodes_start,l=t.nodes_end;null!==r;){var i=r===l?null:Mt(r);r.remove(),r=i}n=!0}Ce(t,e&&!n),oe(t,0),$e(t,N);var o=t.transitions;if(null!==o)for(const s of o)s.stop();Le(t);var a=t.parent;null!==a&&null!==a.first&&Se(t),t.next=t.prev=t.teardown=t.ctx=t.deps=t.fn=t.nodes_start=t.nodes_end=null}function Se(t){var e=t.parent,n=t.prev,r=t.next;null!==n&&(n.next=r),null!==r&&(r.prev=n),null!==e&&(e.first===t&&(e.first=r),e.last===t&&(e.last=n))}function je(t,e,n){if(!(t.f&k)){if(t.f^=k,null!==t.transitions)for(const r of t.transitions)(r.is_global||n)&&e.push(r);for(var r=t.first;null!==r;){var l=r.next;je(r,e,!!(!!(65536&r.f)||!!(r.f&E))&&n),r=l}}}function Me(t){throw new Error("https://svelte.dev/e/lifecycle_outside_component")}let ke=null;function Ne(t){ke=t}function Ae(t,e=!1,n){var r=ke={p:ke,c:null,d:!1,e:null,m:!1,s:t,x:null,l:null};b&&!e&&(ke.l={s:null,u:null,r1:[],r2:ut(!1)}),we((()=>{r.d=!0}))}function Te(t){const e=ke;if(null!==e){void 0!==t&&(e.x=t);const o=e.e;if(null!==o){var n=Kt,r=It;e.e=null;try{for(var l=0;l<o.length;l++){var i=o[l];Ut(i.effect),Ft(i.reaction),xe(i.fn)}}finally{Ut(n),Ft(r)}}ke=e.p,e.m=!0}return t||{}}function De(){return!b||null!==ke&&null===ke.l}const Re=["touchstart","touchmove"];const qe=new Set,Be=new Set;function We(t,e,n,r={}){function l(t){if(r.capture||He.call(e,t),!t.cancelBubble)return function(t){var e=It,n=Kt;Ft(null),Ut(null);try{return t()}finally{Ft(e),Ut(n)}}((()=>null==n?void 0:n.call(this,t)))}return t.startsWith("pointer")||t.startsWith("touch")||"wheel"===t?nt((()=>{e.addEventListener(t,l,r)})):e.addEventListener(t,l,r),l}function Ie(t,e,n,r,l){var i={capture:r,passive:l},o=We(t,e,n,i);e!==document.body&&e!==window&&e!==document||we((()=>{e.removeEventListener(t,o,i)}))}function He(t){var e,n=this,r=n.ownerDocument,l=t.type,i=(null==(e=t.composedPath)?void 0:e.call(t))||[],o=i[0]||t.target,a=0,s=t.__root;if(s){var u=i.indexOf(s);if(-1!==u&&(n===document||n===window))return void(t.__root=n);var f=i.indexOf(n);if(-1===f)return;u<=f&&(a=u)}if((o=i[a]||t.target)!==n){F(t,"currentTarget",{configurable:!0,get:()=>o||r});var c=It,v=Kt;Ft(null),Ut(null);try{for(var d,h=[];null!==o;){var p=o.assignedSlot||o.parentNode||o.host||null;try{var g=o["__"+l];if(null!=g&&(!o.disabled||t.target===o))if(B(g)){var[$,...y]=g;$.apply(o,[t,...y])}else g.call(o,t)}catch(m){d?h.push(m):d=m}if(t.cancelBubble||p===n||null===p)break;o=p}if(d){for(let t of h)queueMicrotask((()=>{throw t}));throw d}}finally{t.__root=n,delete t.currentTarget,Ft(c),Ut(v)}}}function Fe(t,e){var n=Kt;null===n.nodes_start&&(n.nodes_start=t,n.nodes_end=e)}function Ke(t,e){var n,r=!!(2&e),l=!t.startsWith("<!>");return()=>{if(bt)return Fe(mt,null),mt;var e,i;void 0===n&&(e=l?t:"<!>"+t,(i=document.createElement("template")).innerHTML=e,n=jt(n=i.content));var o=r||Ot?document.importNode(n,!0):n.cloneNode(!0);return Fe(o,o),o}}function Ue(t,e){if(bt)return Kt.nodes_end=mt,void zt();null!==t&&t.before(e)}function Je(t,e){var n,r=null==e?"":"object"==typeof e?e+"":e;r!==(null!=(n=t.__t)?n:t.__t=t.nodeValue)&&(t.__t=r,t.nodeValue=r+"")}function Ve(t,e){return Qe(t,e)}function Xe(t,e){var n;Pt(),e.intro=null!=(n=e.intro)&&n;const r=e.target,l=bt,i=mt;try{for(var o=jt(r);o&&(8!==o.nodeType||"["!==o.data);)o=Mt(o);if(!o)throw w;wt(!0),_t(o),zt();const n=Qe(t,h(d({},e),{anchor:o}));if(null===mt||8!==mt.nodeType||"]"!==mt.data)throw yt(),w;return wt(!1),n}catch(a){if(a===w)return!1===e.recover&&function(){throw new Error("https://svelte.dev/e/hydration_failed")}(),Pt(),r.textContent="",wt(!1),Ve(t,e);throw a}finally{wt(l),_t(i)}}const Ge=new Map;function Qe(t,{target:e,anchor:n,props:r={},events:l,context:i,intro:o=!0}){Pt();var a=new Set,s=t=>{for(var n=0;n<t.length;n++){var r=t[n];if(!a.has(r)){a.add(r);var l=(o=r,Re.includes(o));e.addEventListener(r,He,{passive:l});var i=Ge.get(r);void 0===i?(document.addEventListener(r,He,{passive:l}),Ge.set(r,1)):Ge.set(r,i+1)}}var o};s(I(qe)),Be.add(s);var u=void 0,f=ze((()=>{var o=null!=n?n:e.appendChild(St());return function(t,e=!0){be(40,t,!0,e)}((()=>{i&&(Ae({}),ke.c=i);l&&(r.$$events=l),bt&&Fe(o,null),u=t(o,r)||{},bt&&(Kt.nodes_end=mt),i&&Te()})),()=>{var t;for(var r of a){e.removeEventListener(r,He);var l=Ge.get(r);0==--l?(document.removeEventListener(r,He),Ge.delete(r)):Ge.set(r,l)}Be.delete(s),o!==n&&(null==(t=o.parentNode)||t.removeChild(o))}}));return Ye.set(u,f),u}let Ye=new WeakMap;const Ze=Symbol("is custom element"),tn=Symbol("is html");function en(t,e,n,r){var l=function(t){var e;return null!=(e=t.__attributes)?e:t.__attributes={[Ze]:t.nodeName.includes("-"),[tn]:t.namespaceURI===z}}(t);bt&&(l[e]=t.getAttribute(e),"src"===e||"srcset"===e||"href"===e&&"LINK"===t.nodeName)||l[e]!==(l[e]=n)&&("loading"===e&&(t[q]=n),null==n?t.removeAttribute(e):"string"!=typeof n&&function(t){var e,n=nn.get(t.nodeName);if(n)return n;nn.set(t.nodeName,n=[]);var r=t,l=Element.prototype;for(;l!==r;){for(var i in e=U(r))e[i].set&&n.push(i);r=X(r)}return n}(t).includes(e)?t[e]=n:t.setAttribute(e,n))}var nn=new Map;function rn(t,e){return t===e||(null==t?void 0:t[D])===e}function ln(t=!1){const e=ke,n=e.l.u;if(!n)return;let r=()=>function(t){if("object"==typeof t&&t&&!(t instanceof EventTarget))if(D in t)ye(t);else if(!Array.isArray(t))for(let e in t){const n=t[e];"object"==typeof n&&n&&D in n&&ye(n)}}(e.s);if(t){let t=0,n={};const l=ht((()=>{let r=!1;const l=e.s;for(const t in l)l[t]!==n[t]&&(n[t]=l[t],r=!0);return r&&t++,t}));r=()=>he(l)}var l;n.b.length&&(l=()=>{on(e,r),Y(n.b)},me(),Ee(l)),_e((()=>{const t=pe((()=>n.m.map(Q)));return()=>{for(const e of t)"function"==typeof e&&e()}})),n.a.length&&_e((()=>{on(e,r),Y(n.a)}))}function on(t,e){if(t.l.s)for(const n of t.l.s)he(n);e()}function an(){const t=ke;return null===t&&Me(),(e,n,r)=>{var l;const i=null==(l=t.s.$$events)?void 0:l[e];if(i){const l=B(i)?i.slice():[i],o=function(t,e,{bubbles:n=!1,cancelable:r=!1}={}){return new CustomEvent(t,{detail:e,bubbles:n,cancelable:r})}(e,n,r);for(const e of l)e.call(t.x,o);return!o.defaultPrevented}return!0}}let sn,un=!1;function fn(t){var e,n;return null!=(n=null==(e=t.ctx)?void 0:e.d)&&n}function cn(t,e,n,r){var l,i,o,a=!b||!!(2&n),s=!!(8&n),u=!1;[o,u]=function(t){var e=un;try{return un=!1,[t(),un]}finally{un=e}}((()=>t[e]));var f,c=D in t||R in t,v=(null!=(i=null==(l=K(t,e))?void 0:l.set)?i:c&&e in t&&(n=>t[e]=n))||void 0,d=r,h=!0,p=!1,g=()=>(p=!0,h&&(h=!1,d=r),d);if(void 0===o&&void 0!==r&&(v&&a&&function(){throw new Error("https://svelte.dev/e/props_invalid_value")}(),o=g(),v&&v(o)),a)f=()=>{var n=t[e];return void 0===n?g():(h=!0,p=!1,n)};else{var $=pt((()=>t[e]));$.f|=131072,f=()=>{var t=he($);return void 0!==t&&(d=void 0),void 0===t?d:t}}if(v){var y=t.$$legacy;return function(t,e){return arguments.length>0?(a&&e&&!y&&!u||v(e?f():t),t):f()}}var m=!1,w=ct(o),_=ht((()=>{var t=f(),e=he(w);return m?(m=!1,e):w.v=t}));return he(_),_.equals=it,function(t,e){if(arguments.length>0){const n=e?he(_):a&&s?ot(t):t;if(!_.equals(n)){if(m=!0,vt(w,n),p&&void 0!==d&&(d=n),fn(_))return t;pe((()=>he(_)))}return t}return fn(_)?_.v:he(_)}}class vn{constructor(t){var e,n;y(this,r),y(this,l);var i=new Map,o=(t,e)=>{var n=ct(e);return i.set(t,n),n};const a=new Proxy(h(d({},t.props||{}),{$$events:{}}),{get(t,e){var n;return he(null!=(n=i.get(e))?n:o(e,Reflect.get(t,e)))},has(t,e){var n;return e===R||(he(null!=(n=i.get(e))?n:o(e,Reflect.get(t,e))),Reflect.has(t,e))},set(t,e,n){var r;return vt(null!=(r=i.get(e))?r:o(e,n),n),Reflect.set(t,e,n)}});m(this,l,(t.hydrate?Xe:Ve)(t.component,{target:t.target,anchor:t.anchor,props:a,context:t.context,intro:null!=(e=t.intro)&&e,recover:t.recover})),(null==(n=null==t?void 0:t.props)?void 0:n.$$host)&&!1!==t.sync||de(),m(this,r,a.$$events);for(const r of Object.keys($(this,l)))"$set"!==r&&"$destroy"!==r&&"$on"!==r&&F(this,r,{get(){return $(this,l)[r]},set(t){$(this,l)[r]=t},enumerable:!0});$(this,l).$set=t=>{Object.assign(a,t)},$(this,l).$destroy=()=>{!function(t,e){const n=Ye.get(t);n?(Ye.delete(t),n(e)):Promise.resolve()}($(this,l))}}$set(t){$(this,l).$set(t)}$on(t,e){$(this,r)[t]=$(this,r)[t]||[];const n=(...t)=>e.call(this,...t);return $(this,r)[t].push(n),()=>{$(this,r)[t]=$(this,r)[t].filter((t=>t!==n))}}$destroy(){$(this,l).$destroy()}}function dn(t,e,n,r){var l;const i=null==(l=n[t])?void 0:l.type;if(e="Boolean"===i&&"boolean"!=typeof e?null!=e:e,!r||!n[t])return e;if("toAttribute"===r)switch(i){case"Object":case"Array":return null==e?null:JSON.stringify(e);case"Boolean":return e?"":null;case"Number":return null==e?null:e;default:return e}else switch(i){case"Object":case"Array":return e&&JSON.parse(e);case"Boolean":default:return e;case"Number":return null!=e?+e:e}}r=new WeakMap,l=new WeakMap,"function"==typeof HTMLElement&&(sn=class extends HTMLElement{constructor(t,e,n){super(),p(this,"$$ctor"),p(this,"$$s"),p(this,"$$c"),p(this,"$$cn",!1),p(this,"$$d",{}),p(this,"$$r",!1),p(this,"$$p_d",{}),p(this,"$$l",{}),p(this,"$$l_u",new Map),p(this,"$$me"),this.$$ctor=t,this.$$s=e,n&&this.attachShadow({mode:"open"})}addEventListener(t,e,n){if(this.$$l[t]=this.$$l[t]||[],this.$$l[t].push(e),this.$$c){const n=this.$$c.$on(t,e);this.$$l_u.set(e,n)}super.addEventListener(t,e,n)}removeEventListener(t,e,n){if(super.removeEventListener(t,e,n),this.$$c){const t=this.$$l_u.get(e);t&&(t(),this.$$l_u.delete(e))}}connectedCallback(){return t=this,e=null,n=function*(){if(this.$$cn=!0,!this.$$c){let e=function(t){return e=>{const n=document.createElement("slot");"default"!==t&&(n.name=t),Ue(e,n)}};if(yield Promise.resolve(),!this.$$cn||this.$$c)return;const n={},r=function(t){const e={};return t.childNodes.forEach((t=>{e[t.slot||"default"]=!0})),e}(this);for(const t of this.$$s)t in r&&("default"!==t||this.$$d.children?n[t]=e(t):(this.$$d.children=e(t),n.default=!0));for(const t of this.attributes){const e=this.$$g_p(t.name);e in this.$$d||(this.$$d[e]=dn(e,t.value,this.$$p_d,"toProp"))}for(const t in this.$$p_d)t in this.$$d||void 0===this[t]||(this.$$d[t]=this[t],delete this[t]);this.$$c=(t={component:this.$$ctor,target:this.shadowRoot||this,props:h(d({},this.$$d),{$$slots:n,$$host:this})},new vn(t)),this.$$me=function(t){const e=be(O,t,!0);return()=>{Pe(e)}}((()=>{Ee((()=>{var t;this.$$r=!0;for(const e of H(this.$$c)){if(!(null==(t=this.$$p_d[e])?void 0:t.reflect))continue;this.$$d[e]=this.$$c[e];const n=dn(e,this.$$d[e],this.$$p_d,"toAttribute");null==n?this.removeAttribute(this.$$p_d[e].attribute||e):this.setAttribute(this.$$p_d[e].attribute||e,n)}this.$$r=!1}))}));for(const t in this.$$l)for(const e of this.$$l[t]){const n=this.$$c.$on(t,e);this.$$l_u.set(e,n)}this.$$l={}}var t},new Promise(((r,l)=>{var i=t=>{try{a(n.next(t))}catch(e){l(e)}},o=t=>{try{a(n.throw(t))}catch(e){l(e)}},a=t=>t.done?r(t.value):Promise.resolve(t.value).then(i,o);a((n=n.apply(t,e)).next())}));var t,e,n}attributeChangedCallback(t,e,n){var r;this.$$r||(t=this.$$g_p(t),this.$$d[t]=dn(t,n,this.$$p_d,"toProp"),null==(r=this.$$c)||r.$set({[t]:this.$$d[t]}))}disconnectedCallback(){this.$$cn=!1,Promise.resolve().then((()=>{!this.$$cn&&this.$$c&&(this.$$c.$destroy(),this.$$me(),this.$$c=void 0)}))}$$g_p(t){return H(this.$$p_d).find((e=>this.$$p_d[e].attribute===t||!this.$$p_d[e].attribute&&e.toLowerCase()===t))||t}});var hn=Ke('<div class="zigzag-timeline-container svelte-1gaf1he"><svg class="zigzag-timeline svelte-1gaf1he" role="img"><polyline class="zigzag-line svelte-1gaf1he" fill="none"></polyline><circle class="indicator svelte-1gaf1he" r="10" tabindex="0"></circle><text class="label start-label svelte-1gaf1he" x="0"> </text><text class="label middle-label svelte-1gaf1he"> </text><text class="label end-label svelte-1gaf1he" text-anchor="end"> </text></svg></div>');const pn={hash:"svelte-1gaf1he",code:":host {\n    /* Base tokens */--gds-zigzag-line-color: var(--gds-zigzag-line-color, #ff9eb3);--gds-zigzag-indicator-color: var(--gds-zigzag-indicator-color, #4263eb);--gds-zigzag-indicator-hover-color: var(--gds-zigzag-indicator-hover-color, #364fc7);--gds-zigzag-line-width: var(--gds-zigzag-line-width, 3px);--gds-zigzag-indicator-size: var(--gds-zigzag-indicator-size, 20px);--gds-zigzag-font-family: var(--gds-font-family, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif);--gds-zigzag-font-size: var(--gds-font-size-sm, 0.875rem);--gds-zigzag-label-color: var(--gds-color-dark, #212529);--gds-zigzag-height: var(--gds-zigzag-height, 100px);--gds-zigzag-transition: var(--gds-transition-fast, 150ms);display:block;width:100%;font-family:var(--gds-zigzag-font-family);}.zigzag-timeline-container.svelte-1gaf1he {width:100%;height:var(--gds-zigzag-height);position:relative;}.zigzag-timeline.svelte-1gaf1he {width:100%;height:100%;cursor:pointer;}.zigzag-line.svelte-1gaf1he {stroke:var(--gds-zigzag-line-color);stroke-width:var(--gds-zigzag-line-width);stroke-linecap:round;stroke-linejoin:round;}.indicator.svelte-1gaf1he {fill:var(--gds-zigzag-indicator-color);stroke:white;stroke-width:2px;cursor:grab;transition:fill var(--gds-zigzag-transition) ease;}.indicator.svelte-1gaf1he:hover {fill:var(--gds-zigzag-indicator-hover-color);}.indicator.svelte-1gaf1he:active {cursor:grabbing;}.label.svelte-1gaf1he {font-size:var(--gds-zigzag-font-size);fill:var(--gds-zigzag-label-color);user-select:none;pointer-events:none;}.start-label.svelte-1gaf1he {text-anchor:start;}.middle-label.svelte-1gaf1he {text-anchor:middle;font-weight:var(--gds-font-weight-medium, 500);}.end-label.svelte-1gaf1he {text-anchor:end;}"};customElements.define("gds-zigzag-timeline",function(t,e,n,r,l){let i=class extends sn{constructor(){super(t,n,l),this.$$p_d=e}static get observedAttributes(){return H(e).map((t=>(e[t].attribute||t).toLowerCase()))}};return H(e).forEach((t=>{F(i.prototype,t,{get(){return this.$$c&&t in this.$$c?this.$$c[t]:this.$$d[t]},set(n){var r;n=dn(t,n,e),this.$$d[t]=n;var l=this.$$c;l&&((null==(r=K(l,t))?void 0:r.get)?l[t]=n:l.$set({[t]:n}))}})})),r.forEach((t=>{F(i.prototype,t,{get(){var e;return null==(e=this.$$c)?void 0:e[t]}})})),t.element=i,i}((function(t,e){var n,r;Ae(e,!1),n=t,r=pn,nt((()=>{var t,e=n.getRootNode(),l=e.host?e:null!=(t=e.head)?t:e.ownerDocument.head;if(!l.querySelector("#"+r.hash)){const t=document.createElement("style");t.id=r.hash,t.textContent=r.code,l.appendChild(t)}}));let l=cn(e,"steps",12,5),i=cn(e,"currentStep",12,0),o=cn(e,"startLabel",12,"Past"),a=cn(e,"middleLabel",12,"Now"),s=cn(e,"endLabel",12,"Future"),u=cn(e,"lineColor",12,"#ff9eb3"),f=cn(e,"indicatorColor",12,"#4263eb"),c=cn(e,"interactive",12,!0),v=ct(),d=!1,h=ct(0),p=ct(0),g=0,$=ct(0),y=ct(""),m=ct(0),w=ct(0);const _=an();var z,x,E,O;function L(){if(!he(v))return;const t=he(v).getBoundingClientRect();vt(h,t.width),vt(p,t.height),g=he(h)/l();const e=.4*he(p),n=he(p)/2;let r=[];for(let i=0;i<=l();i++){const t=i*g,l=n+(i%2==0?-e/2:e/2);r.push(`${t},${l}`)}vt(y,r.join(" ")),C()}function C(){i()<0&&i(0),i()>l()&&i(l()),vt($,i());const t=.4*he(p),e=he(p)/2;vt(m,he($)*g),vt(w,e+(Math.floor(he($))%2==0?-t/2+he($)%1*t:t/2-he($)%1*t))}function P(t){d&&c()&&(A(t),t.preventDefault())}function j(t){d&&c()&&(d=!1,A(t),T(),t.preventDefault())}function k(t){if(d&&c()){if(t.touches.length>0){!function(t){if(!he(v))return;const e=he(v).getBoundingClientRect(),n=t.clientX-e.left;vt($,Math.max(0,Math.min(l(),n/g))),C(),_("change",{position:he($),step:Math.round(he($))})}(t.touches[0])}t.preventDefault()}}function N(t){d&&c()&&(d=!1,T(),t.preventDefault())}function A(t){if(!he(v))return;const e=he(v).getBoundingClientRect(),n=t.clientX-e.left;vt($,Math.max(0,Math.min(l(),n/g))),C(),_("change",{position:he($),step:Math.round(he($))})}function T(){i(Math.round(he($))),C(),_("change",{position:i(),step:i()})}z=()=>(L(),window.addEventListener("resize",L),()=>{window.removeEventListener("resize",L)}),null===ke&&Me(),b&&null!==ke.l?(x=ke,O=x.l,null!=(E=O.u)?E:O.u={a:[],b:[],m:[]}).m.push(z):_e((()=>{const t=pe(z);if("function"==typeof t)return t})),function(t,e){var n=ke,r={effect:null,ran:!1};n.l.r1.push(r),r.effect=Ee((()=>{t(),r.ran||(r.ran=!0,vt(n.l.r2,!0),pe(e))}))}((()=>he(v)),(()=>{he(v)&&C()})),function(){var t=ke;Ee((()=>{if(he(t.l.r2)){for(var e of t.l.r1){var n=e.effect;n.f&S&&$e(n,M),ee(n)&&ae(n),e.ran=!1}t.l.r2.v=!1}}))}(),ln();var D=hn(),R=kt(D),q=kt(R),B=Nt(q),W=Nt(B),I=kt(W,!0);xt(W);var H=Nt(W),F=kt(H,!0);xt(H);var K=Nt(H),U=kt(K,!0);return xt(K),xt(R),function(t={},e,n){xe((()=>{var r,l;return Ee((()=>{r=l,l=[],pe((()=>{t!==n(...l)&&(e(t,...l),r&&rn(n(...r),t)&&e(null,...r))}))})),()=>{nt((()=>{l&&rn(n(...l),t)&&e(null,...l)}))}}))}(R,(t=>vt(v,t)),(()=>he(v))),xt(D),Oe((t=>{var e,n;en(R,"aria-label",`Timeline from ${null!=(e=o())?e:""} to ${null!=(n=s())?n:""}`),en(q,"points",he(y)),en(B,"cx",he(m)),en(B,"cy",he(w)),en(B,"aria-label",t),en(W,"y",he(p)-10),Je(I,o()),en(H,"x",he(m)),en(H,"y",he(w)-20),Je(F,a()),en(K,"x",he(h)),en(K,"y",he(p)-10),Je(U,s())}),[()=>`Timeline position: ${Math.round(he($))} of ${l()}`],pt),Ie("mousedown",R,(function(t){c()&&(d=!0,P(t),t.preventDefault())})),Ie("mousemove",R,P),Ie("mouseup",R,j),Ie("mouseleave",R,j),Ie("click",R,(function(t){c()&&(A(t),T())})),Ie("touchstart",R,(function(t){c()&&(d=!0,k(t),t.preventDefault())})),Ie("touchmove",R,k),Ie("touchend",R,N),Ie("touchcancel",R,N),Ue(t,D),Te({get steps(){return l()},set steps(t){l(t),de()},get currentStep(){return i()},set currentStep(t){i(t),de()},get startLabel(){return o()},set startLabel(t){o(t),de()},get middleLabel(){return a()},set middleLabel(t){a(t),de()},get endLabel(){return s()},set endLabel(t){s(t),de()},get lineColor(){return u()},set lineColor(t){u(t),de()},get indicatorColor(){return f()},set indicatorColor(t){f(t),de()},get interactive(){return c()},set interactive(t){c(t),de()}})}),{steps:{},currentStep:{},startLabel:{},middleLabel:{},endLabel:{},lineColor:{},indicatorColor:{},interactive:{}},[],[],!0))}));
+//# sourceMappingURL=index.umd.cjs.map
+</script>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .showcase-container {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+    
+    .showcase-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #111827;
+      margin-bottom: 2rem;
+    }
+    
+    h2 {
+      color: #374151;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+    }
+    
+    p {
+      color: #6b7280;
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+    }
+    
+    .controls {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #4263eb;
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    
+    button:hover {
+      background-color: #364fc7;
+    }
+    
+    .info-panel {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: #f9fafb;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Zigzag Timeline Component Showcase</h1>
+  
+  <div class="showcase-container">
+    <div class="showcase-item">
+      <h2>Default Zigzag Timeline</h2>
+      <p>Interactive timeline with 5 steps. Drag the indicator to move along the timeline.</p>
+      <gds-zigzag-timeline id="default-timeline" steps="5" currentStep="0"></gds-zigzag-timeline>
+      <div class="info-panel" id="default-info">Current position: 0 / 5</div>
+    </div>
+    
+    <div class="showcase-item">
+      <h2>Custom Colored Timeline</h2>
+      <p>Timeline with custom colors for the line and indicator.</p>
+      <gds-zigzag-timeline 
+        id="custom-timeline" 
+        steps="5" 
+        currentStep="2" 
+        lineColor="#22c55e" 
+        indicatorColor="#8b5cf6"
+      ></gds-zigzag-timeline>
+      <div class="controls">
+        <button id="move-left">Move Left</button>
+        <button id="move-right">Move Right</button>
+      </div>
+    </div>
+    
+    <div class="showcase-item">
+      <h2>Timeline with Custom Labels</h2>
+      <p>Timeline with custom labels for the start, current, and end positions.</p>
+      <gds-zigzag-timeline 
+        steps="5" 
+        currentStep="1.5" 
+        startLabel="Beginning" 
+        middleLabel="Current" 
+        endLabel="Completion"
+      ></gds-zigzag-timeline>
+    </div>
+    
+    <div class="showcase-item">
+      <h2>Non-Interactive Timeline</h2>
+      <p>This timeline is set to be non-interactive and cannot be manipulated by the user.</p>
+      <gds-zigzag-timeline 
+        steps="5" 
+        currentStep="3" 
+        interactive="false"
+      ></gds-zigzag-timeline>
+    </div>
+    
+    <div class="showcase-item">
+      <h2>Timeline with Many Steps</h2>
+      <p>A timeline with 8 steps to show how the component handles more complex zigzag patterns.</p>
+      <gds-zigzag-timeline 
+        steps="8" 
+        currentStep="4"
+      ></gds-zigzag-timeline>
+    </div>
+  </div>
+
+  <script>
+    // Wait for custom elements to be defined
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set up event listeners for the default timeline
+      const defaultTimeline = document.getElementById('default-timeline');
+      const defaultInfo = document.getElementById('default-info');
+      
+      defaultTimeline.addEventListener('change', (event) => {
+        const { position, step } = event.detail;
+        defaultInfo.textContent = `Current position: ${position.toFixed(1)} / 5 (Step: ${step})`;
+      });
+      
+      // Set up controls for the custom timeline
+      const customTimeline = document.getElementById('custom-timeline');
+      const moveLeftBtn = document.getElementById('move-left');
+      const moveRightBtn = document.getElementById('move-right');
+      
+      moveLeftBtn.addEventListener('click', () => {
+        if (customTimeline.currentStep > 0) {
+          customTimeline.currentStep -= 1;
+        }
+      });
+      
+      moveRightBtn.addEventListener('click', () => {
+        if (customTimeline.currentStep < customTimeline.steps) {
+          customTimeline.currentStep += 1;
+        }
+      });
+    });
+  </script>
+</body>
