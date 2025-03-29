@@ -117,7 +117,7 @@ async function generateComponent(systemPrompt, componentPrompt, images) {
         const response = await anthropic.messages.create({
             model: process.env.ANTHROPIC_MODEL || 'claude-3-7-sonnet-latest',
             messages,
-            max_tokens: 50000,
+            max_tokens: 25000,
             temperature: parseFloat(process.env.ANTHROPIC_TEMPERATURE || '0.05'),
         });
 
