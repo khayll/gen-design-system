@@ -37,12 +37,6 @@ function addBaseStylesToShowcase(filePath) {
         // Read the showcase file
         let content = fs.readFileSync(filePath, 'utf8');
 
-        // Check if base styles are already present (improved check)
-        if (content.includes('<style') && content.includes('--gds-color-primary:')) {
-            console.log(`Base styles already present in ${filePath}`);
-            return;
-        }
-
         // Insert base styles after the opening <head> tag
         // Make sure there's no extra whitespace that might break the HTML
         content = content.replace(/<head>/, `<head>${styleTag.trim()}`);
