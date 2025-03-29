@@ -285,42 +285,23 @@ jobs:
           rm -rf screenshots/showcases/*
           find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
           
-          # Replace UMD imports with actual content
-          find screenshots/showcases -name "*.showcase.html" | while read file; do
-            # Extract the UMD import path
-            UMD_PATH=$(grep -o 'src="[^"]*index.umd.cjs"' "$file" | cut -d'"' -f2)
-            if [ -n "$UMD_PATH" ]; then
-              # Get the actual content of the UMD file
-              if [ -f "$UMD_PATH" ]; then
-                # Create a temporary file with the new content
-                TMP_FILE=$(mktemp)
-                # Process the file line by line
-                while IFS= read -r line; do
-                  if [[ "$line" == *"<script src=\"$UMD_PATH\">"* ]]; then
-                    echo "<script>" >> "$TMP_FILE"
-                    cat "$UMD_PATH" >> "$TMP_FILE"
-                    echo "</script>" >> "$TMP_FILE"
-                    # Skip the closing script tag
-                    read -r
-                  else
-                    echo "$line" >> "$TMP_FILE"
-                  fi
-                done < "$file"
-                # Replace the original file with the new content
-                mv "$TMP_FILE" "$file"
-              else
-                echo "Warning: UMD file not found: $UMD_PATH"
-              fi
-            fi
+
+      - name: Log showcase file contents after fixing imports
+        run: |
+          echo "=== Showcase File Contents After Fixing Imports ==="
+          find screenshots/showcases -type f | while read file; do
+            echo "=== Contents of $file ==="
+            cat "$file"
+            echo "=== End of $file ===\n"
           done
 
       - name: Add base styles to showcase files
         run: |
           node scripts/add-base-styles.js
 
-      - name: Log showcase file contents
+      - name: Log showcase file contents after base styles
         run: |
-          echo "=== Showcase File Contents ==="
+          echo "=== Showcase File Contents After Base Styles ==="
           find screenshots/showcases -type f | while read file; do
             echo "=== Contents of $file ==="
             cat "$file"
@@ -533,3 +514,4 @@ jobs:
               git push origin --delete "$branch" || true
             fi
           done
+          
