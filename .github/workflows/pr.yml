@@ -314,13 +314,22 @@ jobs:
             fi
           done
 
+      - name: Log showcase file contents after fixing imports
+        run: |
+          echo "=== Showcase File Contents After Fixing Imports ==="
+          find screenshots/showcases -type f | while read file; do
+            echo "=== Contents of $file ==="
+            cat "$file"
+            echo "=== End of $file ===\n"
+          done
+
       - name: Add base styles to showcase files
         run: |
           node scripts/add-base-styles.js
 
-      - name: Log showcase file contents
+      - name: Log showcase file contents after base styles
         run: |
-          echo "=== Showcase File Contents ==="
+          echo "=== Showcase File Contents After Base Styles ==="
           find screenshots/showcases -type f | while read file; do
             echo "=== Contents of $file ==="
             cat "$file"
