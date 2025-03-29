@@ -285,34 +285,6 @@ jobs:
           rm -rf screenshots/showcases/*
           find libs -name "*.showcase.html" -exec cp {} screenshots/showcases/ \;
           
-          # Replace UMD imports with actual content
-          find screenshots/showcases -name "*.showcase.html" | while read file; do
-            # Extract the UMD import path
-            UMD_PATH=$(grep -o 'src="[^"]*index.umd.cjs"' "$file" | cut -d'"' -f2)
-            if [ -n "$UMD_PATH" ]; then
-              # Get the actual content of the UMD file
-              if [ -f "$UMD_PATH" ]; then
-                # Create a temporary file with the new content
-                TMP_FILE=$(mktemp)
-                # Process the file line by line
-                while IFS= read -r line; do
-                  if [[ "$line" == *"<script src=\"$UMD_PATH\">"* ]]; then
-                    echo "<script>" >> "$TMP_FILE"
-                    cat "$UMD_PATH" >> "$TMP_FILE"
-                    echo "</script>" >> "$TMP_FILE"
-                    # Skip the closing script tag
-                    read -r
-                  else
-                    echo "$line" >> "$TMP_FILE"
-                  fi
-                done < "$file"
-                # Replace the original file with the new content
-                mv "$TMP_FILE" "$file"
-              else
-                echo "Warning: UMD file not found: $UMD_PATH"
-              fi
-            fi
-          done
 
       - name: Log showcase file contents after fixing imports
         run: |
