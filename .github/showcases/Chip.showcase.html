@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><style>
+    body {/* Colors */ --gds-color-primary: #4263eb; --gds-color-primary-hover: #364fc7; --gds-color-secondary: #868e96; --gds-color-secondary-hover: #495057; --gds-color-success: #40c057; --gds-color-warning: #fcc419; --gds-color-danger: #fa5252; --gds-color-info: #15aabf; --gds-color-light: #f8f9fa; --gds-color-dark: #212529; /* Typography */ --gds-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; --gds-font-size-xs: 0.75rem; --gds-font-size-sm: 0.875rem; --gds-font-size-md: 1rem; --gds-font-size-lg: 1.125rem; --gds-font-size-xl: 1.25rem; --gds-font-weight-normal: 400; --gds-font-weight-medium: 500; --gds-font-weight-bold: 700; /* Spacing */ --gds-spacing-xs: 0.25rem; --gds-spacing-sm: 0.5rem; --gds-spacing-md: 1rem; --gds-spacing-lg: 1.5rem; --gds-spacing-xl: 2rem; /* Borders */ --gds-border-radius-sm: 0.25rem; --gds-border-radius-md: 0.375rem; --gds-border-radius-lg: 0.5rem; --gds-border-radius-full: 9999px; --gds-border-width: 1px; /* Shadows */ --gds-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05); --gds-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); --gds-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Transitions */ --gds-transition-fast: 150ms; --gds-transition-normal: 250ms; --gds-transition-slow: 350ms;}
+</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chip Component Showcase</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      color: #333;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #1a1a1a;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+      margin: 2rem 0 1rem;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.5rem;
+    }
+    
+    .showcase-section {
+      margin-bottom: 2rem;
+    }
+    
+    .chip-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0;
+      align-items: center;
+    }
+    
+    .description {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    
+    .interactive-demo {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .demo-title {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    
+    .demo-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .demo-label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+    
+    .selected-tags {
+      min-height: 40px;
+      border: 1px dashed #ccc;
+      border-radius: 4px;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    code {
+      font-family: monospace;
+      background-color: #f5f5f5;
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.9rem;
+    }
+    
+    .code-block {
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    
+    pre {
+      margin: 0;
+    }
+  </style>
+  <script type="module">
+    // Import the component (in a real environment, this would be the path to your bundled component)
+    import './Chip.svelte';
+    
+    // This script will run after the component is registered
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set up interactive demo
+      setupInteractiveDemo();
+    });
+    
+    function setupInteractiveDemo() {
+      const filterChips = document.querySelectorAll('#filter-chips gds-chip');
+      const tagChips = document.querySelectorAll('#available-tags gds-chip');
+      const selectedTagsContainer = document.getElementById('selected-tags');
+      
+      // Handle filter chip selection
+      filterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          // Deselect all filter chips
+          filterChips.forEach(c => c.setAttribute('selected', 'false'));
+          // Select the clicked chip
+          chip.setAttribute('selected', 'true');
+        });
+      });
+      
+      // Handle tag chip selection
+      tagChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          const value = chip.getAttribute('value');
+          const label = chip.getAttribute('label');
+          const color = chip.getAttribute('color');
+          
+          // Create a new chip in the selected tags container
+          const newChip = document.createElement('gds-chip');
+          newChip.setAttribute('label', label);
+          newChip.setAttribute('type', 'input');
+          newChip.setAttribute('removable', 'true');
+          newChip.setAttribute('color', color);
+          newChip.setAttribute('value', value);
+          
+          // Handle remove event
+          newChip.addEventListener('remove', () => {
+            newChip.remove();
+          });
+          
+          selectedTagsContainer.appendChild(newChip);
+        });
+      });
+      
+      // Handle remove all button
+      const removeAllButton = document.getElementById('remove-all-button');
+      removeAllButton.addEventListener('click', () => {
+        while (selectedTagsContainer.firstChild) {
+          selectedTagsContainer.removeChild(selectedTagsContainer.firstChild);
+        }
+      });
+    }
+  </script>
+  <script data-showcase-umd>
+!function(e){"function"==typeof define&&define.amd?define(e):e()}((function(){"use strict";var e,t,r,n,i,o=Object.defineProperty,l=Object.defineProperties,s=Object.getOwnPropertyDescriptors,a=Object.getOwnPropertySymbols,c=Object.prototype.hasOwnProperty,u=Object.prototype.propertyIsEnumerable,d=e=>{throw TypeError(e)},v=(e,t,r)=>t in e?o(e,t,{enumerable:!0,configurable:!0,writable:!0,value:r}):e[t]=r,f=(e,t)=>{for(var r in t||(t={}))c.call(t,r)&&v(e,r,t[r]);if(a)for(var r of a(t))u.call(t,r)&&v(e,r,t[r]);return e},p=(e,t)=>l(e,s(t)),h=(e,t,r)=>v(e,"symbol"!=typeof t?t+"":t,r),g=(e,t,r)=>t.has(e)||d("Cannot "+r),b=(e,t,r)=>(g(e,t,"read from private field"),r?r.call(e):t.get(e)),w=(e,t,r)=>t.has(e)?d("Cannot add the same private member more than once"):t instanceof WeakSet?t.add(e):t.set(e,r),m=(e,t,r,n)=>(g(e,t,"write to private field"),n?n.call(e,r):t.set(e,r),r);"undefined"!=typeof window&&(null!=(r=(t=null!=(e=window.__svelte)?e:window.__svelte={}).v)?r:t.v=new Set).add("5");let y=!1;y=!0;const $={},x=Symbol(),_="http://www.w3.org/1999/xhtml",k=!1,z=32,E=64,O=128,j=256,P=512,N=1024,A=2048,S=4096,I=8192,L=16384,C=65536,M=1<<20,T=1<<21,D=Symbol("$state"),R=Symbol("legacy props"),q=Symbol("");var W=Array.isArray,B=Array.prototype.indexOf,H=Array.from,K=Object.keys,J=Object.defineProperty,V=Object.getOwnPropertyDescriptor,F=Object.getOwnPropertyDescriptors,U=Object.prototype,G=Array.prototype,Q=Object.getPrototypeOf,X=Object.isExtensible;function Y(e){return e()}function Z(e){for(var t=0;t<e.length;t++)e[t]()}let ee=[],te=[];function re(){var e=ee;ee=[],Z(e)}function ne(e){0===ee.length&&queueMicrotask(re),ee.push(e)}function ie(){var e;ee.length>0&&re(),te.length>0&&(e=te,te=[],Z(e))}function oe(e){return e===this.v}function le(e){return t=e,r=this.v,!(t!=t?r==r:t!==r||null!==t&&"object"==typeof t||"function"==typeof t);var t,r}function se(e,t){if("object"!=typeof e||null===e||D in e)return e;const r=Q(e);if(r!==U&&r!==G)return e;var n=new Map,i=W(e),o=de(0),l=He,s=e=>{var t,r=He;return Je(l),t=e(),Je(r),t};return i&&n.set("length",de(e.length)),new Proxy(e,{defineProperty(e,t,r){"value"in r&&!1!==r.configurable&&!1!==r.enumerable&&!1!==r.writable||function(){throw new Error("https://svelte.dev/e/state_descriptors_fixed")}();var i=n.get(t);return void 0===i?(i=s((()=>de(r.value))),n.set(t,i)):fe(i,s((()=>se(r.value)))),!0},deleteProperty(e,t){var r=n.get(t);if(void 0===r)t in e&&n.set(t,s((()=>de(x))));else{if(i&&"string"==typeof t){var l=n.get("length"),a=Number(t);Number.isInteger(a)&&a<l.v&&fe(l,a)}fe(r,x),ae(o)}return!0},get(t,r,i){var o;if(r===D)return e;var l=n.get(r),a=r in t;if(void 0!==l||a&&!(null==(o=V(t,r))?void 0:o.writable)||(l=s((()=>de(se(a?t[r]:x)))),n.set(r,l)),void 0!==l){var c=ht(l);return c===x?void 0:c}return Reflect.get(t,r,i)},getOwnPropertyDescriptor(e,t){var r=Reflect.getOwnPropertyDescriptor(e,t);if(r&&"value"in r){var i=n.get(t);i&&(r.value=ht(i))}else if(void 0===r){var o=n.get(t),l=null==o?void 0:o.v;if(void 0!==o&&l!==x)return{enumerable:!0,configurable:!0,value:l,writable:!0}}return r},has(e,t){var r;if(t===D)return!0;var i=n.get(t),o=void 0!==i&&i.v!==x||Reflect.has(e,t);if((void 0!==i||null!==Ve&&(!o||(null==(r=V(e,t))?void 0:r.writable)))&&(void 0===i&&(i=s((()=>de(o?se(e[t]):x))),n.set(t,i)),ht(i)===x))return!1;return o},set(e,t,r,l){var a,c=n.get(t),u=t in e;if(i&&"length"===t)for(var d=r;d<c.v;d+=1){var v=n.get(d+"");void 0!==v?fe(v,x):d in e&&(v=s((()=>de(x))),n.set(d+"",v))}void 0===c?u&&!(null==(a=V(e,t))?void 0:a.writable)||(fe(c=s((()=>de(void 0))),s((()=>se(r)))),n.set(t,c)):(u=c.v!==x,fe(c,s((()=>se(r)))));var f=Reflect.getOwnPropertyDescriptor(e,t);if((null==f?void 0:f.set)&&f.set.call(l,r),!u){if(i&&"string"==typeof t){var p=n.get("length"),h=Number(t);Number.isInteger(h)&&h>=p.v&&fe(p,h+1)}ae(o)}return!0},ownKeys(e){ht(o);var t=Reflect.ownKeys(e).filter((e=>{var t=n.get(e);return void 0===t||t.v!==x}));for(var[r,i]of n)i.v===x||r in e||t.push(r);return t},setPrototypeOf(){!function(){throw new Error("https://svelte.dev/e/state_prototype_fixed")}()}})}function ae(e,t=1){fe(e,e.v+t)}const ce=new Map;function ue(e,t){return{f:0,v:e,reactions:null,equals:oe,rv:0,wv:0}}function de(e,t){const r=ue(e);var n;return n=r,null!==He&&He.f&T&&(null===Ue?Ue=[n]:Ue.push(n)),r}function ve(e,t=!1){var r,n;const i=ue(e);return t||(i.equals=le),y&&null!==Rt&&null!==Rt.l&&(null!=(n=(r=Rt.l).s)?n:r.s=[]).push(i),i}function fe(e,t,r=!1){return null!==He&&!Ke&&Ht()&&18&He.f&&!(null==Ue?void 0:Ue.includes(e))&&function(){throw new Error("https://svelte.dev/e/state_unsafe_mutation")}(),function(e,t){if(!e.equals(t)){var r=e.v;qe?ce.set(e,t):ce.set(e,r),e.v=t,e.wv=tt(),pe(e,A),Ht()&&null!==Ve&&Ve.f&N&&!(96&Ve.f)&&(null===Xe?function(e){Xe=e}([e]):Xe.push(e))}return t}(e,r?se(t):t)}function pe(e,t){var r=e.reactions;if(null!==r)for(var n=Ht(),i=r.length,o=0;o<i;o++){var l=r[o],s=l.f;s&A||(n||l!==Ve)&&(wt(l,t),1280&s&&(2&s?pe(l,S):vt(l)))}}function he(e){var t=2050,r=null!==He&&2&He.f?He:null;null===Ve||null!==r&&r.f&j?t|=j:Ve.f|=M;return{ctx:Rt,deps:null,effects:null,equals:oe,f:t,fn:e,reactions:null,rv:0,v:null,wv:0,parent:null!=r?r:Ve}}function ge(e){const t=he(e);return t.equals=le,t}function be(e){var t=e.effects;if(null!==t){e.effects=null;for(var r=0;r<t.length;r+=1)St(t[r])}}function we(e){var t=function(e){var t,r=Ve;Fe(function(e){for(var t=e.parent;null!==t;){if(!(2&t.f))return t;t=t.parent}return null}(e));try{be(e),t=ot(e)}finally{Fe(r)}return t}(e);wt(e,(et||e.f&j)&&null!==e.deps?S:N),e.equals(t)||(e.v=t,e.wv=tt())}function me(e){console.warn("https://svelte.dev/e/hydration_mismatch")}let ye,$e=!1;function xe(e){$e=e}function _e(e){if(null===e)throw me(),$;return ye=e}function ke(){return _e(Ie(ye))}function ze(e){if($e){if(null!==Ie(ye))throw me(),$;ye=e}}var Ee,Oe,je,Pe;function Ne(){if(void 0===Ee){Ee=window,Oe=/Firefox/.test(navigator.userAgent);var e=Element.prototype,t=Node.prototype,r=Text.prototype;je=V(t,"firstChild").get,Pe=V(t,"nextSibling").get,X(e)&&(e.__click=void 0,e.__className=void 0,e.__attributes=null,e.__style=void 0,e.__e=void 0),X(r)&&(r.__t=void 0)}}function Ae(e=""){return document.createTextNode(e)}function Se(e){return je.call(e)}function Ie(e){return Pe.call(e)}function Le(e,t){if(!$e)return Se(e);var r=Se(ye);if(null===r)r=ye.appendChild(Ae());else if(t&&3!==r.nodeType){var n=Ae();return null==r||r.before(n),_e(n),n}return _e(r),r}function Ce(e,t=1,r=!1){let n=$e?ye:e;for(var i;t--;)i=n,n=Ie(n);if(!$e)return n;var o=null==n?void 0:n.nodeType;if(r&&3!==o){var l=Ae();return null===n?null==i||i.after(l):n.before(l),_e(l),l}return _e(n),n}let Me=!1,Te=!1,De=null,Re=!1,qe=!1;function We(e){qe=e}let Be=[],He=null,Ke=!1;function Je(e){He=e}let Ve=null;function Fe(e){Ve=e}let Ue=null;let Ge=null,Qe=0,Xe=null;let Ye=1,Ze=0,et=!1;function tt(){return++Ye}function rt(e){var t,r,n=e.f;if(n&A)return!0;if(n&S){var i=e.deps,o=!!(n&j);if(null!==i){var l,s,a=!!(n&P),c=o&&null!==Ve&&!et,u=i.length;if(a||c){var d=e,v=d.parent;for(l=0;l<u;l++)s=i[l],!a&&(null==(t=null==s?void 0:s.reactions)?void 0:t.includes(d))||(null!=(r=s.reactions)?r:s.reactions=[]).push(d);a&&(d.f^=P),!c||null===v||v.f&j||(d.f^=j)}for(l=0;l<u;l++)if(rt(s=i[l])&&we(s),s.wv>e.wv)return!0}o&&(null===Ve||et)||wt(e,N)}return!1}function nt(e,t,r,n){if(Me){if(null===r&&(Me=!1),function(e){return!(e.f&L||null!==e.parent&&e.parent.f&O)}(t))throw e}else null!==r&&(Me=!0),function(e,t){for(var r=t;null!==r;){if(r.f&O)try{return void r.fn(e)}catch(n){r.f^=O}r=r.parent}throw Me=!1,e}(e,t)}function it(e,t,r=!0){var n=e.reactions;if(null!==n)for(var i=0;i<n.length;i++){var o=n[i];(null==Ue?void 0:Ue.includes(e))||(2&o.f?it(o,t,!1):t===o&&(r?wt(o,A):o.f&N&&wt(o,S),vt(o)))}}function ot(e){var t,r,n=Ge,i=Qe,o=Xe,l=He,s=et,a=Ue,c=Rt,u=Ke,d=e.f;Ge=null,Qe=0,Xe=null,et=!!(d&j)&&(Ke||!Re||null===He),He=96&d?null:e,Ue=null,qt(e.ctx),Ke=!1,Ze++,e.f|=T;try{var v=(0,e.fn)(),f=e.deps;if(null!==Ge){var p;if(st(e,Qe),null!==f&&Qe>0)for(f.length=Qe+Ge.length,p=0;p<Ge.length;p++)f[Qe+p]=Ge[p];else e.deps=f=Ge;if(!et)for(p=Qe;p<f.length;p++)(null!=(r=(t=f[p]).reactions)?r:t.reactions=[]).push(e)}else null!==f&&Qe<f.length&&(st(e,Qe),f.length=Qe);if(Ht()&&null!==Xe&&!Ke&&null!==f&&!(6146&e.f))for(p=0;p<Xe.length;p++)it(Xe[p],e);return null!==l&&(Ze++,null!==Xe&&(null===o?o=Xe:o.push(...Xe))),v}finally{Ge=n,Qe=i,Xe=o,He=l,et=s,Ue=a,qt(c),Ke=u,e.f^=T}}function lt(e,t){let r=t.reactions;if(null!==r){var n=B.call(r,e);if(-1!==n){var i=r.length-1;0===i?r=t.reactions=null:(r[n]=r[i],r.pop())}}null===r&&2&t.f&&(null===Ge||!Ge.includes(t))&&(wt(t,S),768&t.f||(t.f^=P),be(t),st(t,0))}function st(e,t){var r=e.deps;if(null!==r)for(var n=t;n<r.length;n++)lt(e,r[n])}function at(e){var t=e.f;if(!(t&L)){wt(e,N);var r=Ve,n=Rt,i=Re;Ve=e,Re=!0;try{16&t?function(e){var t=e.first;for(;null!==t;){var r=t.next;t.f&z||St(t),t=r}}(e):At(e),Nt(e);var o=ot(e);e.teardown="function"==typeof o?o:null,e.wv=Ye;e.deps;k}catch(l){nt(l,e,r,n||e.ctx)}finally{Re=i,Ve=r}}}function ct(){try{!function(){throw new Error("https://svelte.dev/e/effect_update_depth_exceeded")}()}catch(e){if(null===De)throw e;nt(e,De,null)}}function ut(){var e=Re;try{var t=0;for(Re=!0;Be.length>0;){t++>1e3&&ct();var r=Be,n=r.length;Be=[];for(var i=0;i<n;i++){dt(ft(r[i]))}}}finally{Te=!1,Re=e,De=null,ce.clear()}}function dt(e){var t=e.length;if(0!==t)for(var r=0;r<t;r++){var n=e[r];if(!(24576&n.f))try{rt(n)&&(at(n),null===n.deps&&null===n.first&&null===n.nodes_start&&(null===n.teardown?It(n):n.fn=null))}catch(i){nt(i,n,null,n.ctx)}}}function vt(e){Te||(Te=!0,queueMicrotask(ut));for(var t=De=e;null!==t.parent;){var r=(t=t.parent).f;if(96&r){if(!(r&N))return;t.f^=N}}Be.push(t)}function ft(e){for(var t=[],r=e;null!==r;){var n=r.f,i=!!(96&n);if(!(i&&!!(n&N)||n&I)){if(4&n)t.push(r);else if(i)r.f^=N;else{var o=He;try{He=r,rt(r)&&at(r)}catch(a){nt(a,r,null,r.ctx)}finally{He=o}}var l=r.first;if(null!==l){r=l;continue}}var s=r.parent;for(r=r.next;null===r&&null!==s;)r=s.next,s=s.parent}return t}function pt(e){for(ie();Be.length>0;)Te=!0,ut(),ie()}function ht(e){var t=!!(2&e.f);if(null===He||Ke){if(t&&null===e.deps&&null===e.effects){var r=e,n=r.parent;null===n||n.f&j||(r.f^=j)}}else if(!(null==Ue?void 0:Ue.includes(e))){var i=He.deps;e.rv<Ze&&(e.rv=Ze,null===Ge&&null!==i&&i[Qe]===e?Qe++:null===Ge?Ge=[e]:et&&Ge.includes(e)||Ge.push(e))}return t&&rt(r=e)&&we(r),qe&&ce.has(e)?ce.get(e):e.v}function gt(e){var t=Ke;try{return Ke=!0,e()}finally{Ke=t}}const bt=-7169;function wt(e,t){e.f=e.f&bt|t}function mt(e){if("object"==typeof e&&e&&!(e instanceof EventTarget))if(D in e)yt(e);else if(!Array.isArray(e))for(let t in e){const r=e[t];"object"==typeof r&&r&&D in r&&yt(r)}}function yt(e,t=new Set){if(!("object"!=typeof e||null===e||e instanceof EventTarget||t.has(e))){t.add(e),e instanceof Date&&e.getTime();for(let i in e)try{yt(e[i],t)}catch(r){}const n=Q(e);if(n!==Object.prototype&&n!==Array.prototype&&n!==Map.prototype&&n!==Set.prototype&&n!==Date.prototype){const t=F(n);for(let n in t){const i=t[n].get;if(i)try{i.call(e)}catch(r){}}}}}function $t(e){null===Ve&&null===He&&function(){throw new Error("https://svelte.dev/e/effect_orphan")}(),null!==He&&He.f&j&&null===Ve&&function(){throw new Error("https://svelte.dev/e/effect_in_unowned_derived")}(),qe&&function(){throw new Error("https://svelte.dev/e/effect_in_teardown")}()}function xt(e,t,r,n=!0){var i,o=Ve,l={ctx:Rt,deps:null,nodes_start:null,nodes_end:null,f:e|A,first:null,fn:t,last:null,next:null,parent:o,prev:null,teardown:null,transitions:null,wv:0};if(r)try{at(l),l.f|=32768}catch(a){throw St(l),a}else null!==t&&vt(l);if(!(r&&null===l.deps&&null===l.first&&null===l.nodes_start&&null===l.teardown&&!(1048704&l.f))&&n&&(null!==o&&function(e,t){var r=t.last;null===r?t.last=t.first=e:(r.next=e,e.prev=r,t.last=e)}(l,o),null!==He&&2&He.f)){var s=He;(null!=(i=s.effects)?i:s.effects=[]).push(l)}return l}function _t(e){const t=xt(8,null,!1);return wt(t,N),t.teardown=e,t}function kt(e){var t;if($t(),!(null!==Ve&&!!(Ve.f&z)&&null!==Rt&&!Rt.m))return zt(e);var r=Rt;(null!=(t=r.e)?t:r.e=[]).push({fn:e,effect:Ve,reaction:He})}function zt(e){return xt(4,e,!1)}function Et(e){return xt(8,e,!0)}function Ot(e,t=[],r=he){const n=t.map(r);return jt((()=>e(...n.map(ht))))}function jt(e,t=0){return xt(24|t,e,!0)}function Pt(e,t=!0){return xt(40,e,!0,t)}function Nt(e){var t=e.teardown;if(null!==t){const e=qe,r=He;We(!0),Je(null);try{t.call(null)}finally{We(e),Je(r)}}}function At(e,t=!1){var r=e.first;for(e.first=e.last=null;null!==r;){var n=r.next;r.f&E?r.parent=null:St(r,t),r=n}}function St(e,t=!0){var r=!1;if((t||524288&e.f)&&null!==e.nodes_start){for(var n=e.nodes_start,i=e.nodes_end;null!==n;){var o=n===i?null:Ie(n);n.remove(),n=o}r=!0}At(e,t&&!r),st(e,0),wt(e,L);var l=e.transitions;if(null!==l)for(const a of l)a.stop();Nt(e);var s=e.parent;null!==s&&null!==s.first&&It(e),e.next=e.prev=e.teardown=e.ctx=e.deps=e.fn=e.nodes_start=e.nodes_end=null}function It(e){var t=e.parent,r=e.prev,n=e.next;null!==r&&(r.next=n),null!==n&&(n.prev=r),null!==t&&(t.first===e&&(t.first=n),t.last===e&&(t.last=r))}function Lt(e,t){var r=[];Ct(e,r,!0),function(e,t){var r=e.length;if(r>0){var n=()=>--r||t();for(var i of e)i.out(n)}else t()}(r,(()=>{St(e),t&&t()}))}function Ct(e,t,r){if(!(e.f&I)){if(e.f^=I,null!==e.transitions)for(const n of e.transitions)(n.is_global||r)&&t.push(n);for(var n=e.first;null!==n;){var i=n.next;Ct(n,t,!!(!!(n.f&C)||!!(n.f&z))&&r),n=i}}}function Mt(e){Tt(e,!0)}function Tt(e,t){if(e.f&I){e.f^=I,e.f&N||(e.f^=N),rt(e)&&(wt(e,A),vt(e));for(var r=e.first;null!==r;){var n=r.next;Tt(r,!!(!!(r.f&C)||!!(r.f&z))&&t),r=n}if(null!==e.transitions)for(const r of e.transitions)(r.is_global||t)&&r.in()}}function Dt(e){throw new Error("https://svelte.dev/e/lifecycle_outside_component")}let Rt=null;function qt(e){Rt=e}function Wt(e,t=!1,r){var n=Rt={p:Rt,c:null,d:!1,e:null,m:!1,s:e,x:null,l:null};y&&!t&&(Rt.l={s:null,u:null,r1:[],r2:ue(!1)}),_t((()=>{n.d=!0}))}function Bt(e){const t=Rt;if(null!==t){void 0!==e&&(t.x=e);const l=t.e;if(null!==l){var r=Ve,n=He;t.e=null;try{for(var i=0;i<l.length;i++){var o=l[i];Fe(o.effect),Je(o.reaction),zt(o.fn)}}finally{Fe(r),Je(n)}}Rt=t.p,t.m=!0}return e||{}}function Ht(){return!y||null!==Rt&&null===Rt.l}const Kt=["touchstart","touchmove"];const Jt=new Set,Vt=new Set;function Ft(e,t,r,n={}){function i(e){if(n.capture||Gt.call(t,e),!e.cancelBubble)return function(e){var t=He,r=Ve;Je(null),Fe(null);try{return e()}finally{Je(t),Fe(r)}}((()=>null==r?void 0:r.call(this,e)))}return e.startsWith("pointer")||e.startsWith("touch")||"wheel"===e?ne((()=>{t.addEventListener(e,i,n)})):t.addEventListener(e,i,n),i}function Ut(e,t,r,n,i){var o={capture:n,passive:i},l=Ft(e,t,r,o);t!==document.body&&t!==window&&t!==document||_t((()=>{t.removeEventListener(e,l,o)}))}function Gt(e){var t,r=this,n=r.ownerDocument,i=e.type,o=(null==(t=e.composedPath)?void 0:t.call(e))||[],l=o[0]||e.target,s=0,a=e.__root;if(a){var c=o.indexOf(a);if(-1!==c&&(r===document||r===window))return void(e.__root=r);var u=o.indexOf(r);if(-1===u)return;c<=u&&(s=c)}if((l=o[s]||e.target)!==r){J(e,"currentTarget",{configurable:!0,get:()=>l||n});var d=He,v=Ve;Je(null),Fe(null);try{for(var f,p=[];null!==l;){var h=l.assignedSlot||l.parentNode||l.host||null;try{var g=l["__"+i];if(null!=g&&(!l.disabled||e.target===l))if(W(g)){var[b,...w]=g;b.apply(l,[e,...w])}else g.call(l,e)}catch(m){f?p.push(m):f=m}if(e.cancelBubble||h===r||null===h)break;l=h}if(f){for(let e of p)queueMicrotask((()=>{throw e}));throw f}}finally{e.__root=r,delete e.currentTarget,Je(d),Fe(v)}}}function Qt(e,t){var r=Ve;null===r.nodes_start&&(r.nodes_start=e,r.nodes_end=t)}function Xt(e,t){var r,n=!!(2&t),i=!e.startsWith("<!>");return()=>{if($e)return Qt(ye,null),ye;var t,o;void 0===r&&(t=i?e:"<!>"+e,(o=document.createElement("template")).innerHTML=t,r=Se(r=o.content));var l=n||Oe?document.importNode(r,!0):r.cloneNode(!0);return Qt(l,l),l}}function Yt(e,t){if($e)return Ve.nodes_end=ye,void ke();null!==e&&e.before(t)}function Zt(e,t){var r,n=null==t?"":"object"==typeof t?t+"":t;n!==(null!=(r=e.__t)?r:e.__t=e.nodeValue)&&(e.__t=n,e.nodeValue=n+"")}function er(e,t){return nr(e,t)}function tr(e,t){var r;Ne(),t.intro=null!=(r=t.intro)&&r;const n=t.target,i=$e,o=ye;try{for(var l=Se(n);l&&(8!==l.nodeType||"["!==l.data);)l=Ie(l);if(!l)throw $;xe(!0),_e(l),ke();const r=nr(e,p(f({},t),{anchor:l}));if(null===ye||8!==ye.nodeType||"]"!==ye.data)throw me(),$;return xe(!1),r}catch(s){if(s===$)return!1===t.recover&&function(){throw new Error("https://svelte.dev/e/hydration_failed")}(),Ne(),n.textContent="",xe(!1),er(e,t);throw s}finally{xe(i),_e(o)}}const rr=new Map;function nr(e,{target:t,anchor:r,props:n={},events:i,context:o,intro:l=!0}){Ne();var s=new Set,a=e=>{for(var r=0;r<e.length;r++){var n=e[r];if(!s.has(n)){s.add(n);var i=(l=n,Kt.includes(l));t.addEventListener(n,Gt,{passive:i});var o=rr.get(n);void 0===o?(document.addEventListener(n,Gt,{passive:i}),rr.set(n,1)):rr.set(n,o+1)}}var l};a(H(Jt)),Vt.add(a);var c=void 0,u=function(e){const t=xt(E,e,!0);return(e={})=>new Promise((r=>{e.outro?Lt(t,(()=>{St(t),r(void 0)})):(St(t),r(void 0))}))}((()=>{var l=null!=r?r:t.appendChild(Ae());return Pt((()=>{o&&(Wt({}),Rt.c=o);i&&(n.$events=i),$e&&Qt(l,null),c=e(l,n)||{},$e&&(Ve.nodes_end=ye),o&&Bt()})),()=>{var e;for(var n of s){t.removeEventListener(n,Gt);var i=rr.get(n);0==--i?(document.removeEventListener(n,Gt),rr.delete(n)):rr.set(n,i)}Vt.delete(a),l!==r&&(null==(e=l.parentNode)||e.removeChild(l))}}));return ir.set(c,u),c}let ir=new WeakMap;function or(e,t,[r,n]=[0,0]){$e&&0===r&&ke();var i=e,o=null,l=null,s=x,a=!1;const c=(e,t=!0)=>{a=!0,u(t,e)},u=(e,t)=>{if(s===(s=e))return;let a=!1;if($e&&-1!==n){if(0===r){const e=i.data;"["===e?n=0:"[!"===e?n=1/0:(n=parseInt(e.substring(1)))!=n&&(n=s?1/0:-1)}!!s===n>r&&(i=function(){for(var e=0,t=ye;;){if(8===t.nodeType){var r=t.data;if("]"===r){if(0===e)return t;e-=1}else"["!==r&&"[!"!==r||(e+=1)}var n=Ie(t);t.remove(),t=n}}(),_e(i),xe(!1),a=!0,n=-1)}s?(o?Mt(o):t&&(o=Pt((()=>t(i)))),l&&Lt(l,(()=>{l=null}))):(l?Mt(l):t&&(l=Pt((()=>t(i,[r+1,n])))),o&&Lt(o,(()=>{o=null}))),a&&xe(!0)};jt((()=>{a=!1,t(c),a||u(null,null)}),r>0?C:0),$e&&(i=ye)}function lr(e,t,r,n,i){var o;$e&&ke();var l=null==(o=t.$slots)?void 0:o[r],s=!1;!0===l&&(l=t["default"===r?"children":r],s=!0),void 0===l?null!==i&&i(e):l(e,s?()=>n:n)}const sr=[..." \t\n\r\f \v\ufeff"];function ar(e,t,r,n,i,o){var l=e.__className;if($e||l!==r){var s=function(e,t,r){var n=null==e?"":""+e;if(n=n?n+" "+t:t,r)for(var i in r)if(r[i])n=n?n+" "+i:i;else if(n.length)for(var o=i.length,l=0;(l=n.indexOf(i,l))>=0;){var s=l+o;0!==l&&!sr.includes(n[l-1])||s!==n.length&&!sr.includes(n[s])?l=s:n=(0===l?"":n.substring(0,l))+n.substring(s+1)}return""===n?null:n}(r,n,o);$e&&s===e.getAttribute("class")||(null==s?e.removeAttribute("class"):e.className=s),e.__className=r}else if(o&&i!==o)for(var a in o){var c=!!o[a];null!=i&&c===!!i[a]||e.classList.toggle(a,c)}return o}function cr(e,t,r,n){var i=e.__style;if($e||i!==t){var o=function(e){return null==e?null:String(e)}(t);$e&&o===e.getAttribute("style")||(null==o?e.removeAttribute("style"):e.style.cssText=o),e.__style=t}return n}const ur=Symbol("is custom element"),dr=Symbol("is html");function vr(e,t,r,n){var i=function(e){var t;return null!=(t=e.__attributes)?t:e.__attributes={[ur]:e.nodeName.includes("-"),[dr]:e.namespaceURI===_}}(e);$e&&(i[t]=e.getAttribute(t),"src"===t||"srcset"===t||"href"===t&&"LINK"===e.nodeName)||i[t]!==(i[t]=r)&&("loading"===t&&(e[q]=r),null==r?e.removeAttribute(t):"string"!=typeof r&&function(e){var t,r=fr.get(e.nodeName);if(r)return r;fr.set(e.nodeName,r=[]);var n=e,i=Element.prototype;for(;i!==n;){for(var o in t=F(n))t[o].set&&r.push(o);n=Q(n)}return r}(e).includes(t)?e[t]=r:e.setAttribute(t,r))}var fr=new Map;function pr(e,t){return e===t||(null==e?void 0:e[D])===t}function hr(e=!1){const t=Rt,r=t.l.u;if(!r)return;let n=()=>mt(t.s);if(e){let e=0,r={};const i=he((()=>{let n=!1;const i=t.s;for(const e in i)i[e]!==r[e]&&(r[e]=i[e],n=!0);return n&&e++,e}));n=()=>ht(i)}var i;r.b.length&&(i=()=>{gr(t,n),Z(r.b)},$t(),Et(i)),kt((()=>{const e=gt((()=>r.m.map(Y)));return()=>{for(const t of e)"function"==typeof t&&t()}})),r.a.length&&kt((()=>{gr(t,n),Z(r.a)}))}function gr(e,t){if(e.l.s)for(const r of e.l.s)ht(r);t()}function br(){const e=Rt;return null===e&&Dt(),(t,r,n)=>{var i;const o=null==(i=e.s.$events)?void 0:i[t];if(o){const i=W(o)?o.slice():[o],l=function(e,t,{bubbles:r=!1,cancelable:n=!1}={}){return new CustomEvent(e,{detail:t,bubbles:r,cancelable:n})}(t,r,n);for(const t of i)t.call(e.x,l);return!l.defaultPrevented}return!0}}let wr,mr=!1;function yr(e){var t,r;return null!=(r=null==(t=e.ctx)?void 0:t.d)&&r}function $r(e,t,r,n){var i,o,l,s=!y||!!(2&r),a=!!(8&r),c=!1;[l,c]=function(e){var t=mr;try{return mr=!1,[e(),mr]}finally{mr=t}}((()=>e[t]));var u,d=D in e||R in e,v=(null!=(o=null==(i=V(e,t))?void 0:i.set)?o:d&&t in e&&(r=>e[t]=r))||void 0,f=n,p=!0,h=!1,g=()=>(h=!0,p&&(p=!1,f=n),f);if(void 0===l&&void 0!==n&&(v&&s&&function(){throw new Error("https://svelte.dev/e/props_invalid_value")}(),l=g(),v&&v(l)),s)u=()=>{var r=e[t];return void 0===r?g():(p=!0,h=!1,r)};else{var b=ge((()=>e[t]));b.f|=131072,u=()=>{var e=ht(b);return void 0!==e&&(f=void 0),void 0===e?f:e}}if(v){var w=e.$legacy;return function(e,t){return arguments.length>0?(s&&t&&!w&&!c||v(t?u():e),e):u()}}var m=!1,$=ve(l),x=he((()=>{var e=u(),t=ht($);return m?(m=!1,t):$.v=e}));return ht(x),x.equals=le,function(e,t){if(arguments.length>0){const r=t?ht(x):s&&a?se(e):e;if(!x.equals(r)){if(m=!0,fe($,r),h&&void 0!==f&&(f=r),yr(x))return e;gt((()=>ht(x)))}return e}return yr(x)?x.v:ht(x)}}class xr{constructor(e){var t,r;w(this,n),w(this,i);var o=new Map,l=(e,t)=>{var r=ve(t);return o.set(e,r),r};const s=new Proxy(p(f({},e.props||{}),{$events:{}}),{get(e,t){var r;return ht(null!=(r=o.get(t))?r:l(t,Reflect.get(e,t)))},has(e,t){var r;return t===R||(ht(null!=(r=o.get(t))?r:l(t,Reflect.get(e,t))),Reflect.has(e,t))},set(e,t,r){var n;return fe(null!=(n=o.get(t))?n:l(t,r),r),Reflect.set(e,t,r)}});m(this,i,(e.hydrate?tr:er)(e.component,{target:e.target,anchor:e.anchor,props:s,context:e.context,intro:null!=(t=e.intro)&&t,recover:e.recover})),(null==(r=null==e?void 0:e.props)?void 0:r.$host)&&!1!==e.sync||pt(),m(this,n,s.$events);for(const n of Object.keys(b(this,i)))"$set"!==n&&"$destroy"!==n&&"$on"!==n&&J(this,n,{get(){return b(this,i)[n]},set(e){b(this,i)[n]=e},enumerable:!0});b(this,i).$set=e=>{Object.assign(s,e)},b(this,i).$destroy=()=>{!function(e,t){const r=ir.get(e);r?(ir.delete(e),r(t)):Promise.resolve()}(b(this,i))}}$set(e){b(this,i).$set(e)}$on(e,t){b(this,n)[e]=b(this,n)[e]||[];const r=(...e)=>t.call(this,...e);return b(this,n)[e].push(r),()=>{b(this,n)[e]=b(this,n)[e].filter((e=>e!==r))}}$destroy(){b(this,i).$destroy()}}function _r(e,t,r,n){var i;const o=null==(i=r[e])?void 0:i.type;if(t="Boolean"===o&&"boolean"!=typeof t?null!=t:t,!n||!r[e])return t;if("toAttribute"===n)switch(o){case"Object":case"Array":return null==t?null:JSON.stringify(t);case"Boolean":return t?"":null;case"Number":return null==t?null:t;default:return t}else switch(o){case"Object":case"Array":return t&&JSON.parse(t);case"Boolean":default:return t;case"Number":return null!=t?+t:t}}n=new WeakMap,i=new WeakMap,"function"==typeof HTMLElement&&(wr=class extends HTMLElement{constructor(e,t,r){super(),h(this,"$ctor"),h(this,"$s"),h(this,"$c"),h(this,"$cn",!1),h(this,"$d",{}),h(this,"$r",!1),h(this,"$p_d",{}),h(this,"$l",{}),h(this,"$l_u",new Map),h(this,"$me"),this.$ctor=e,this.$s=t,r&&this.attachShadow({mode:"open"})}addEventListener(e,t,r){if(this.$l[e]=this.$l[e]||[],this.$l[e].push(t),this.$c){const r=this.$c.$on(e,t);this.$l_u.set(t,r)}super.addEventListener(e,t,r)}removeEventListener(e,t,r){if(super.removeEventListener(e,t,r),this.$c){const e=this.$l_u.get(t);e&&(e(),this.$l_u.delete(t))}}connectedCallback(){return e=this,t=null,r=function*(){if(this.$cn=!0,!this.$c){let t=function(e){return t=>{const r=document.createElement("slot");"default"!==e&&(r.name=e),Yt(t,r)}};if(yield Promise.resolve(),!this.$cn||this.$c)return;const r={},n=function(e){const t={};return e.childNodes.forEach((e=>{t[e.slot||"default"]=!0})),t}(this);for(const e of this.$s)e in n&&("default"!==e||this.$d.children?r[e]=t(e):(this.$d.children=t(e),r.default=!0));for(const e of this.attributes){const t=this.$g_p(e.name);t in this.$d||(this.$d[t]=_r(t,e.value,this.$p_d,"toProp"))}for(const e in this.$p_d)e in this.$d||void 0===this[e]||(this.$d[e]=this[e],delete this[e]);this.$c=(e={component:this.$ctor,target:this.shadowRoot||this,props:p(f({},this.$d),{$slots:r,$host:this})},new xr(e)),this.$me=function(e){const t=xt(E,e,!0);return()=>{St(t)}}((()=>{Et((()=>{var e;this.$r=!0;for(const t of K(this.$c)){if(!(null==(e=this.$p_d[t])?void 0:e.reflect))continue;this.$d[t]=this.$c[t];const r=_r(t,this.$d[t],this.$p_d,"toAttribute");null==r?this.removeAttribute(this.$p_d[t].attribute||t):this.setAttribute(this.$p_d[t].attribute||t,r)}this.$r=!1}))}));for(const e in this.$l)for(const t of this.$l[e]){const r=this.$c.$on(e,t);this.$l_u.set(t,r)}this.$l={}}var e},new Promise(((n,i)=>{var o=e=>{try{s(r.next(e))}catch(t){i(t)}},l=e=>{try{s(r.throw(e))}catch(t){i(t)}},s=e=>e.done?n(e.value):Promise.resolve(e.value).then(o,l);s((r=r.apply(e,t)).next())}));var e,t,r}attributeChangedCallback(e,t,r){var n;this.$r||(e=this.$g_p(e),this.$d[e]=_r(e,r,this.$p_d,"toProp"),null==(n=this.$c)||n.$set({[e]:this.$d[e]}))}disconnectedCallback(){this.$cn=!1,Promise.resolve().then((()=>{!this.$cn&&this.$c&&(this.$c.$destroy(),this.$me(),this.$c=void 0)}))}$g_p(e){return K(this.$p_d).find((t=>this.$p_d[t].attribute===e||!this.$p_d[t].attribute&&t.toLowerCase()===e))||e}});var kr=Xt('<div class="avatar svelte-1wsrp8i"><img alt="" class="svelte-1wsrp8i"></div>'),zr=Xt('<span class="material-icons svelte-1wsrp8i"> </span>'),Er=Xt('<div class="icon leading-icon svelte-1wsrp8i"><!></div>'),Or=Xt('<span class="material-icons svelte-1wsrp8i"> </span>'),jr=Xt('<div class="icon trailing-icon svelte-1wsrp8i"><!></div>'),Pr=Xt('<span class="material-icons svelte-1wsrp8i">close</span>'),Nr=Xt('<button class="remove-button svelte-1wsrp8i" type="button" aria-label="Remove"><!></button>'),Ar=Xt('<div><!> <span class="label svelte-1wsrp8i"><!></span> <!> <!></div>');const Sr={hash:"svelte-1wsrp8i",code:":host {\n    /* Base chip variables */--gds-chip-height-sm: 24px;--gds-chip-height-md: 32px;--gds-chip-height-lg: 40px;--gds-chip-padding-sm: 0 var(--gds-spacing-xs);--gds-chip-padding-md: 0 var(--gds-spacing-sm);--gds-chip-padding-lg: 0 var(--gds-spacing-md);--gds-chip-border-radius: var(--gds-border-radius-full, 9999px);--gds-chip-font-size-sm: var(--gds-font-size-xs, 0.75rem);--gds-chip-font-size-md: var(--gds-font-size-sm, 0.875rem);--gds-chip-font-size-lg: var(--gds-font-size-md, 1rem);--gds-chip-font-weight: var(--gds-font-weight-medium, 500);--gds-chip-gap: var(--gds-spacing-xs, 0.25rem);--gds-chip-transition: all var(--gds-transition-fast, 150ms) ease-in-out;\n    \n    /* Icon and avatar sizes */--gds-chip-icon-size-sm: 16px;--gds-chip-icon-size-md: 18px;--gds-chip-icon-size-lg: 20px;--gds-chip-avatar-size-sm: 18px;--gds-chip-avatar-size-md: 24px;--gds-chip-avatar-size-lg: 28px;--gds-chip-remove-button-size-sm: 16px;--gds-chip-remove-button-size-md: 18px;--gds-chip-remove-button-size-lg: 20px;\n    \n    /* Default color variables */--gds-chip-background: var(--gds-color-light, #f8f9fa);--gds-chip-text-color: var(--gds-color-dark, #212529);--gds-chip-border-color: var(--gds-color-secondary, #868e96);--gds-chip-shadow: var(--gds-shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));--gds-chip-hover-background: rgba(0, 0, 0, 0.05);--gds-chip-active-background: rgba(0, 0, 0, 0.1);--gds-chip-selected-background: rgba(0, 0, 0, 0.08);--gds-chip-disabled-opacity: 0.6;--gds-chip-focus-outline: 2px solid var(--gds-color-primary, #4263eb);--gds-chip-focus-outline-offset: 2px;\n    \n    /* Color-specific variables */--gds-chip-primary-background: var(--gds-color-primary, #4263eb);--gds-chip-primary-text-color: white;--gds-chip-primary-border-color: var(--gds-color-primary, #4263eb);--gds-chip-primary-hover-background: var(--gds-color-primary-hover, #364fc7);--gds-chip-secondary-background: var(--gds-color-secondary, #868e96);--gds-chip-secondary-text-color: white;--gds-chip-secondary-border-color: var(--gds-color-secondary, #868e96);--gds-chip-secondary-hover-background: var(--gds-color-secondary-hover, #495057);--gds-chip-success-background: var(--gds-color-success, #40c057);--gds-chip-success-text-color: white;--gds-chip-success-border-color: var(--gds-color-success, #40c057);--gds-chip-success-hover-background: #37a94e;--gds-chip-warning-background: var(--gds-color-warning, #fcc419);--gds-chip-warning-text-color: #212529;--gds-chip-warning-border-color: var(--gds-color-warning, #fcc419);--gds-chip-warning-hover-background: #e5b10e;--gds-chip-error-background: var(--gds-color-danger, #fa5252);--gds-chip-error-text-color: white;--gds-chip-error-border-color: var(--gds-color-danger, #fa5252);--gds-chip-error-hover-background: #e03e3e;--gds-chip-info-background: var(--gds-color-info, #15aabf);--gds-chip-info-text-color: white;--gds-chip-info-border-color: var(--gds-color-info, #15aabf);--gds-chip-info-hover-background: #1098a8;display:inline-block;vertical-align:middle;box-sizing:border-box;font-family:var(--gds-font-family, system-ui, sans-serif);}.chip.svelte-1wsrp8i {display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;max-width:100%;border-radius:var(--gds-chip-border-radius);transition:var(--gds-chip-transition);font-weight:var(--gds-chip-font-weight);cursor:default;user-select:none;overflow:hidden;gap:var(--gds-chip-gap);}\n\n  /* Size variants */.chip.sm.svelte-1wsrp8i {height:var(--gds-chip-height-sm);padding:var(--gds-chip-padding-sm);font-size:var(--gds-chip-font-size-sm);}.chip.md.svelte-1wsrp8i {height:var(--gds-chip-height-md);padding:var(--gds-chip-padding-md);font-size:var(--gds-chip-font-size-md);}.chip.lg.svelte-1wsrp8i {height:var(--gds-chip-height-lg);padding:var(--gds-chip-padding-lg);font-size:var(--gds-chip-font-size-lg);}\n\n  /* Style variants */.chip.filled.svelte-1wsrp8i {background-color:var(--gds-chip-background);color:var(--gds-chip-text-color);border:none;}.chip.outlined.svelte-1wsrp8i {background-color:transparent;color:var(--gds-chip-text-color);border:var(--gds-border-width, 1px) solid var(--gds-chip-border-color);}.chip.elevated.svelte-1wsrp8i {background-color:var(--gds-chip-background);color:var(--gds-chip-text-color);border:none;box-shadow:var(--gds-chip-shadow);}\n\n  /* Color variants */.chip.primary.filled.svelte-1wsrp8i {background-color:var(--gds-chip-primary-background);color:var(--gds-chip-primary-text-color);}.chip.primary.outlined.svelte-1wsrp8i {border-color:var(--gds-chip-primary-border-color);color:var(--gds-chip-primary-border-color);}.chip.secondary.filled.svelte-1wsrp8i {background-color:var(--gds-chip-secondary-background);color:var(--gds-chip-secondary-text-color);}.chip.secondary.outlined.svelte-1wsrp8i {border-color:var(--gds-chip-secondary-border-color);color:var(--gds-chip-secondary-border-color);}.chip.success.filled.svelte-1wsrp8i {background-color:var(--gds-chip-success-background);color:var(--gds-chip-success-text-color);}.chip.success.outlined.svelte-1wsrp8i {border-color:var(--gds-chip-success-border-color);color:var(--gds-chip-success-border-color);}.chip.warning.filled.svelte-1wsrp8i {background-color:var(--gds-chip-warning-background);color:var(--gds-chip-warning-text-color);}.chip.warning.outlined.svelte-1wsrp8i {border-color:var(--gds-chip-warning-border-color);color:var(--gds-chip-warning-border-color);}.chip.error.filled.svelte-1wsrp8i {background-color:var(--gds-chip-error-background);color:var(--gds-chip-error-text-color);}.chip.error.outlined.svelte-1wsrp8i {border-color:var(--gds-chip-error-border-color);color:var(--gds-chip-error-border-color);}.chip.info.filled.svelte-1wsrp8i {background-color:var(--gds-chip-info-background);color:var(--gds-chip-info-text-color);}.chip.info.outlined.svelte-1wsrp8i {border-color:var(--gds-chip-info-border-color);color:var(--gds-chip-info-border-color);}\n\n  /* States */.chip.selected.filled.svelte-1wsrp8i:not(.primary):not(.secondary):not(.success):not(.warning):not(.error):not(.info) {background-color:var(--gds-chip-selected-background);}.chip.clickable.svelte-1wsrp8i {cursor:pointer;}.chip.clickable.svelte-1wsrp8i:hover:not(.disabled) {background-color:var(--gds-chip-hover-background);}.chip.clickable.primary.filled.svelte-1wsrp8i:hover:not(.disabled) {background-color:var(--gds-chip-primary-hover-background);}.chip.clickable.secondary.filled.svelte-1wsrp8i:hover:not(.disabled) {background-color:var(--gds-chip-secondary-hover-background);}.chip.clickable.success.filled.svelte-1wsrp8i:hover:not(.disabled) {background-color:var(--gds-chip-success-hover-background);}.chip.clickable.warning.filled.svelte-1wsrp8i:hover:not(.disabled) {background-color:var(--gds-chip-warning-hover-background);}.chip.clickable.error.filled.svelte-1wsrp8i:hover:not(.disabled) {background-color:var(--gds-chip-error-hover-background);}.chip.clickable.info.filled.svelte-1wsrp8i:hover:not(.disabled) {background-color:var(--gds-chip-info-hover-background);}.chip.active.svelte-1wsrp8i:not(.disabled) {background-color:var(--gds-chip-active-background);}.chip.disabled.svelte-1wsrp8i {opacity:var(--gds-chip-disabled-opacity);pointer-events:none;}.chip.focused.svelte-1wsrp8i:not(.disabled) {outline:var(--gds-chip-focus-outline);outline-offset:var(--gds-chip-focus-outline-offset);}\n\n  /* Label */.label.svelte-1wsrp8i {white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}\n\n  /* Icons */.icon.svelte-1wsrp8i {display:flex;align-items:center;justify-content:center;}.chip.sm.svelte-1wsrp8i .icon:where(.svelte-1wsrp8i) {font-size:var(--gds-chip-icon-size-sm);width:var(--gds-chip-icon-size-sm);height:var(--gds-chip-icon-size-sm);}.chip.md.svelte-1wsrp8i .icon:where(.svelte-1wsrp8i) {font-size:var(--gds-chip-icon-size-md);width:var(--gds-chip-icon-size-md);height:var(--gds-chip-icon-size-md);}.chip.lg.svelte-1wsrp8i .icon:where(.svelte-1wsrp8i) {font-size:var(--gds-chip-icon-size-lg);width:var(--gds-chip-icon-size-lg);height:var(--gds-chip-icon-size-lg);}\n\n  /* Avatar */.avatar.svelte-1wsrp8i {display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:50%;}.chip.sm.svelte-1wsrp8i .avatar:where(.svelte-1wsrp8i) {width:var(--gds-chip-avatar-size-sm);height:var(--gds-chip-avatar-size-sm);}.chip.md.svelte-1wsrp8i .avatar:where(.svelte-1wsrp8i) {width:var(--gds-chip-avatar-size-md);height:var(--gds-chip-avatar-size-md);}.chip.lg.svelte-1wsrp8i .avatar:where(.svelte-1wsrp8i) {width:var(--gds-chip-avatar-size-lg);height:var(--gds-chip-avatar-size-lg);}.avatar.svelte-1wsrp8i img:where(.svelte-1wsrp8i) {width:100%;height:100%;object-fit:cover;}\n\n  /* Remove button */.remove-button.svelte-1wsrp8i {display:flex;align-items:center;justify-content:center;background:transparent;border:none;padding:0;margin:0;cursor:pointer;color:inherit;opacity:0.7;transition:opacity var(--gds-transition-fast, 150ms) ease-in-out;}.remove-button.svelte-1wsrp8i:hover {opacity:1;}.chip.sm.svelte-1wsrp8i .remove-button:where(.svelte-1wsrp8i) {width:var(--gds-chip-remove-button-size-sm);height:var(--gds-chip-remove-button-size-sm);font-size:var(--gds-chip-remove-button-size-sm);}.chip.md.svelte-1wsrp8i .remove-button:where(.svelte-1wsrp8i) {width:var(--gds-chip-remove-button-size-md);height:var(--gds-chip-remove-button-size-md);font-size:var(--gds-chip-remove-button-size-md);}.chip.lg.svelte-1wsrp8i .remove-button:where(.svelte-1wsrp8i) {width:var(--gds-chip-remove-button-size-lg);height:var(--gds-chip-remove-button-size-lg);font-size:var(--gds-chip-remove-button-size-lg);}\n\n  /* Material Icons */.material-icons.svelte-1wsrp8i {font-family:'Material Icons';font-weight:normal;font-style:normal;font-size:inherit;display:inline-block;line-height:1;text-transform:none;letter-spacing:normal;word-wrap:normal;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;-moz-osx-font-smoothing:grayscale;font-feature-settings:'liga';}"};customElements.define("gds-chip",function(e,t,r,n,i){let o=class extends wr{constructor(){super(e,r,i),this.$p_d=t}static get observedAttributes(){return K(t).map((e=>(t[e].attribute||e).toLowerCase()))}};return K(t).forEach((e=>{J(o.prototype,e,{get(){return this.$c&&e in this.$c?this.$c[e]:this.$d[e]},set(r){var n;r=_r(e,r,t),this.$d[e]=r;var i=this.$c;i&&((null==(n=V(i,e))?void 0:n.get)?i[e]=r:i.$set({[e]:r}))}})})),n.forEach((e=>{J(o.prototype,e,{get(){var t;return null==(t=this.$c)?void 0:t[e]}})})),e.element=o,o}((function(e,t){var r,n;Wt(t,!1),r=e,n=Sr,ne((()=>{var e,t=r.getRootNode(),i=t.host?t:null!=(e=t.head)?e:t.ownerDocument.head;if(!i.querySelector("#"+n.hash)){const e=document.createElement("style");e.id=n.hash,e.textContent=n.code,i.appendChild(e)}}));const i=ve();let o=$r(t,"label",12,""),l=$r(t,"type",12,"basic"),s=$r(t,"variant",12,"filled"),a=$r(t,"size",12,"md"),c=$r(t,"color",12,"default"),u=$r(t,"selected",12,!1),d=$r(t,"disabled",12,!1),v=$r(t,"clickable",12,!1),f=$r(t,"removable",12,!1),p=$r(t,"maxWidth",12,""),h=$r(t,"leadingIcon",12,""),g=$r(t,"trailingIcon",12,""),b=$r(t,"avatar",12,""),w=$r(t,"tabIndex",12,0),m=$r(t,"tooltip",12,""),$=$r(t,"value",12,void 0),x=ve(),_=ve(!1),k=ve(!1),z=ve(!1);const E=br();function O(e){d()?e.preventDefault():v()&&(E("click",{value:$(),originalEvent:e}),"filter"!==l()&&"choice"!==l()||(u(!u()),E("select",{selected:u(),value:$()})))}function j(e){e.stopPropagation(),d()||E("remove",{value:$()})}var P,A,I,L;P=()=>{var e;v()&&void 0===w()&&(e=x,ht(x).tabIndex=0,fe(e,gt((()=>ht(e)))))},null===Rt&&Dt(),y&&null!==Rt.l?(A=Rt,L=A.l,null!=(I=L.u)?I:L.u={a:[],b:[],m:[]}).m.push(P):kt((()=>{const e=gt(P);if("function"==typeof e)return e})),function(e,t){var r=Rt,n={effect:null,ran:!1};r.l.r1.push(n),n.effect=Et((()=>{e(),n.ran||(n.ran=!0,fe(r.l.r2,!0),gt(t))}))}((()=>(mt(v()),mt(l()),mt(u()))),(()=>{fe(i,v()&&"action"===l()?"button":"choice"===l()?"option":"filter"===l()&&void 0!==u()?"checkbox":v()?"button":void 0)})),function(){var e=Rt;Et((()=>{if(ht(e.l.r2)){for(var t of e.l.r1){var r=t.effect;r.f&N&&wt(r,S),rt(r)&&at(r),t.ran=!1}e.l.r2.v=!1}}))}(),hr();var C=Ar();let M;var T=Le(C),D=e=>{var t=kr(),r=Le(t);ze(t),Ot((()=>vr(r,"src",b()))),Yt(e,t)},R=(e,r)=>{var n=e=>{var r=Er();lr(Le(r),t,"leading-icon",{},(e=>{var t=zr(),r=Le(t,!0);ze(t),Ot((()=>Zt(r,h()))),Yt(e,t)})),ze(r),Yt(e,r)};or(e,(e=>{h()&&e(n)}),r)};or(T,(e=>{b()?e(D):e(R,!1)}));var q=Ce(T,2);lr(Le(q),t,"default",{},(e=>{var t=function(e=""){if(!$e){var t=Ae(e+"");return Qt(t,t),t}var r=ye;return 3!==r.nodeType&&(r.before(r=Ae()),_e(r)),Qt(r,r),r}();Ot((()=>Zt(t,o()))),Yt(e,t)})),ze(q);var W=Ce(q,2),B=e=>{var r=jr();lr(Le(r),t,"trailing-icon",{},(e=>{var t=Or(),r=Le(t,!0);ze(t),Ot((()=>Zt(r,g()))),Yt(e,t)})),ze(r),Yt(e,r)};or(W,(e=>{g()&&!f()&&e(B)}));var H=Ce(W,2),K=e=>{var r=Nr();lr(Le(r),t,"remove-icon",{},(e=>{Yt(e,Pr())})),ze(r),Ot((()=>vr(r,"tabindex",d()?-1:0))),Ut("click",r,j),Ut("keydown",r,(e=>"Enter"===e.key&&j(e))),Yt(e,r)};return or(H,(e=>{f()&&e(K)})),ze(C),function(e={},t,r){zt((()=>{var n,i;return Et((()=>{n=i,i=[],gt((()=>{e!==r(...i)&&(t(e,...i),n&&pr(r(...n),e)&&t(null,...n))}))})),()=>{ne((()=>{i&&pr(r(...i),e)&&t(null,...i)}))}}))}(C,(e=>fe(x,e)),(()=>ht(x))),Ot((e=>{var t,r,n,v;M=ar(C,0,`chip ${null!=(t=l())?t:""} ${null!=(r=s())?r:""} ${null!=(n=a())?n:""} ${null!=(v=c())?v:""}`,"svelte-1wsrp8i",M,e),cr(C,p()?`max-width: ${p()};`:""),vr(C,"role",ht(i)),vr(C,"aria-disabled",d()?"true":void 0),vr(C,"aria-selected","choice"===l()||"filter"===l()?u()?"true":"false":void 0),vr(C,"tabindex",d()?-1:w()),vr(C,"title",m()||(p()?o():void 0))}),[()=>({selected:u(),disabled:d(),clickable:v(),focused:ht(_),hovered:ht(k),active:ht(z),"with-leading-icon":h(),"with-trailing-icon":g(),"with-avatar":b(),removable:f()})],ge),Ut("click",C,O),Ut("keydown",C,(function(e){d()||(E("keydown",{originalEvent:e}),!v()||"Enter"!==e.key&&" "!==e.key||(e.preventDefault(),O(e)),!f()||"Backspace"!==e.key&&"Delete"!==e.key||(e.preventDefault(),j(e)),"Escape"===e.key&&ht(x).blur())})),Ut("focus",C,(function(){fe(_,!0)})),Ut("blur",C,(function(){fe(_,!1),fe(z,!1)})),Ut("mousedown",C,(function(){!d()&&v()&&fe(z,!0)})),Ut("mouseup",C,(function(){fe(z,!1)})),Ut("mouseenter",C,(function(){fe(k,!0)})),Ut("mouseleave",C,(function(){fe(k,!1),fe(z,!1)})),Yt(e,C),Bt({get label(){return o()},set label(e){o(e),pt()},get type(){return l()},set type(e){l(e),pt()},get variant(){return s()},set variant(e){s(e),pt()},get size(){return a()},set size(e){a(e),pt()},get color(){return c()},set color(e){c(e),pt()},get selected(){return u()},set selected(e){u(e),pt()},get disabled(){return d()},set disabled(e){d(e),pt()},get clickable(){return v()},set clickable(e){v(e),pt()},get removable(){return f()},set removable(e){f(e),pt()},get maxWidth(){return p()},set maxWidth(e){p(e),pt()},get leadingIcon(){return h()},set leadingIcon(e){h(e),pt()},get trailingIcon(){return g()},set trailingIcon(e){g(e),pt()},get avatar(){return b()},set avatar(e){b(e),pt()},get tabIndex(){return w()},set tabIndex(e){w(e),pt()},get tooltip(){return m()},set tooltip(e){m(e),pt()},get value(){return $()},set value(e){$(e),pt()}})}),{label:{},type:{},variant:{},size:{},color:{},selected:{},disabled:{},clickable:{},removable:{},maxWidth:{},leadingIcon:{},trailingIcon:{},avatar:{},tabIndex:{},tooltip:{},value:{}},["leading-icon","default","trailing-icon","remove-icon"],[],!0))}));
+//# sourceMappingURL=index.umd.cjs.map
+
+</script>
+</head>
+<body>
+  <h1>Chip Component Showcase</h1>
+  
+  <p>
+    The Chip component is a versatile element for displaying compact information, representing input entities, 
+    filtering content, or triggering actions. Chips are small, interactive elements that typically represent 
+    a discrete piece of information, entity, or action.
+  </p>
+  
+  <h2>Basic Chips</h2>
+  <div class="showcase-section">
+    <p class="description">Simple chips with different variants and colors.</p>
+    <div class="chip-container">
+      <gds-chip label="Basic Chip"></gds-chip>
+      <gds-chip label="Outlined" variant="outlined"></gds-chip>
+      <gds-chip label="Elevated" variant="elevated"></gds-chip>
+    </div>
+  </div>
+  
+  <h2>Chip Types</h2>
+  <div class="showcase-section">
+    <p class="description">Different types of chips for various use cases.</p>
+    <div class="chip-container">
+      <gds-chip label="Basic" type="basic"></gds-chip>
+      <gds-chip label="Input" type="input" removable></gds-chip>
+      <gds-chip label="Filter" type="filter" clickable selected></gds-chip>
+      <gds-chip label="Choice" type="choice" clickable></gds-chip>
+      <gds-chip label="Action" type="action" clickable leadingIcon="add"></gds-chip>
+    </div>
+  </div>
+  
+  <h2>Chip Sizes</h2>
+  <div class="showcase-section">
+    <p class="description">Chips in different sizes.</p>
+    <div class="chip-container">
+      <gds-chip label="Small" size="sm"></gds-chip>
+      <gds-chip label="Medium" size="md"></gds-chip>
+      <gds-chip label="Large" size="lg"></gds-chip>
+    </div>
+  </div>
+  
+  <h2>Color Variants</h2>
+  <div class="showcase-section">
+    <p class="description">Filled chips in different colors.</p>
+    <div class="chip-container">
+      <gds-chip label="Default" color="default"></gds-chip>
+      <gds-chip label="Primary" color="primary"></gds-chip>
+      <gds-chip label="Secondary" color="secondary"></gds-chip>
+      <gds-chip label="Success" color="success"></gds-chip>
+      <gds-chip label="Warning" color="warning"></gds-chip>
+      <gds-chip label="Error" color="error"></gds-chip>
+      <gds-chip label="Info" color="info"></gds-chip>
+    </div>
+    
+    <p class="description">Outlined chips in different colors.</p>
+    <div class="chip-container">
+      <gds-chip label="Default" variant="outlined" color="default"></gds-chip>
+      <gds-chip label="Primary" variant="outlined" color="primary"></gds-chip>
+      <gds-chip label="Secondary" variant="outlined" color="secondary"></gds-chip>
+      <gds-chip label="Success" variant="outlined" color="success"></gds-chip>
+      <gds-chip label="Warning" variant="outlined" color="warning"></gds-chip>
+      <gds-chip label="Error" variant="outlined" color="error"></gds-chip>
+      <gds-chip label="Info" variant="outlined" color="info"></gds-chip>
+    </div>
+  </div>
+  
+  <h2>With Icons</h2>
+  <div class="showcase-section">
+    <p class="description">Chips with leading and trailing icons.</p>
+    <div class="chip-container">
+      <gds-chip label="Leading Icon" leadingIcon="star"></gds-chip>
+      <gds-chip label="Trailing Icon" trailingIcon="arrow_drop_down"></gds-chip>
+      <gds-chip label="Both Icons" leadingIcon="favorite" trailingIcon="close"></gds-chip>
+    </div>
+  </div>
+  
+  <h2>With Avatar</h2>
+  <div class="showcase-section">
+    <p class="description">Chips with avatar images.</p>
+    <div class="chip-container">
+      <gds-chip 
+        label="John Doe" 
+        avatar="https://i.pravatar.cc/300?img=1"
+      ></gds-chip>
+      <gds-chip 
+        label="Jane Smith" 
+        avatar="https://i.pravatar.cc/300?img=5" 
+        removable
+      ></gds-chip>
+      <gds-chip 
+        label="Alex Johnson" 
+        avatar="https://i.pravatar.cc/300?img=8" 
+        variant="outlined"
+      ></gds-chip>
+    </div>
+  </div>
+  
+  <h2>Removable Chips</h2>
+  <div class="showcase-section">
+    <p class="description">Chips with remove buttons.</p>
+    <div class="chip-container">
+      <gds-chip label="Removable" removable></gds-chip>
+      <gds-chip label="With Icon" leadingIcon="mail" removable></gds-chip>
+      <gds-chip label="Outlined" variant="outlined" removable></gds-chip>
+      <gds-chip label="Primary" color="primary" removable></gds-chip>
+    </div>
+  </div>
+  
+  <h2>States</h2>
+  <div class="showcase-section">
+    <p class="description">Chips in different states.</p>
+    <div class="chip-container">
+      <gds-chip label="Default"></gds-chip>
+      <gds-chip label="Selected" selected></gds-chip>
+      <gds-chip label="Disabled" disabled></gds-chip>
+      <gds-chip label="Clickable" clickable></gds-chip>
+      <gds-chip label="Selected & Clickable" selected clickable></gds-chip>
+      <gds-chip label="Disabled & Selected" disabled selected></gds-chip>
+    </div>
+  </div>
+  
+  <h2>Truncated Text</h2>
+  <div class="showcase-section">
+    <p class="description">Chips with truncated text and tooltips.</p>
+    <div class="chip-container">
+      <gds-chip 
+        label="This is a very long chip text that will be truncated" 
+        maxWidth="150px"
+        tooltip="This is a very long chip text that will be truncated"
+      ></gds-chip>
+      <gds-chip 
+        label="Another long chip with an icon" 
+        leadingIcon="info"
+        maxWidth="180px"
+        tooltip="Another long chip with an icon"
+      ></gds-chip>
+    </div>
+  </div>
+  
+  <h2>Chip Collections</h2>
+  <div class="showcase-section">
+    <p class="description">Groups of related chips.</p>
+    
+    <h3>Filter Chips</h3>
+    <div class="chip-container">
+      <gds-chip label="All" type="filter" clickable selected></gds-chip>
+      <gds-chip label="Electronics" type="filter" clickable></gds-chip>
+      <gds-chip label="Clothing" type="filter" clickable></gds-chip>
+      <gds-chip label="Books" type="filter" clickable></gds-chip>
+      <gds-chip label="Home & Garden" type="filter" clickable></gds-chip>
+    </div>
+    
+    <h3>Choice Chips</h3>
+    <div class="chip-container">
+      <gds-chip label="Small" type="choice" clickable></gds-chip>
+      <gds-chip label="Medium" type="choice" clickable selected></gds-chip>
+      <gds-chip label="Large" type="choice" clickable></gds-chip>
+      <gds-chip label="X-Large" type="choice" clickable></gds-chip>
+    </div>
+    
+    <h3>Input Chips</h3>
+    <div class="chip-container">
+      <gds-chip label="john.doe@example.com" type="input" removable></gds-chip>
+      <gds-chip label="jane.smith@example.com" type="input" removable></gds-chip>
+      <gds-chip label="alex@example.com" type="input" removable></gds-chip>
+    </div>
+  </div>
+  
+  <h2>Interactive Demo</h2>
+  <div class="interactive-demo">
+    <div class="demo-section">
+      <div class="demo-label">Select a category:</div>
+      <div class="chip-container" id="filter-chips">
+        <gds-chip 
+          label="All" 
+          type="filter" 
+          clickable 
+          selected
+          value="all"
+        ></gds-chip>
+        <gds-chip 
+          label="Electronics" 
+          type="filter" 
+          clickable 
+          value="electronics"
+        ></gds-chip>
+        <gds-chip 
+          label="Clothing" 
+          type="filter" 
+          clickable 
+          value="clothing"
+        ></gds-chip>
+        <gds-chip 
+          label="Books" 
+          type="filter" 
+          clickable 
+          value="books"
+        ></gds-chip>
+      </div>
+    </div>
+    
+    <div class="demo-section">
+      <div class="demo-label">Selected tags:</div>
+      <div class="selected-tags" id="selected-tags">
+        <!-- Tags will be added here -->
+      </div>
+      <button id="remove-all-button">Remove All</button>
+    </div>
+    
+    <div class="demo-section">
+      <div class="demo-label">Available tags (click to add):</div>
+      <div class="chip-container" id="available-tags">
+        <gds-chip 
+          label="Bestseller" 
+          type="input" 
+          clickable 
+          leadingIcon="star"
+          color="primary"
+          value="bestseller"
+        ></gds-chip>
+        <gds-chip 
+          label="Sale" 
+          type="input" 
+          clickable 
+          leadingIcon="local_offer"
+          color="error"
+          value="sale"
+        ></gds-chip>
+        <gds-chip 
+          label="New" 
+          type="input" 
+          clickable 
+          leadingIcon="fiber_new"
+          color="success"
+          value="new"
+        ></gds-chip>
+        <gds-chip 
+          label="Limited" 
+          type="input" 
+          clickable 
+          leadingIcon="timer"
+          color="warning"
+          value="limited"
+        ></gds-chip>
+      </div>
+    </div>
+  </div>
+  
+  <h2>Usage Example</h2>
+  <div class="showcase-section">
+    <p class="description">Example of how to use the Chip component in HTML:</p>
+    <div class="code-block">
+      <pre><code>&lt;!-- Basic chip --&gt;
+&lt;gds-chip label="Basic Chip"&gt;&lt;/gds-chip&gt;
+
+&lt;!-- Outlined primary chip with icon --&gt;
+&lt;gds-chip
+  label="Primary Chip"
+  variant="outlined"
+  color="primary"
+  leadingIcon="star"
+&gt;&lt;/gds-chip&gt;
+
+&lt;!-- Removable input chip --&gt;
+&lt;gds-chip
+  label="john.doe@example.com"
+  type="input"
+  removable
+&gt;&lt;/gds-chip&gt;
+
+&lt;!-- Filter chip with selection --&gt;
+&lt;gds-chip
+  label="Category: Electronics"
+  type="filter"
+  selected
+  clickable
+&gt;&lt;/gds-chip&gt;
+
+&lt;!-- Disabled chip --&gt;
+&lt;gds-chip
+  label="Unavailable"
+  disabled
+&gt;&lt;/gds-chip&gt;
+
+&lt;!-- Choice chip with icon --&gt;
+&lt;gds-chip
+  label="Small"
+  type="choice"
+  clickable
+  trailingIcon="expand_more"
+&gt;&lt;/gds-chip&gt;
+
+&lt;!-- Action chip --&gt;
+&lt;gds-chip
+  label="Add to cart"
+  type="action"
+  clickable
+  leadingIcon="shopping_cart"
+  color="success"
+&gt;&lt;/gds-chip&gt;</code></pre>
+    </div>
+  </div>
+  
+  <h2>Keyboard Navigation</h2>
+  <div class="showcase-section">
+    <p class="description">The Chip component supports keyboard navigation:</p>
+    <ul>
+      <li><code>Tab</code>: Move focus to the next focusable element</li>
+      <li><code>Shift + Tab</code>: Move focus to the previous focusable element</li>
+      <li><code>Enter</code> or <code>Space</code>: Activate the chip (if clickable)</li>
+      <li><code>Delete</code> or <code>Backspace</code>: Remove the chip (if removable)</li>
+      <li><code>Escape</code>: Blur/deselect the chip</li>
+    </ul>
+    <p>Try using keyboard navigation with the chips below:</p>
+    <div class="chip-container">
+      <gds-chip label="Clickable" clickable></gds-chip>
+      <gds-chip label="Removable" removable></gds-chip>
+      <gds-chip label="Both" clickable removable></gds-chip>
+    </div>
+  </div>
+</body>
+</html>
