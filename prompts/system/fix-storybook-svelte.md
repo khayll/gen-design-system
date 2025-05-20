@@ -1,9 +1,19 @@
 # fixes to the generated storybook files
 
-ensure to fix these in the generated stories files:
+Ensure to apply these fixes in the generated story files:
 
-COMPONENT_NAME refers to the name of the component in PascalCase
+- Use an import statement for the component, for example:
 
-use import statement for component like this: import COMPONENT_NAME './COMPONENT_NAME.svelte';
-for the meta for the component property just use COMPONENT_NAME
+```ts
+import COMPONENT_NAME from './COMPONENT_NAME.svelte';
+```
+
+- For the meta object, ensure the component property references the component:
+
+```ts
+export default {
+  title: 'COMPONENT_NAME',
+  component: COMPONENT_NAME,
+};
+```
 

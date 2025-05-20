@@ -134,8 +134,8 @@ function parseGeneratedResponse(response) {
     const componentMatch = response.match(/```svelte\n([\s\S]*?)\n```/);
     const componentCode = componentMatch ? componentMatch[1] : null;
 
-    // Extract Storybook story
-    const storyMatch = response.match(/```typescript\n([\s\S]*?)\n```/) || response.match(/```ts\n([\s\S]*?)\n```/);
+    // Extract Storybook story (TypeScript, TSX, or MDX code fences)
+    const storyMatch = response.match(/```(?:typescript|ts|tsx)\n([\s\S]*?)\n```/) || response.match(/```mdx\n([\s\S]*?)\n```/);
     const storyCode = storyMatch ? storyMatch[1] : null;
 
     // Extract Playwright showcase HTML
@@ -143,6 +143,25 @@ function parseGeneratedResponse(response) {
     const showcaseCode = showcaseMatch ? showcaseMatch[1] : null;
 
     return { componentCode, storyCode, showcaseCode };
+}
+
+// Function to fix generated Storybook code: correct import and meta component usage
+function fixStoryCode(storyCode, componentName) {
+    if (!storyCode) return storyCode;
+    // Ensure correct import statement
+    const importLineRegex = /^import\s+.*?from\s+['"].*?\.svelte['"];?/m;
+    const fixedImport = `import ${componentName} from './${componentName}.svelte';`;
+    if (importLineRegex.test(storyCode)) {
+        storyCode = storyCode.replace(importLineRegex, fixedImport);
+    } else {
+        // Prepend import if missing
+        storyCode = `${fixedImport}\n${storyCode}`;
+    }
+    // Ensure component meta property is correct
+    storyCode = storyCode.replace(/component\s*:\s*\w+/, `component: ${componentName}`);
+    // Ensure title meta property uses component name
+    storyCode = storyCode.replace(/title\s*:\s*['"][^'"]*['"]/, `title: '${componentName}'`);
+    return storyCode;
 }
 
 // Function to create a new NX library for the component
@@ -419,8 +438,10 @@ async function generateComponents(specificComponents = []) {
                     continue;
                 }
 
+                // Fix Storybook code according to conventions
+                const fixedStoryCode = fixStoryCode(storyCode, pascalCaseName);
                 // Save generated files
-                const savedFiles = await saveGeneratedFiles(libPath, pascalCaseName, componentCode, storyCode, showcaseCode);
+                const savedFiles = await saveGeneratedFiles(libPath, pascalCaseName, componentCode, fixedStoryCode, showcaseCode);
 
                 if (!savedFiles) {
                     console.log(`Failed to save generated files for ${componentName}. Skipping.`);
