@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><style>
+    body {/* Colors */ --gds-color-primary: #4263eb; --gds-color-primary-hover: #364fc7; --gds-color-secondary: #868e96; --gds-color-secondary-hover: #495057; --gds-color-success: #40c057; --gds-color-warning: #fcc419; --gds-color-danger: #fa5252; --gds-color-info: #15aabf; --gds-color-light: #f8f9fa; --gds-color-dark: #212529; /* Typography */ --gds-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; --gds-font-size-xs: 0.75rem; --gds-font-size-sm: 0.875rem; --gds-font-size-md: 1rem; --gds-font-size-lg: 1.125rem; --gds-font-size-xl: 1.25rem; --gds-font-weight-normal: 400; --gds-font-weight-medium: 500; --gds-font-weight-bold: 700; /* Spacing */ --gds-spacing-xs: 0.25rem; --gds-spacing-sm: 0.5rem; --gds-spacing-md: 1rem; --gds-spacing-lg: 1.5rem; --gds-spacing-xl: 2rem; /* Borders */ --gds-border-radius-sm: 0.25rem; --gds-border-radius-md: 0.375rem; --gds-border-radius-lg: 0.5rem; --gds-border-radius-full: 9999px; --gds-border-width: 1px; /* Shadows */ --gds-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05); --gds-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); --gds-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Transitions */ --gds-transition-fast: 150ms; --gds-transition-normal: 250ms; --gds-transition-slow: 350ms;}
+</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toggle Component Showcase</title>
+  <script type="module" src="./Toggle.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      color: #333;
+    }
+    
+    h1 {
+      margin-bottom: 2rem;
+      color: #1a1a1a;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.5rem;
+    }
+    
+    h2 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    
+    .showcase-section {
+      margin-bottom: 3rem;
+    }
+    
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .showcase-item {
+      padding: 1.5rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .showcase-item h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      color: #555;
+    }
+    
+    .form-example {
+      padding: 1.5rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .form-example button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background-color: #4263eb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .form-example button:hover {
+      background-color: #364fc7;
+    }
+    
+    .custom-toggle {
+      --gds-toggle-track-color: #f0f0f0;
+      --gds-toggle-track-color-checked: #6200ee;
+      --gds-toggle-thumb-color: white;
+      --gds-toggle-thumb-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    
+    .ios-toggle {
+      --gds-toggle-track-border: 1px solid #d1d1d6;
+      --gds-toggle-track-color: #e9ecef;
+      --gds-toggle-track-color-checked: #34c759;
+    }
+    
+    .material-toggle {
+      --gds-toggle-track-color: rgba(0, 0, 0, 0.38);
+      --gds-toggle-track-color-checked: rgba(98, 0, 238, 0.5);
+      --gds-toggle-thumb-color: white;
+      --gds-toggle-thumb-color-checked: #6200ee;
+    }
+    
+    .keyboard-demo {
+      padding: 1.5rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .keyboard-demo p {
+      margin-bottom: 1rem;
+    }
+  </style>
+  <script data-showcase-umd>
+!function(e){"function"==typeof define&&define.amd?define(e):e()}((function(){"use strict";var e,t,n,r,l,o=Object.defineProperty,s=Object.defineProperties,i=Object.getOwnPropertyDescriptors,a=Object.getOwnPropertySymbols,u=Object.prototype.hasOwnProperty,g=Object.prototype.propertyIsEnumerable,c=e=>{throw TypeError(e)},d=(e,t,n)=>t in e?o(e,t,{enumerable:!0,configurable:!0,writable:!0,value:n}):e[t]=n,f=(e,t)=>{for(var n in t||(t={}))u.call(t,n)&&d(e,n,t[n]);if(a)for(var n of a(t))g.call(t,n)&&d(e,n,t[n]);return e},v=(e,t)=>s(e,i(t)),h=(e,t,n)=>d(e,"symbol"!=typeof t?t+"":t,n),p=(e,t,n)=>t.has(e)||c("Cannot "+n),b=(e,t,n)=>(p(e,t,"read from private field"),n?n.call(e):t.get(e)),m=(e,t,n)=>t.has(e)?c("Cannot add the same private member more than once"):t instanceof WeakSet?t.add(e):t.set(e,n),y=(e,t,n,r)=>(p(e,t,"write to private field"),r?r.call(e,n):t.set(e,n),n);"undefined"!=typeof window&&(null!=(n=(t=null!=(e=window.__svelte)?e:window.__svelte={}).v)?n:t.v=new Set).add("5");let $=!1;$=!0;const _={},w=Symbol(),k=!1,x=32,O=64,E=128,P=256,z=512,C=1024,L=2048,j=4096,N=8192,S=16384,A=65536,I=1<<20,T=1<<21,q=Symbol("$state"),M=Symbol("legacy props"),D=Symbol("");var R=Array.isArray,B=Array.prototype.indexOf,U=Array.from,W=Object.keys,F=Object.defineProperty,H=Object.getOwnPropertyDescriptor,K=Object.getOwnPropertyDescriptors,J=Object.prototype,V=Array.prototype,X=Object.getPrototypeOf,G=Object.isExtensible;function Q(e){return e()}function Y(e){for(var t=0;t<e.length;t++)e[t]()}const Z="undefined"==typeof requestIdleCallback?e=>setTimeout(e,1):requestIdleCallback;let ee=[],te=[];function ne(){var e=ee;ee=[],Y(e)}function re(){var e=te;te=[],Y(e)}function le(e){0===ee.length&&queueMicrotask(ne),ee.push(e)}function oe(){ee.length>0&&ne(),te.length>0&&re()}function se(e){return e===this.v}function ie(e){return t=e,n=this.v,!(t!=t?n==n:t!==n||null!==t&&"object"==typeof t||"function"==typeof t);var t,n}function ae(e,t){if("object"!=typeof e||null===e||q in e)return e;const n=X(e);if(n!==J&&n!==V)return e;var r=new Map,l=R(e),o=de(0),s=He,i=e=>{var t,n=He;return Je(s),t=e(),Je(n),t};return l&&r.set("length",de(e.length)),new Proxy(e,{defineProperty(e,t,n){"value"in n&&!1!==n.configurable&&!1!==n.enumerable&&!1!==n.writable||function(){throw new Error("https://svelte.dev/e/state_descriptors_fixed")}();var l=r.get(t);return void 0===l?(l=i((()=>de(n.value))),r.set(t,l)):he(l,i((()=>ae(n.value)))),!0},deleteProperty(e,t){var n=r.get(t);if(void 0===n)t in e&&r.set(t,i((()=>de(w))));else{if(l&&"string"==typeof t){var s=r.get("length"),a=Number(t);Number.isInteger(a)&&a<s.v&&he(s,a)}he(n,w),ue(o)}return!0},get(t,n,l){var o;if(n===q)return e;var s=r.get(n),a=n in t;if(void 0!==s||a&&!(null==(o=H(t,n))?void 0:o.writable)||(s=i((()=>de(ae(a?t[n]:w)))),r.set(n,s)),void 0!==s){var u=bt(s);return u===w?void 0:u}return Reflect.get(t,n,l)},getOwnPropertyDescriptor(e,t){var n=Reflect.getOwnPropertyDescriptor(e,t);if(n&&"value"in n){var l=r.get(t);l&&(n.value=bt(l))}else if(void 0===n){var o=r.get(t),s=null==o?void 0:o.v;if(void 0!==o&&s!==w)return{enumerable:!0,configurable:!0,value:s,writable:!0}}return n},has(e,t){var n;if(t===q)return!0;var l=r.get(t),o=void 0!==l&&l.v!==w||Reflect.has(e,t);if((void 0!==l||null!==Ve&&(!o||(null==(n=H(e,t))?void 0:n.writable)))&&(void 0===l&&(l=i((()=>de(o?ae(e[t]):w))),r.set(t,l)),bt(l)===w))return!1;return o},set(e,t,n,s){var a,u=r.get(t),g=t in e;if(l&&"length"===t)for(var c=n;c<u.v;c+=1){var d=r.get(c+"");void 0!==d?he(d,w):c in e&&(d=i((()=>de(w))),r.set(c+"",d))}void 0===u?g&&!(null==(a=H(e,t))?void 0:a.writable)||(he(u=i((()=>de(void 0))),i((()=>ae(n)))),r.set(t,u)):(g=u.v!==w,he(u,i((()=>ae(n)))));var f=Reflect.getOwnPropertyDescriptor(e,t);if((null==f?void 0:f.set)&&f.set.call(s,n),!g){if(l&&"string"==typeof t){var v=r.get("length"),h=Number(t);Number.isInteger(h)&&h>=v.v&&he(v,h+1)}ue(o)}return!0},ownKeys(e){bt(o);var t=Reflect.ownKeys(e).filter((e=>{var t=r.get(e);return void 0===t||t.v!==w}));for(var[n,l]of r)l.v===w||n in e||t.push(n);return t},setPrototypeOf(){!function(){throw new Error("https://svelte.dev/e/state_prototype_fixed")}()}})}function ue(e,t=1){he(e,e.v+t)}const ge=new Map;function ce(e,t){return{f:0,v:e,reactions:null,equals:se,rv:0,wv:0}}function de(e,t){const n=ce(e);var r;return r=n,null!==He&&He.f&T&&(null===Ge?Ge=[r]:Ge.push(r)),n}function fe(e,t=!1){var n,r;const l=ce(e);return t||(l.equals=ie),</head>&null!==Ut&&null!==Ut.l&&(null!=(r=(n=Ut.l).s)?r:n.s=[]).push(l),l}function ve(e,t){return he(e,mt((()=>bt(e)))),t}function he(e,t,n=!1){return null!==He&&!Ke&&Kt()&&18&He.f&&!(null==Ge?void 0:Ge.includes(e))&&function(){throw new Error("https://svelte.dev/e/state_unsafe_mutation")}(),function(e,t){if(!e.equals(t)){var n=e.v;Ue?ge.set(e,t):ge.set(e,n),e.v=t,e.wv=rt(),pe(e,L),Kt()&&null!==Ve&&Ve.f&C&&!(96&Ve.f)&&(null===Ze?function(e){Ze=e}([e]):Ze.push(e))}return t}(e,n?ae(t):t)}function pe(e,t){var n=e.reactions;if(null!==n)for(var r=Kt(),l=n.length,o=0;o<l;o++){var s=n[o],i=s.f;i&L||(r||s!==Ve)&&($t(s,t),1280&i&&(2&i?pe(s,j):vt(s)))}}function be(e){var t=2050,n=null!==He&&2&He.f?He:null;null===Ve||null!==n&&n.f&P?t|=P:Ve.f|=I;return{ctx:Ut,deps:null,effects:null,equals:se,f:t,fn:e,reactions:null,rv:0,v:null,wv:0,parent:null!=n?n:Ve}}function me(e){const t=be(e);return t.equals=ie,t}function ye(e){var t=e.effects;if(null!==t){e.effects=null;for(var n=0;n<t.length;n+=1)It(t[n])}}function $e(e){var t=function(e){var t,n=Ve;Xe(function(e){for(var t=e.parent;null!==t;){if(!(2&t.f))return t;t=t.parent}return null}(e));try{ye(e),t=it(e)}finally{Xe(n)}return t}(e);$t(e,(nt||e.f&P)&&null!==e.deps?j:C),e.equals(t)||(e.v=t,e.wv=rt())}function _e(e){console.warn("https://svelte.dev/e/hydration_mismatch")}let we,ke=!1;function xe(e){ke=e}function Oe(e){if(null===e)throw _e(),_;return we=e}function Ee(){return Oe(Ie(we))}function Pe(e){if(ke){if(null!==Ie(we))throw _e(),_;we=e}}var ze,Ce,Le,je;function Ne(){if(void 0===ze){ze=window,Ce=/Firefox/.test(navigator.userAgent);var e=Element.prototype,t=Node.prototype,n=Text.prototype;Le=H(t,"firstChild").get,je=H(t,"nextSibling").get,G(e)&&(e.__click=void 0,e.__className=void 0,e.__attributes=null,e.__style=void 0,e.__e=void 0),G(n)&&(n.__t=void 0)}}function Se(e=""){return document.createTextNode(e)}function Ae(e){return Le.call(e)}function Ie(e){return je.call(e)}function Te(e,t){if(!ke)return Ae(e);var n=Ae(we);if(null===n)n=we.appendChild(Se());else if(t&&3!==n.nodeType){var r=Se();return null==n||n.before(r),Oe(r),r}return Oe(n),n}function qe(e,t=1,n=!1){let r=ke?we:e;for(var l;t--;)l=r,r=Ie(r);if(!ke)return r;var o=null==r?void 0:r.nodeType;if(n&&3!==o){var s=Se();return null===r?null==l||l.after(s):r.before(s),Oe(s),s}return Oe(r),r}let Me=!1,De=!1,Re=null,Be=!1,Ue=!1;function We(e){Ue=e}let Fe=[],He=null,Ke=!1;function Je(e){He=e}let Ve=null;function Xe(e){Ve=e}let Ge=null;let Qe=null,Ye=0,Ze=null;let et=1,tt=0,nt=!1;function rt(){return++et}function lt(e){var t,n,r=e.f;if(r&L)return!0;if(r&j){var l=e.deps,o=!!(r&P);if(null!==l){var s,i,a=!!(r&z),u=o&&null!==Ve&&!nt,g=l.length;if(a||u){var c=e,d=c.parent;for(s=0;s<g;s++)i=l[s],!a&&(null==(t=null==i?void 0:i.reactions)?void 0:t.includes(c))||(null!=(n=i.reactions)?n:i.reactions=[]).push(c);a&&(c.f^=z),!u||null===d||d.f&P||(c.f^=P)}for(s=0;s<g;s++)if(lt(i=l[s])&&$e(i),i.wv>e.wv)return!0}o&&(null===Ve||nt)||$t(e,C)}return!1}function ot(e,t,n,r){if(Me){if(null===n&&(Me=!1),function(e){return!(e.f&S||null!==e.parent&&e.parent.f&E)}(t))throw e}else null!==n&&(Me=!0),function(e,t){for(var n=t;null!==n;){if(n.f&E)try{return void n.fn(e)}catch(r){n.f^=E}n=n.parent}throw Me=!1,e}(e,t)}function st(e,t,n=!0){var r=e.reactions;if(null!==r)for(var l=0;l<r.length;l++){var o=r[l];(null==Ge?void 0:Ge.includes(e))||(2&o.f?st(o,t,!1):t===o&&(n?$t(o,L):o.f&C&&$t(o,j),vt(o)))}}function it(e){var t,n,r=Qe,l=Ye,o=Ze,s=He,i=nt,a=Ge,u=Ut,g=Ke,c=e.f;Qe=null,Ye=0,Ze=null,nt=!!(c&P)&&(Ke||!Be||null===He),He=96&c?null:e,Ge=null,Wt(e.ctx),Ke=!1,tt++,e.f|=T;try{var d=(0,e.fn)(),f=e.deps;if(null!==Qe){var v;if(ut(e,Ye),null!==f&&Ye>0)for(f.length=Ye+Qe.length,v=0;v<Qe.length;v++)f[Ye+v]=Qe[v];else e.deps=f=Qe;if(!nt)for(v=Ye;v<f.length;v++)(null!=(n=(t=f[v]).reactions)?n:t.reactions=[]).push(e)}else null!==f&&Ye<f.length&&(ut(e,Ye),f.length=Ye);if(Kt()&&null!==Ze&&!Ke&&null!==f&&!(6146&e.f))for(v=0;v<Ze.length;v++)st(Ze[v],e);return null!==s&&(tt++,null!==Ze&&(null===o?o=Ze:o.push(...Ze))),d}finally{Qe=r,Ye=l,Ze=o,He=s,nt=i,Ge=a,Wt(u),Ke=g,e.f^=T}}function at(e,t){let n=t.reactions;if(null!==n){var r=B.call(n,e);if(-1!==r){var l=n.length-1;0===l?n=t.reactions=null:(n[r]=n[l],n.pop())}}null===n&&2&t.f&&(null===Qe||!Qe.includes(t))&&($t(t,j),768&t.f||(t.f^=z),ye(t),ut(t,0))}function ut(e,t){var n=e.deps;if(null!==n)for(var r=t;r<n.length;r++)at(e,n[r])}function gt(e){var t=e.f;if(!(t&S)){$t(e,C);var n=Ve,r=Ut,l=Be;Ve=e,Be=!0;try{16&t?function(e){var t=e.first;for(;null!==t;){var n=t.next;t.f&x||It(t),t=n}}(e):At(e),St(e);var o=it(e);e.teardown="function"==typeof o?o:null,e.wv=et;e.deps;k}catch(s){ot(s,e,n,r||e.ctx)}finally{Be=l,Ve=n}}}function ct(){try{!function(){throw new Error("https://svelte.dev/e/effect_update_depth_exceeded")}()}catch(e){if(null===Re)throw e;ot(e,Re,null)}}function dt(){var e=Be;try{var t=0;for(Be=!0;Fe.length>0;){t++>1e3&&ct();var n=Fe,r=n.length;Fe=[];for(var l=0;l<r;l++){ft(ht(n[l]))}}}finally{De=!1,Be=e,Re=null,ge.clear()}}function ft(e){var t=e.length;if(0!==t)for(var n=0;n<t;n++){var r=e[n];if(!(24576&r.f))try{lt(r)&&(gt(r),null===r.deps&&null===r.first&&null===r.nodes_start&&(null===r.teardown?Tt(r):r.fn=null))}catch(l){ot(l,r,null,r.ctx)}}}function vt(e){De||(De=!0,queueMicrotask(dt));for(var t=Re=e;null!==t.parent;){var n=(t=t.parent).f;if(96&n){if(!(n&C))return;t.f^=C}}Fe.push(t)}function ht(e){for(var t=[],n=e;null!==n;){var r=n.f,l=!!(96&r);if(!(l&&!!(r&C)||r&N)){if(4&r)t.push(n);else if(l)n.f^=C;else{var o=He;try{He=n,lt(n)&&gt(n)}catch(a){ot(a,n,null,n.ctx)}finally{He=o}}var s=n.first;if(null!==s){n=s;continue}}var i=n.parent;for(n=n.next;null===n&&null!==i;)n=i.next,i=i.parent}return t}function pt(e){for(oe();Fe.length>0;)De=!0,dt(),oe()}function bt(e){var t=!!(2&e.f);if(null===He||Ke){if(t&&null===e.deps&&null===e.effects){var n=e,r=n.parent;null===r||r.f&P||(n.f^=P)}}else if(!(null==Ge?void 0:Ge.includes(e))){var l=He.deps;e.rv<tt&&(e.rv=tt,null===Qe&&null!==l&&l[Ye]===e?Ye++:null===Qe?Qe=[e]:nt&&Qe.includes(e)||Qe.push(e))}return t&&lt(n=e)&&$e(n),Ue&&ge.has(e)?ge.get(e):e.v}function mt(e){var t=Ke;try{return Ke=!0,e()}finally{Ke=t}}const yt=-7169;function $t(e,t){e.f=e.f&yt|t}function _t(e){if("object"==typeof e&&e&&!(e instanceof EventTarget))if(q in e)wt(e);else if(!Array.isArray(e))for(let t in e){const n=e[t];"object"==typeof n&&n&&q in n&&wt(n)}}function wt(e,t=new Set){if(!("object"!=typeof e||null===e||e instanceof EventTarget||t.has(e))){t.add(e),e instanceof Date&&e.getTime();for(let l in e)try{wt(e[l],t)}catch(n){}const r=X(e);if(r!==Object.prototype&&r!==Array.prototype&&r!==Map.prototype&&r!==Set.prototype&&r!==Date.prototype){const t=K(r);for(let r in t){const l=t[r].get;if(l)try{l.call(e)}catch(n){}}}}}function kt(e){null===Ve&&null===He&&function(){throw new Error("https://svelte.dev/e/effect_orphan")}(),null!==He&&He.f&P&&null===Ve&&function(){throw new Error("https://svelte.dev/e/effect_in_unowned_derived")}(),Ue&&function(){throw new Error("https://svelte.dev/e/effect_in_teardown")}()}function xt(e,t,n,r=!0){var l,o=Ve,s={ctx:Ut,deps:null,nodes_start:null,nodes_end:null,f:e|L,first:null,fn:t,last:null,next:null,parent:o,prev:null,teardown:null,transitions:null,wv:0};if(n)try{gt(s),s.f|=32768}catch(a){throw It(s),a}else null!==t&&vt(s);if(!(n&&null===s.deps&&null===s.first&&null===s.nodes_start&&null===s.teardown&&!(1048704&s.f))&&r&&(null!==o&&function(e,t){var n=t.last;null===n?t.last=t.first=e:(n.next=e,e.prev=n,t.last=e)}(s,o),null!==He&&2&He.f)){var i=He;(null!=(l=i.effects)?l:i.effects=[]).push(s)}return s}function Ot(e){const t=xt(8,null,!1);return $t(t,C),t.teardown=e,t}function Et(e){var t;if(kt(),!(null!==Ve&&!!(Ve.f&x)&&null!==Ut&&!Ut.m))return Pt(e);var n=Ut;(null!=(t=n.e)?t:n.e=[]).push({fn:e,effect:Ve,reaction:He})}function Pt(e){return xt(4,e,!1)}function zt(e,t){var n=Ut,r={effect:null,ran:!1};n.l.r1.push(r),r.effect=Ct((()=>{e(),r.ran||(r.ran=!0,he(n.l.r2,!0),mt(t))}))}function Ct(e){return xt(8,e,!0)}function Lt(e,t=[],n=be){const r=t.map(n);return jt((()=>e(...r.map(bt))))}function jt(e,t=0){return xt(24|t,e,!0)}function Nt(e,t=!0){return xt(40,e,!0,t)}function St(e){var t=e.teardown;if(null!==t){const e=Ue,n=He;We(!0),Je(null);try{t.call(null)}finally{We(e),Je(n)}}}function At(e,t=!1){var n=e.first;for(e.first=e.last=null;null!==n;){var r=n.next;n.f&O?n.parent=null:It(n,t),n=r}}function It(e,t=!0){var n=!1;if((t||524288&e.f)&&null!==e.nodes_start){for(var r=e.nodes_start,l=e.nodes_end;null!==r;){var o=r===l?null:Ie(r);r.remove(),r=o}n=!0}At(e,t&&!n),ut(e,0),$t(e,S);var s=e.transitions;if(null!==s)for(const a of s)a.stop();St(e);var i=e.parent;null!==i&&null!==i.first&&Tt(e),e.next=e.prev=e.teardown=e.ctx=e.deps=e.fn=e.nodes_start=e.nodes_end=null}function Tt(e){var t=e.parent,n=e.prev,r=e.next;null!==n&&(n.next=r),null!==r&&(r.prev=n),null!==t&&(t.first===e&&(t.first=r),t.last===e&&(t.last=n))}function qt(e,t){var n=[];Mt(e,n,!0),function(e,t){var n=e.length;if(n>0){var r=()=>--n||t();for(var l of e)l.out(r)}else t()}(n,(()=>{It(e),t&&t()}))}function Mt(e,t,n){if(!(e.f&N)){if(e.f^=N,null!==e.transitions)for(const r of e.transitions)(r.is_global||n)&&t.push(r);for(var r=e.first;null!==r;){var l=r.next;Mt(r,t,!!(!!(r.f&A)||!!(r.f&x))&&n),r=l}}}function Dt(e){Rt(e,!0)}function Rt(e,t){if(e.f&N){e.f^=N,e.f&C||(e.f^=C),lt(e)&&($t(e,L),vt(e));for(var n=e.first;null!==n;){var r=n.next;Rt(n,!!(!!(n.f&A)||!!(n.f&x))&&t),n=r}if(null!==e.transitions)for(const n of e.transitions)(n.is_global||t)&&n.in()}}function Bt(e){throw new Error("https://svelte.dev/e/lifecycle_outside_component")}let Ut=null;function Wt(e){Ut=e}function Ft(e,t=!1,n){var r=Ut={p:Ut,c:null,d:!1,e:null,m:!1,s:e,x:null,l:null};</head>&!t&&(Ut.l={s:null,u:null,r1:[],r2:ce(!1)}),Ot((()=>{r.d=!0}))}function Ht(e){const t=Ut;if(null!==t){void 0!==e&&(t.x=e);const s=t.e;if(null!==s){var n=Ve,r=He;t.e=null;try{for(var l=0;l<s.length;l++){var o=s[l];Xe(o.effect),Je(o.reaction),Pt(o.fn)}}finally{Xe(n),Je(r)}}Ut=t.p,t.m=!0}return e||{}}function Kt(){return!$||null!==Ut&&null===Ut.l}const Jt=["touchstart","touchmove"];let Vt=!1;const Xt=new Set,Gt=new Set;function Qt(e,t,n,r={}){function l(e){if(r.capture||Zt.call(t,e),!e.cancelBubble)return function(e){var t=He,n=Ve;Je(null),Xe(null);try{return e()}finally{Je(t),Xe(n)}}((()=>null==n?void 0:n.call(this,e)))}return e.startsWith("pointer")||e.startsWith("touch")||"wheel"===e?le((()=>{t.addEventListener(e,l,r)})):t.addEventListener(e,l,r),l}function Yt(e,t,n,r,l){var o={capture:r,passive:l},s=Qt(e,t,n,o);t!==document.body&&t!==window&&t!==document||Ot((()=>{t.removeEventListener(e,s,o)}))}function Zt(e){var t,n=this,r=n.ownerDocument,l=e.type,o=(null==(t=e.composedPath)?void 0:t.call(e))||[],s=o[0]||e.target,i=0,a=e.__root;if(a){var u=o.indexOf(a);if(-1!==u&&(n===document||n===window))return void(e.__root=n);var g=o.indexOf(n);if(-1===g)return;u<=g&&(i=u)}if((s=o[i]||e.target)!==n){F(e,"currentTarget",{configurable:!0,get:()=>s||r});var c=He,d=Ve;Je(null),Xe(null);try{for(var f,v=[];null!==s;){var h=s.assignedSlot||s.parentNode||s.host||null;try{var p=s["__"+l];if(null!=p&&(!s.disabled||e.target===s))if(R(p)){var[b,...m]=p;b.apply(s,[e,...m])}else p.call(s,e)}catch(y){f?v.push(y):f=y}if(e.cancelBubble||h===n||null===h)break;s=h}if(f){for(let e of v)queueMicrotask((()=>{throw e}));throw f}}finally{e.__root=n,delete e.currentTarget,Je(c),Xe(d)}}}function en(e,t){var n=Ve;null===n.nodes_start&&(n.nodes_start=e,n.nodes_end=t)}function tn(e,t){var n,r=!!(1&t),l=!!(2&t),o=!e.startsWith("<!>");return()=>{if(ke)return en(we,null),we;var t,s;void 0===n&&(t=o?e:"<!>"+e,(s=document.createElement("template")).innerHTML=t,n=s.content,r||(n=Ae(n)));var i=l||Ce?document.importNode(n,!0):n.cloneNode(!0);r?en(Ae(i),i.lastChild):en(i,i);return i}}function nn(e,t){if(ke)return Ve.nodes_end=we,void Ee();null!==e&&e.before(t)}function rn(e,t){var n,r=null==t?"":"object"==typeof t?t+"":t;r!==(null!=(n=e.__t)?n:e.__t=e.nodeValue)&&(e.__t=r,e.nodeValue=r+"")}function ln(e,t){return an(e,t)}function on(e,t){var n;Ne(),t.intro=null!=(n=t.intro)&&n;const r=t.target,l=ke,o=we;try{for(var s=Ae(r);s&&(8!==s.nodeType||"["!==s.data);)s=Ie(s);if(!s)throw _;xe(!0),Oe(s),Ee();const n=an(e,v(f({},t),{anchor:s}));if(null===we||8!==we.nodeType||"]"!==we.data)throw _e(),_;return xe(!1),n}catch(i){if(i===_)return!1===t.recover&&function(){throw new Error("https://svelte.dev/e/hydration_failed")}(),Ne(),r.textContent="",xe(!1),ln(e,t);throw i}finally{xe(l),Oe(o)}}const sn=new Map;function an(e,{target:t,anchor:n,props:r={},events:l,context:o,intro:s=!0}){Ne();var i=new Set,a=e=>{for(var n=0;n<e.length;n++){var r=e[n];if(!i.has(r)){i.add(r);var l=(s=r,Jt.includes(s));t.addEventListener(r,Zt,{passive:l});var o=sn.get(r);void 0===o?(document.addEventListener(r,Zt,{passive:l}),sn.set(r,1)):sn.set(r,o+1)}}var s};a(U(Xt)),Gt.add(a);var u=void 0,g=function(e){const t=xt(O,e,!0);return(e={})=>new Promise((n=>{e.outro?qt(t,(()=>{It(t),n(void 0)})):(It(t),n(void 0))}))}((()=>{var s=null!=n?n:t.appendChild(Se());return Nt((()=>{o&&(Ft({}),Ut.c=o);l&&(r.$events=l),ke&&en(s,null),u=e(s,r)||{},ke&&(Ve.nodes_end=we),o&&Ht()})),()=>{var e;for(var r of i){t.removeEventListener(r,Zt);var l=sn.get(r);0==--l?(document.removeEventListener(r,Zt),sn.delete(r)):sn.set(r,l)}Gt.delete(a),s!==n&&(null==(e=s.parentNode)||e.removeChild(s))}}));return un.set(u,g),u}let un=new WeakMap;function gn(e,t,[n,r]=[0,0]){ke&&0===n&&Ee();var l=e,o=null,s=null,i=w,a=!1;const u=(e,t=!0)=>{a=!0,g(t,e)},g=(e,t)=>{if(i===(i=e))return;let a=!1;if(ke&&-1!==r){if(0===n){const e=l.data;"["===e?r=0:"[!"===e?r=1/0:(r=parseInt(e.substring(1)))!=r&&(r=i?1/0:-1)}!!i===r>n&&(l=function(){for(var e=0,t=we;;){if(8===t.nodeType){var n=t.data;if("]"===n){if(0===e)return t;e-=1}else"["!==n&&"[!"!==n||(e+=1)}var r=Ie(t);t.remove(),t=r}}(),Oe(l),xe(!1),a=!0,r=-1)}i?(o?Dt(o):t&&(o=Nt((()=>t(l)))),s&&qt(s,(()=>{s=null}))):(s?Dt(s):t&&(s=Nt((()=>t(l,[n+1,r])))),o&&qt(o,(()=>{o=null}))),a&&xe(!0)};jt((()=>{a=!1,t(u),a||g(null,null)}),n>0?A:0),ke&&(l=we)}function cn(e){var t,n,r="";if("string"==typeof e||"number"==typeof e)r+=e;else if("object"==typeof e)if(Array.isArray(e)){var l=e.length;for(t=0;t<l;t++)e[t]&&(n=cn(e[t]))&&(r&&(r+=" "),r+=n)}else for(n in e)e[n]&&(r&&(r+=" "),r+=n);return r}function dn(e){return"object"==typeof e?function(){for(var e,t,n=0,r="",l=arguments.length;n<l;n++)(e=arguments[n])&&(t=cn(e))&&(r&&(r+=" "),r+=t);return r}(e):null!=e?e:""}function fn(e,t,n,r){var l=e.__style;if(ke||l!==t){var o=function(e){return null==e?null:String(e)}(t);ke&&o===e.getAttribute("style")||(null==o?e.removeAttribute("style"):e.style.cssText=o),e.__style=t}return r}const vn=Symbol("is custom element"),hn=Symbol("is html");function pn(e){if(ke){var t,n=!1,r=()=>{if(!n){if(n=!0,e.hasAttribute("value")){var t=e.value;bn(e,"value",null),e.value=t}if(e.hasAttribute("checked")){var r=e.checked;bn(e,"checked",null),e.checked=r}}};e.__on_r=r,t=r,0===te.length&&Z(re),te.push(t),Vt||(Vt=!0,document.addEventListener("reset",(e=>{Promise.resolve().then((()=>{var t;if(!e.defaultPrevented)for(const n of e.target.elements)null==(t=n.__on_r)||t.call(n)}))}),{capture:!0}))}}function bn(e,t,n,r){var l=mn(e);ke&&(l[t]=e.getAttribute(t),"src"===t||"srcset"===t||"href"===t&&"LINK"===e.nodeName)||l[t]!==(l[t]=n)&&("loading"===t&&(e[D]=n),null==n?e.removeAttribute(t):"string"!=typeof n&&function(e){var t,n=yn.get(e.nodeName);if(n)return n;yn.set(e.nodeName,n=[]);var r=e,l=Element.prototype;for(;l!==r;){for(var o in t=K(r))t[o].set&&n.push(o);r=X(r)}return n}(e).includes(t)?e[t]=n:e.setAttribute(t,n))}function mn(e){var t;return null!=(t=e.__attributes)?t:e.__attributes={[vn]:e.nodeName.includes("-"),[hn]:"http://www.w3.org/1999/xhtml"===e.namespaceURI}}var yn=new Map;function $n(e,t){return e===t||(null==e?void 0:e[q])===t}function _n(e=!1){const t=Ut,n=t.l.u;if(!n)return;let r=()=>_t(t.s);if(e){let e=0,n={};const l=be((()=>{let r=!1;const l=t.s;for(const e in l)l[e]!==n[e]&&(n[e]=l[e],r=!0);return r&&e++,e}));r=()=>bt(l)}var l;n.b.length&&(l=()=>{wn(t,r),Y(n.b)},kt(),Ct(l)),Et((()=>{const e=mt((()=>n.m.map(Q)));return()=>{for(const t of e)"function"==typeof t&&t()}})),n.a.length&&Et((()=>{wn(t,r),Y(n.a)}))}function wn(e,t){if(e.l.s)for(const n of e.l.s)bt(n);t()}function kn(){const e=Ut;return null===e&&Bt(),(t,n,r)=>{var l;const o=null==(l=e.s.$events)?void 0:l[t];if(o){const l=R(o)?o.slice():[o],s=function(e,t,{bubbles:n=!1,cancelable:r=!1}={}){return new CustomEvent(e,{detail:t,bubbles:n,cancelable:r})}(t,n,r);for(const t of l)t.call(e.x,s);return!s.defaultPrevented}return!0}}let xn,On=!1;function En(e){var t,n;return null!=(n=null==(t=e.ctx)?void 0:t.d)&&n}function Pn(e,t,n,r){var l,o,s,i=!$||!!(2&n),a=!!(8&n),u=!1;[s,u]=function(e){var t=On;try{return On=!1,[e(),On]}finally{On=t}}((()=>e[t]));var g,c=q in e||M in e,d=(null!=(o=null==(l=H(e,t))?void 0:l.set)?o:c&&t in e&&(n=>e[t]=n))||void 0,f=r,v=!0,h=!1,p=()=>(h=!0,v&&(v=!1,f=r),f);if(void 0===s&&void 0!==r&&(d&&i&&function(){throw new Error("https://svelte.dev/e/props_invalid_value")}(),s=p(),d&&d(s)),i)g=()=>{var n=e[t];return void 0===n?p():(v=!0,h=!1,n)};else{var b=me((()=>e[t]));b.f|=131072,g=()=>{var e=bt(b);return void 0!==e&&(f=void 0),void 0===e?f:e}}if(d){var m=e.$legacy;return function(e,t){return arguments.length>0?(i&&t&&!m&&!u||d(t?g():e),e):g()}}var y=!1,_=fe(s),w=be((()=>{var e=g(),t=bt(_);return y?(y=!1,t):_.v=e}));return bt(w),w.equals=ie,function(e,t){if(arguments.length>0){const n=t?bt(w):i&&a?ae(e):e;if(!w.equals(n)){if(y=!0,he(_,n),h&&void 0!==f&&(f=n),En(w))return e;mt((()=>bt(w)))}return e}return En(w)?w.v:bt(w)}}class zn{constructor(e){var t,n;m(this,r),m(this,l);var o=new Map,s=(e,t)=>{var n=fe(t);return o.set(e,n),n};const i=new Proxy(v(f({},e.props||{}),{$events:{}}),{get(e,t){var n;return bt(null!=(n=o.get(t))?n:s(t,Reflect.get(e,t)))},has(e,t){var n;return t===M||(bt(null!=(n=o.get(t))?n:s(t,Reflect.get(e,t))),Reflect.has(e,t))},set(e,t,n){var r;return he(null!=(r=o.get(t))?r:s(t,n),n),Reflect.set(e,t,n)}});y(this,l,(e.hydrate?on:ln)(e.component,{target:e.target,anchor:e.anchor,props:i,context:e.context,intro:null!=(t=e.intro)&&t,recover:e.recover})),(null==(n=null==e?void 0:e.props)?void 0:n.$host)&&!1!==e.sync||pt(),y(this,r,i.$events);for(const r of Object.keys(b(this,l)))"$set"!==r&&"$destroy"!==r&&"$on"!==r&&F(this,r,{get(){return b(this,l)[r]},set(e){b(this,l)[r]=e},enumerable:!0});b(this,l).$set=e=>{Object.assign(i,e)},b(this,l).$destroy=()=>{!function(e,t){const n=un.get(e);n?(un.delete(e),n(t)):Promise.resolve()}(b(this,l))}}$set(e){b(this,l).$set(e)}$on(e,t){b(this,r)[e]=b(this,r)[e]||[];const n=(...e)=>t.call(this,...e);return b(this,r)[e].push(n),()=>{b(this,r)[e]=b(this,r)[e].filter((e=>e!==n))}}$destroy(){b(this,l).$destroy()}}function Cn(e,t,n,r){var l;const o=null==(l=n[e])?void 0:l.type;if(t="Boolean"===o&&"boolean"!=typeof t?null!=t:t,!r||!n[e])return t;if("toAttribute"===r)switch(o){case"Object":case"Array":return null==t?null:JSON.stringify(t);case"Boolean":return t?"":null;case"Number":return null==t?null:t;default:return t}else switch(o){case"Object":case"Array":return t&&JSON.parse(t);case"Boolean":default:return t;case"Number":return null!=t?+t:t}}r=new WeakMap,l=new WeakMap,"function"==typeof HTMLElement&&(xn=class extends HTMLElement{constructor(e,t,n){super(),h(this,"$ctor"),h(this,"$s"),h(this,"$c"),h(this,"$cn",!1),h(this,"$d",{}),h(this,"$r",!1),h(this,"$p_d",{}),h(this,"$l",{}),h(this,"$l_u",new Map),h(this,"$me"),this.$ctor=e,this.$s=t,n&&this.attachShadow({mode:"open"})}addEventListener(e,t,n){if(this.$l[e]=this.$l[e]||[],this.$l[e].push(t),this.$c){const n=this.$c.$on(e,t);this.$l_u.set(t,n)}super.addEventListener(e,t,n)}removeEventListener(e,t,n){if(super.removeEventListener(e,t,n),this.$c){const e=this.$l_u.get(t);e&&(e(),this.$l_u.delete(t))}}connectedCallback(){return e=this,t=null,n=function*(){if(this.$cn=!0,!this.$c){let t=function(e){return t=>{const n=document.createElement("slot");"default"!==e&&(n.name=e),nn(t,n)}};if(yield Promise.resolve(),!this.$cn||this.$c)return;const n={},r=function(e){const t={};return e.childNodes.forEach((e=>{t[e.slot||"default"]=!0})),t}(this);for(const e of this.$s)e in r&&("default"!==e||this.$d.children?n[e]=t(e):(this.$d.children=t(e),n.default=!0));for(const e of this.attributes){const t=this.$g_p(e.name);t in this.$d||(this.$d[t]=Cn(t,e.value,this.$p_d,"toProp"))}for(const e in this.$p_d)e in this.$d||void 0===this[e]||(this.$d[e]=this[e],delete this[e]);this.$c=(e={component:this.$ctor,target:this.shadowRoot||this,props:v(f({},this.$d),{$slots:n,$host:this})},new zn(e)),this.$me=function(e){const t=xt(O,e,!0);return()=>{It(t)}}((()=>{Ct((()=>{var e;this.$r=!0;for(const t of W(this.$c)){if(!(null==(e=this.$p_d[t])?void 0:e.reflect))continue;this.$d[t]=this.$c[t];const n=Cn(t,this.$d[t],this.$p_d,"toAttribute");null==n?this.removeAttribute(this.$p_d[t].attribute||t):this.setAttribute(this.$p_d[t].attribute||t,n)}this.$r=!1}))}));for(const e in this.$l)for(const t of this.$l[e]){const n=this.$c.$on(e,t);this.$l_u.set(t,n)}this.$l={}}var e},new Promise(((r,l)=>{var o=e=>{try{i(n.next(e))}catch(t){l(t)}},s=e=>{try{i(n.throw(e))}catch(t){l(t)}},i=e=>e.done?r(e.value):Promise.resolve(e.value).then(o,s);i((n=n.apply(e,t)).next())}));var e,t,n}attributeChangedCallback(e,t,n){var r;this.$r||(e=this.$g_p(e),this.$d[e]=Cn(e,n,this.$p_d,"toProp"),null==(r=this.$c)||r.$set({[e]:this.$d[e]}))}disconnectedCallback(){this.$cn=!1,Promise.resolve().then((()=>{!this.$cn&&this.$c&&(this.$c.$destroy(),this.$me(),this.$c=void 0)}))}$g_p(e){return W(this.$p_d).find((t=>this.$p_d[t].attribute===e||!this.$p_d[t].attribute&&t.toLowerCase()===e))||e}});var Ln=tn('<label for="toggle-input" class="gds-toggle__label svelte-e94glt"> </label>'),jn=tn('<span class="gds-toggle__track-label gds-toggle__track-label--on svelte-e94glt"> </span> <span class="gds-toggle__track-label gds-toggle__track-label--off svelte-e94glt"> </span>',1),Nn=tn('<div class="gds-toggle__loading-indicator svelte-e94glt"></div>'),Sn=tn('<span class="gds-toggle__thumb-icon svelte-e94glt"> </span>'),An=tn('<label for="toggle-input" class="gds-toggle__label svelte-e94glt"> </label>'),In=tn('<div><!> <div class="gds-toggle__container svelte-e94glt"><input id="toggle-input" type="checkbox" class="gds-toggle__input svelte-e94glt" role="switch"> <div class="gds-toggle__track svelte-e94glt"><!> <div class="gds-toggle__thumb svelte-e94glt"><!></div></div></div> <!></div>');const Tn={hash:"svelte-e94glt",code:":host {\n    /* Base tokens */--gds-color-primary: #4263eb;--gds-color-primary-hover: #364fc7;--gds-color-secondary: #868e96;--gds-color-secondary-hover: #495057;--gds-color-success: #40c057;--gds-color-warning: #fcc419;--gds-color-danger: #fa5252;--gds-color-info: #15aabf;--gds-color-light: #f8f9fa;--gds-color-dark: #212529;--gds-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;--gds-font-size-xs: 0.75rem;--gds-font-size-sm: 0.875rem;--gds-font-size-md: 1rem;--gds-font-size-lg: 1.125rem;--gds-font-size-xl: 1.25rem;--gds-font-weight-normal: 400;--gds-font-weight-medium: 500;--gds-font-weight-bold: 700;--gds-spacing-xs: 0.25rem;--gds-spacing-sm: 0.5rem;--gds-spacing-md: 1rem;--gds-spacing-lg: 1.5rem;--gds-spacing-xl: 2rem;--gds-border-radius-sm: 0.25rem;--gds-border-radius-md: 0.375rem;--gds-border-radius-lg: 0.5rem;--gds-border-radius-full: 9999px;--gds-border-width: 1px;--gds-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);--gds-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);--gds-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);--gds-transition-fast: 150ms;--gds-transition-normal: 250ms;--gds-transition-slow: 350ms;\n    \n    /* Component-specific variables */--gds-toggle-width: 3.5rem;--gds-toggle-height: 1.75rem;--gds-toggle-thumb-size: 1.25rem;--gds-toggle-thumb-color: white;--gds-toggle-thumb-color-checked: white;--gds-toggle-track-color: #e9ecef;--gds-toggle-track-color-checked: var(--gds-color-primary);--gds-toggle-border-radius: var(--gds-border-radius-full);--gds-toggle-transition-duration: var(--gds-transition-normal);--gds-toggle-focus-ring-color: rgba(66, 99, 235, 0.25);--gds-toggle-disabled-opacity: 0.6;--gds-toggle-label-gap: var(--gds-spacing-sm);--gds-toggle-label-font-size: var(--gds-font-size-md);--gds-toggle-label-color: var(--gds-color-dark);--gds-toggle-track-text-color: white;--gds-toggle-thumb-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);--gds-toggle-track-border: none;--gds-toggle-padding: 0.25rem;}.gds-toggle.svelte-e94glt {display:inline-flex;align-items:center;font-family:var(--gds-font-family);cursor:pointer;}.gds-toggle--disabled.svelte-e94glt {opacity:var(--gds-toggle-disabled-opacity);cursor:not-allowed;}.gds-toggle--readonly.svelte-e94glt {cursor:default;}.gds-toggle__container.svelte-e94glt {position:relative;display:inline-block;width:var(--gds-toggle-width);height:var(--gds-toggle-height);}.gds-toggle__input.svelte-e94glt {position:absolute;opacity:0;width:0;height:0;}.gds-toggle__track.svelte-e94glt {position:relative;display:flex;align-items:center;width:100%;height:100%;background-color:var(--gds-toggle-track-color);border-radius:var(--gds-toggle-border-radius);transition:background-color var(--gds-toggle-transition-duration) ease;padding:var(--gds-toggle-padding);box-sizing:border-box;border:var(--gds-toggle-track-border);overflow:hidden;}.gds-toggle--checked.svelte-e94glt .gds-toggle__track:where(.svelte-e94glt) {background-color:var(--gds-toggle-track-color-checked);}.gds-toggle__thumb.svelte-e94glt {position:absolute;left:var(--gds-toggle-padding);width:var(--gds-toggle-thumb-size);height:var(--gds-toggle-thumb-size);background-color:var(--gds-toggle-thumb-color);border-radius:var(--gds-toggle-border-radius);transition:transform var(--gds-toggle-transition-duration) ease, background-color var(--gds-toggle-transition-duration) ease;box-shadow:var(--gds-toggle-thumb-shadow);display:flex;align-items:center;justify-content:center;z-index:1;}.gds-toggle--checked.svelte-e94glt .gds-toggle__thumb:where(.svelte-e94glt) {transform:translateX(calc(var(--gds-toggle-width) - var(--gds-toggle-thumb-size) - var(--gds-toggle-padding) * 2));background-color:var(--gds-toggle-thumb-color-checked);}.gds-toggle__track-label.svelte-e94glt {position:absolute;font-size:var(--gds-font-size-xs);font-weight:var(--gds-font-weight-bold);color:var(--gds-toggle-track-text-color);transition:opacity var(--gds-toggle-transition-duration) ease;user-select:none;}.gds-toggle__track-label--on.svelte-e94glt {right:var(--gds-spacing-xs);opacity:0;}.gds-toggle__track-label--off.svelte-e94glt {left:var(--gds-spacing-xs);opacity:1;}.gds-toggle--checked.svelte-e94glt .gds-toggle__track-label--on:where(.svelte-e94glt) {opacity:1;}.gds-toggle--checked.svelte-e94glt .gds-toggle__track-label--off:where(.svelte-e94glt) {opacity:0;}.gds-toggle__label.svelte-e94glt {font-size:var(--gds-toggle-label-font-size);color:var(--gds-toggle-label-color);user-select:none;}.gds-toggle--label-left.svelte-e94glt .gds-toggle__label:where(.svelte-e94glt) {margin-right:var(--gds-toggle-label-gap);}.gds-toggle--label-right.svelte-e94glt .gds-toggle__label:where(.svelte-e94glt) {margin-left:var(--gds-toggle-label-gap);}.gds-toggle--focused.svelte-e94glt .gds-toggle__track:where(.svelte-e94glt) {box-shadow:0 0 0 3px var(--gds-toggle-focus-ring-color);}.gds-toggle__thumb-icon.svelte-e94glt {font-size:calc(var(--gds-toggle-thumb-size) * 0.6);line-height:1;}.gds-toggle__loading-indicator.svelte-e94glt {width:calc(var(--gds-toggle-thumb-size) * 0.6);height:calc(var(--gds-toggle-thumb-size) * 0.6);border:2px solid rgba(0, 0, 0, 0.1);border-top-color:currentColor;border-radius:50%;\n    animation: svelte-e94glt-gds-toggle-spin 0.8s linear infinite;}\n\n  @keyframes svelte-e94glt-gds-toggle-spin {\n    to {\n      transform: rotate(360deg);\n    }\n  }\n\n  /* Size variants */.gds-toggle--sm.svelte-e94glt {--gds-toggle-width: 2.5rem;--gds-toggle-height: 1.25rem;--gds-toggle-thumb-size: 0.875rem;--gds-toggle-label-font-size: var(--gds-font-size-sm);}.gds-toggle--lg.svelte-e94glt {--gds-toggle-width: 4.5rem;--gds-toggle-height: 2.25rem;--gds-toggle-thumb-size: 1.75rem;--gds-toggle-label-font-size: var(--gds-font-size-lg);}\n\n  /* Style variants */.gds-toggle--square.svelte-e94glt {--gds-toggle-border-radius: var(--gds-border-radius-sm);}.gds-toggle--ios.svelte-e94glt {--gds-toggle-track-border: 1px solid #d1d1d6;--gds-toggle-padding: 0.125rem;--gds-toggle-thumb-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);}.gds-toggle--material.svelte-e94glt {--gds-toggle-track-color: rgba(0, 0, 0, 0.38);--gds-toggle-track-color-checked: rgba(66, 99, 235, 0.5);--gds-toggle-height: 1.5rem;--gds-toggle-thumb-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);}\n\n  /* Color variants */.gds-toggle--primary.gds-toggle--checked.svelte-e94glt .gds-toggle__track:where(.svelte-e94glt) {background-color:var(--gds-color-primary);}.gds-toggle--secondary.gds-toggle--checked.svelte-e94glt .gds-toggle__track:where(.svelte-e94glt) {background-color:var(--gds-color-secondary);}.gds-toggle--success.gds-toggle--checked.svelte-e94glt .gds-toggle__track:where(.svelte-e94glt) {background-color:var(--gds-color-success);}.gds-toggle--warning.gds-toggle--checked.svelte-e94glt .gds-toggle__track:where(.svelte-e94glt) {background-color:var(--gds-color-warning);}.gds-toggle--danger.gds-toggle--checked.svelte-e94glt .gds-toggle__track:where(.svelte-e94glt) {background-color:var(--gds-color-danger);}.gds-toggle--info.gds-toggle--checked.svelte-e94glt .gds-toggle__track:where(.svelte-e94glt) {background-color:var(--gds-color-info);}\n\n  /* Indeterminate state */.gds-toggle--indeterminate.svelte-e94glt .gds-toggle__thumb:where(.svelte-e94glt) {transform:translateX(calc((var(--gds-toggle-width) - var(--gds-toggle-thumb-size) - var(--gds-toggle-padding) * 2) / 2));}.gds-toggle--indeterminate.svelte-e94glt .gds-toggle__track:where(.svelte-e94glt) {background-color:var(--gds-color-secondary);}"};customElements.define("gds-toggle",function(e,t,n,r,l){let o=class extends xn{constructor(){super(e,n,l),this.$p_d=t}static get observedAttributes(){return W(t).map((e=>(t[e].attribute||e).toLowerCase()))}};return W(t).forEach((e=>{F(o.prototype,e,{get(){return this.$c&&e in this.$c?this.$c[e]:this.$d[e]},set(n){var r;n=Cn(e,n,t),this.$d[e]=n;var l=this.$c;l&&((null==(r=H(l,e))?void 0:r.get)?l[e]=n:l.$set({[e]:n}))}})})),r.forEach((e=>{F(o.prototype,e,{get(){var t;return null==(t=this.$c)?void 0:t[e]}})})),e.element=o,o}((function(e,t){var n,r;Ft(t,!1),n=e,r=Tn,le((()=>{var e,t=n.getRootNode(),l=t.host?t:null!=(e=t.head)?e:t.ownerDocument.head;if(!l.querySelector("#"+r.hash)){const e=document.createElement("style");e.id=r.hash,e.textContent=r.code,l.appendChild(e)}}));const l=fe(),o=fe();let s=Pn(t,"checked",12,!1),i=Pn(t,"defaultChecked",12,!1),a=Pn(t,"disabled",12,!1),u=Pn(t,"loading",12,!1),g=Pn(t,"readonly",12,!1),c=Pn(t,"size",12,"md"),d=Pn(t,"variant",12,"default"),f=Pn(t,"color",12,"primary"),v=Pn(t,"label",12,""),h=Pn(t,"labelPosition",12,"right"),p=Pn(t,"showLabelsOnTrack",12,!1),b=Pn(t,"onLabel",12,"ON"),m=Pn(t,"offLabel",12,"OFF"),y=Pn(t,"thumbIcon",12,""),_=Pn(t,"thumbCheckedIcon",12,""),w=Pn(t,"thumbUncheckedIcon",12,""),k=Pn(t,"name",12,""),x=Pn(t,"value",12,"on"),O=Pn(t,"required",12,!1),E=Pn(t,"indeterminate",12,!1),P=Pn(t,"animationDuration",12,250),z=fe(i()||s()),L=fe(!1),N=fe();const S=kn();var A,I,T,q;A=()=>{bt(N)&&void 0!==E()&&ve(N,bt(N).indeterminate=E())},null===Ut&&Bt(),</head>&null!==Ut.l?(I=Ut,q=I.l,null!=(T=q.u)?T:q.u={a:[],b:[],m:[]}).m.push(A):Et((()=>{const e=mt(A);if("function"==typeof e)return e})),zt((()=>_t(s())),(()=>{he(z,s())})),zt((()=>(bt(N),_t(E()))),(()=>{bt(N)&&void 0!==E()&&ve(N,bt(N).indeterminate=E())})),zt((()=>(bt(z),_t(_()),_t(y()),_t(w()))),(()=>{he(l,bt(z)?_()||y():w()||y())})),zt((()=>(_t(c()),_t(d()),_t(f()),bt(z),_t(a()),_t(g()),_t(u()),bt(L),_t(E()),_t(h()))),(()=>{he(o,["gds-toggle",`gds-toggle--${c()}`,`gds-toggle--${d()}`,`gds-toggle--${f()}`,bt(z)?"gds-toggle--checked":"",a()?"gds-toggle--disabled":"",g()?"gds-toggle--readonly":"",u()?"gds-toggle--loading":"",bt(L)?"gds-toggle--focused":"",E()?"gds-toggle--indeterminate":"","left"===h()?"gds-toggle--label-left":"gds-toggle--label-right"].filter(Boolean).join(" "))})),function(){var e=Ut;Ct((()=>{if(bt(e.l.r2)){for(var t of e.l.r1){var n=t.effect;n.f&C&&$t(n,j),lt(n)&&gt(n),t.ran=!1}e.l.r2.v=!1}}))}(),_n();var M=In(),D=Te(M),R=e=>{var t=Ln(),n=Te(t,!0);Pe(t),Lt((()=>rn(n,v()))),nn(e,t)};gn(D,(e=>{v()&&"left"===h()&&e(R)}));var B=qe(D,2),U=Te(B);pn(U),function(e={},t,n){Pt((()=>{var r,l;return Ct((()=>{r=l,l=[],mt((()=>{e!==n(...l)&&(t(e,...l),r&&$n(n(...r),e)&&t(null,...r))}))})),()=>{le((()=>{l&&$n(n(...l),e)&&t(null,...l)}))}}))}(U,(e=>he(N,e)),(()=>bt(N)));var W=qe(U,2),F=Te(W),H=e=>{var t=jn(),n=function(e){if(!ke){var t=Ae(e);return t instanceof Comment&&""===t.data?Ie(t):t}return we}(t),r=Te(n,!0);Pe(n);var l=qe(n,2),o=Te(l,!0);Pe(l),Lt((()=>{rn(r,b()),rn(o,m())})),nn(e,t)};gn(F,(e=>{p()&&e(H)}));var K=qe(F,2),J=Te(K),V=e=>{nn(e,Nn())},X=(e,t)=>{var n=e=>{var t=Sn(),n=Te(t,!0);Pe(t),Lt((()=>rn(n,bt(l)))),nn(e,t)};gn(e,(e=>{bt(l)&&e(n)}),t)};gn(J,(e=>{u()?e(V):e(X,!1)})),Pe(K),Pe(W),Pe(B);var G=qe(B,2),Q=e=>{var t=An(),n=Te(t,!0);Pe(t),Lt((()=>rn(n,v()))),nn(e,t)};return gn(G,(e=>{v()&&"right"===h()&&e(Q)})),Pe(M),Lt((()=>{var e;!function(e,t,n,r){var l=e.__className;if(ke||l!==n){var o=function(e,t){var n=null==e?"":""+e;return""===(n=n?n+" "+t:t)?null:n}(n,r);ke&&o===e.getAttribute("class")||(null==o?e.removeAttribute("class"):e.className=o),e.__className=n}}(M,0,dn(bt(o)),"svelte-e94glt"),fn(M,`--gds-toggle-transition-duration: ${null!=(e=P())?e:""}ms;`),function(e,t){var n=mn(e);n.checked!==(n.checked=null!=t?t:void 0)&&(e.checked=t)}(U,bt(z)),U.disabled=a(),U.readOnly=g(),bn(U,"name",k()),function(e,t){var n=mn(e);n.value!==(n.value=null!=t?t:void 0)&&(e.value!==t||0===t&&"PROGRESS"===e.nodeName)&&(e.value=null!=t?t:"")}(U,x()),U.required=O(),bn(U,"aria-checked",E()?"mixed":bt(z)),bn(U,"aria-readonly",g()?"true":void 0)})),Yt("change",U,(function(e){a()||g()||u()?e.preventDefault():(he(z,e.target.checked),s(bt(z)),S("change",{checked:bt(z),name:k(),value:x()}))})),Yt("focus",U,(function(){he(L,!0),S("focus")})),Yt("blur",U,(function(){he(L,!1),S("blur")})),Yt("keydown",U,(function(e){S("keydown",e),a()||g()||u()||"Enter"!==e.key&&" "!==e.key||(e.preventDefault(),he(z,!bt(z)),s(bt(z)),S("change",{checked:bt(z),name:k(),value:x()}))})),nn(e,M),Ht({get checked(){return s()},set checked(e){s(e),pt()},get defaultChecked(){return i()},set defaultChecked(e){i(e),pt()},get disabled(){return a()},set disabled(e){a(e),pt()},get loading(){return u()},set loading(e){u(e),pt()},get readonly(){return g()},set readonly(e){g(e),pt()},get size(){return c()},set size(e){c(e),pt()},get variant(){return d()},set variant(e){d(e),pt()},get color(){return f()},set color(e){f(e),pt()},get label(){return v()},set label(e){v(e),pt()},get labelPosition(){return h()},set labelPosition(e){h(e),pt()},get showLabelsOnTrack(){return p()},set showLabelsOnTrack(e){p(e),pt()},get onLabel(){return b()},set onLabel(e){b(e),pt()},get offLabel(){return m()},set offLabel(e){m(e),pt()},get thumbIcon(){return y()},set thumbIcon(e){y(e),pt()},get thumbCheckedIcon(){return _()},set thumbCheckedIcon(e){_(e),pt()},get thumbUncheckedIcon(){return w()},set thumbUncheckedIcon(e){w(e),pt()},get name(){return k()},set name(e){k(e),pt()},get value(){return x()},set value(e){x(e),pt()},get required(){return O()},set required(e){O(e),pt()},get indeterminate(){return E()},set indeterminate(e){E(e),pt()},get animationDuration(){return P()},set animationDuration(e){P(e),pt()}})}),{checked:{},defaultChecked:{},disabled:{},loading:{},readonly:{},size:{},variant:{},color:{},label:{},labelPosition:{},showLabelsOnTrack:{},onLabel:{},offLabel:{},thumbIcon:{},thumbCheckedIcon:{},thumbUncheckedIcon:{},name:{},value:{},required:{},indeterminate:{},animationDuration:{}},[],[],!0))}));
+//# sourceMappingURL=index.umd.cjs.map
+
+</script>
+</head>
+<body>
+  <h1>Toggle Component Showcase</h1>
+  
+  <div class="showcase-section">
+    <h2>Basic Toggle States</h2>
+    <div class="showcase-grid">
+      <div class="showcase-item">
+        <h3>Default (Unchecked)</h3>
+        <gds-toggle></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Checked</h3>
+        <gds-toggle checked></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>With Label</h3>
+        <gds-toggle label="Toggle Label"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Label on Left</h3>
+        <gds-toggle label="Toggle Label" label-position="left"></gds-toggle>
+      </div>
+    </div>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Sizes</h2>
+    <div class="showcase-grid">
+      <div class="showcase-item">
+        <h3>Small</h3>
+        <gds-toggle size="sm" label="Small Toggle"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Medium (Default)</h3>
+        <gds-toggle size="md" label="Medium Toggle"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Large</h3>
+        <gds-toggle size="lg" label="Large Toggle"></gds-toggle>
+      </div>
+    </div>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Variants</h2>
+    <div class="showcase-grid">
+      <div class="showcase-item">
+        <h3>Default</h3>
+        <gds-toggle variant="default" label="Default Variant" checked></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Pill</h3>
+        <gds-toggle variant="pill" label="Pill Variant" checked></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Square</h3>
+        <gds-toggle variant="square" label="Square Variant" checked></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>iOS Style</h3>
+        <gds-toggle variant="ios" label="iOS Variant" checked class="ios-toggle"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Material Style</h3>
+        <gds-toggle variant="material" label="Material Variant" checked class="material-toggle"></gds-toggle>
+      </div>
+    </div>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Colors</h2>
+    <div class="showcase-grid">
+      <div class="showcase-item">
+        <h3>Primary</h3>
+        <gds-toggle color="primary" label="Primary Color" checked></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Secondary</h3>
+        <gds-toggle color="secondary" label="Secondary Color" checked></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Success</h3>
+        <gds-toggle color="success" label="Success Color" checked></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Warning</h3>
+        <gds-toggle color="warning" label="Warning Color" checked></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Danger</h3>
+        <gds-toggle color="danger" label="Danger Color" checked></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Info</h3>
+        <gds-toggle color="info" label="Info Color" checked></gds-toggle>
+      </div>
+    </div>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>States</h2>
+    <div class="showcase-grid">
+      <div class="showcase-item">
+        <h3>Disabled</h3>
+        <gds-toggle disabled label="Disabled Toggle"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Disabled Checked</h3>
+        <gds-toggle disabled checked label="Disabled Checked Toggle"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Loading</h3>
+        <gds-toggle loading label="Loading Toggle"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Read-only</h3>
+        <gds-toggle readonly checked label="Read-only Toggle"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Indeterminate</h3>
+        <gds-toggle indeterminate label="Indeterminate Toggle"></gds-toggle>
+      </div>
+    </div>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Track Labels</h2>
+    <div class="showcase-grid">
+      <div class="showcase-item">
+        <h3>Default Track Labels</h3>
+        <gds-toggle show-labels-on-track></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Custom Track Labels</h3>
+        <gds-toggle show-labels-on-track on-label="YES" off-label="NO"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Track Labels with Component Label</h3>
+        <gds-toggle show-labels-on-track label="With Component Label"></gds-toggle>
+      </div>
+    </div>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Icons</h2>
+    <div class="showcase-grid">
+      <div class="showcase-item">
+        <h3>Same Icon for Both States</h3>
+        <gds-toggle thumb-icon="✓" label="With Icon"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Different Icons for Each State</h3>
+        <gds-toggle thumb-checked-icon="☀️" thumb-unchecked-icon="🌙" label="Dark Mode"></gds-toggle>
+      </div>
+    </div>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Form Integration</h2>
+    <div class="form-example">
+      <form id="toggle-form">
+        <gds-toggle name="terms" required label="I agree to the terms and conditions"></gds-toggle>
+        <br>
+        <gds-toggle name="newsletter" label="Subscribe to newsletter"></gds-toggle>
+        <br>
+        <button type="submit">Submit</button>
+      </form>
+      <div id="form-result"></div>
+      
+      <script>
+        document.getElementById('toggle-form').addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const result = {};
+          
+          for (const [key, value] of formData.entries()) {
+            result[key] = value;
+          }
+          
+          document.getElementById('form-result').innerHTML = 
+            '<pre style="margin-top: 1rem; padding: 0.5rem; background: #f5f5f5; border-radius: 4px;">' + 
+            JSON.stringify(result, null, 2) + 
+            '</pre>';
+        });
+      </script>
+    </div>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Custom Styling</h2>
+    <div class="showcase-grid">
+      <div class="showcase-item">
+        <h3>Custom Colors</h3>
+        <gds-toggle label="Custom Colors" class="custom-toggle"></gds-toggle>
+      </div>
+      
+      <div class="showcase-item">
+        <h3>Custom Animation</h3>
+        <gds-toggle label="Slow Animation" animation-duration="800"></gds-toggle>
+      </div>
+    </div>
+  </div>
+  
+  <div class="showcase-section">
+    <h2>Keyboard Interaction</h2>
+    <div class="keyboard-demo">
+      <p>Click on the toggle below and use keyboard to interact:</p>
+      <ul>
+        <li>Tab: to focus the toggle</li>
+        <li>Space or Enter: to toggle the state</li>
+      </ul>
+      <gds-toggle label="Keyboard Interactive Toggle"></gds-toggle>
+      <div id="keyboard-events" style="margin-top: 1rem; font-size: 0.875rem;"></div>
+      
+      <script>
+        const toggle = document.querySelector('.keyboard-demo gds-toggle');
+        const eventsDiv = document.getElementById('keyboard-events');
+        
+        toggle.addEventListener('focus', () => {
+          addEvent('Toggle focused');
+        });
+        
+        toggle.addEventListener('blur', () => {
+          addEvent('Toggle blurred');
+        });
+        
+        toggle.addEventListener('change', (e) => {
+          addEvent(`Toggle changed: ${e.detail.checked ? 'ON' : 'OFF'}`);
+        });
+        
+        toggle.addEventListener('keydown', (e) => {
+          addEvent(`Key pressed: ${e.detail.key}`);
+        });
+        
+        function addEvent(text) {
+          const p = document.createElement('p');
+          p.textContent = text;
+          p.style.margin = '0.25rem 0';
+          p.style.padding = '0.25rem 0.5rem';
+          p.style.backgroundColor = '#f5f5f5';
+          p.style.borderRadius = '4px';
+          
+          eventsDiv.prepend(p);
+          
+          // Keep only the last 5 events
+          while (eventsDiv.children.length > 5) {
+            eventsDiv.removeChild(eventsDiv.lastChild);
+          }
+        }
+      </script>
+    </div>
+  </div>
+  
+  <script>
+    // Initialize all toggles with default checked state
+    document.querySelectorAll('gds-toggle[checked]').forEach(toggle => {
+      toggle.checked = true;
+    });
+    
+    // Add change event listeners to all toggles
+    document.querySelectorAll('gds-toggle').forEach(toggle => {
+      toggle.addEventListener('change', (e) => {
+        console.log('Toggle changed:', e.detail);
+      });
+    });
+  </script>
+</body>
+</html>
